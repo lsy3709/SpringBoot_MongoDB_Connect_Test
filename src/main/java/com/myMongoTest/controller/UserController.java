@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +40,13 @@ public class UserController {
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
+	@ResponseBody
+	@GetMapping("/findAll")
+	public List<User> list( ){
+		List<User> userList = userService.mongoFindAll();
+		return userList;
+	}
+	
 	  @RequestMapping("/hello")
 	  public String hello(Model model ){
 		System.out.println("안녕하세요");
@@ -47,4 +55,6 @@ public class UserController {
 		model.addAttribute("user",  userList);
 		return "hello";
 	  } 
+	  
+	  
 }

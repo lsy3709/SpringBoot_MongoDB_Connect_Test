@@ -18,34 +18,46 @@
          	<div class="form-group">
     		<label for="comment">디비검색: </label>
     		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력: 작업중 대기"></input>
-    		<button id="dbInsertBtn">디비검색</button>
+    		<button id="dbSearchBtn">디비검색</button>
     	</div>
         
 <br>
-     
-        <table class="table" th:object="${user}" border=1>
-            <thead>
-            <tr>
-                <td>아이디</td>
-                <td>제목</td>
-                <td>메세지</td>
-                <td>수정</td>
-                <td>삭제</td>
-            </tr>
-            </thead>
-            <tbody>
-             <tr th:each="user: ${user}">
-                <td th:text="${user.id}"></td>
-                <td th:text="${user.title}"></td>
-                <td th:text="${user.message}"></td>
-                <td>	<button id="dbUpdateBtn">수정</button></td>
-                 <td>	<button id="dbDeleteBtn">삭제</button></td>
-            </tr>
-            </tbody>
-        </table>
+      <div id="dbResult"></div>
    
 </body>
 <script type="text/javascript">
+
+$(document).ready(function(){
+		init()
+	})
+	
+
+var init = function(){
+		$.ajax({
+			type:"get",
+			url:"/findAll",
+			dataType:"JSON",
+			contentType:"application/json;charset=utf-8",
+		})
+		.done(function(resp){
+			//alert("resp"+resp)
+			var str = "<table class='table table-hover mt-3' border=1>";
+			$.each(resp,function(key,val){
+				str += "<tr>"
+				str += "<td>" + val.id + "</td>"
+				str += "<td>" + val.title + "</td>"
+				str += "<td>" + val.message + "</td>"
+				str+= "<td><a href='javascript:fdel("+val.id+")'>수정</a></td>"
+				str+= "<td><a href='javascript:fdel("+val.id+")'>삭제</a></td>" 
+				
+				
+				str += "</tr>"
+			})
+			str += "</table>"
+			$("#dbResult").html(str);
+		})
+	};
+
 $("#dbInsertBtn").click(function(){
 	
 
@@ -63,8 +75,7 @@ $("#dbInsertBtn").click(function(){
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){
-		alert("디비 추가 성공");
-		location.reload();
+				init();
 			})
 	.fail(function(){
 		alert("디비 추가 실패")

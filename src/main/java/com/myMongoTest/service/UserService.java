@@ -3,6 +3,8 @@ package com.myMongoTest.service;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.myMongoTest.document.User;
@@ -35,8 +37,18 @@ public void mongoUpdate() {
         
     }
 
-public void mongoDelete() {
+public void mongoDelete(Long id) {
+	mongoTemplate.remove(id);
     
 }
+
+public void deleteDb(String key, Long value) {
+	Criteria criteria = new Criteria(key);
+	criteria.is(value);
+	
+	Query query = new Query(criteria);
+	mongoTemplate.remove(query, "user");
+}
+
 }
 

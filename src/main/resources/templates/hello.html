@@ -31,7 +31,20 @@ $(document).ready(function(){
 		init()
 	})
 	
-
+function dbDel(id){
+	$.ajax({
+		type:"delete",
+		url:"/dbDelete/"+id,
+	})
+	.done(function(resp){
+		alert(id+"번 글 삭제 완료");
+		init();
+	})
+	.fail(function(){
+		alert("삭제 실패")
+	})
+}
+	
 var init = function(){
 		$.ajax({
 			type:"get",
@@ -48,7 +61,7 @@ var init = function(){
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
 				str+= "<td><a href='javascript:fdel("+val.id+")'>수정</a></td>"
-				str+= "<td><a href='javascript:fdel("+val.id+")'>삭제</a></td>" 
+				str+= "<td><a href='javascript:dbDel("+val.id+")'>삭제</a></td>" 
 				
 				
 				str += "</tr>"

@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-      <meta charset="utf-8"  />
-   <title>몽고디비+SpringBoot 연동 테스트 l입니다.</title>
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!--    <script src="js/util.js" defer ></script> -->
 <script>
 
 $(document).ready(function(){
@@ -91,26 +84,3 @@ $("#dbFindAllBtn").click(function(){
 	});
 });
 </script>   
-</head>
-<body>
-   <h1> 몽고디비(atlasCloud)+SpringBoot 연동 CRUD 테스트 입니다</h1>
-   	<div class="form-group">
-    		<label for="comment">디비추가:</label>
-    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"></input>
-    		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력"></input>
-    		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력"></input>
-    		<button id="dbInsertBtn">디비추가</button>
-    	</div>
-        
-         	<div class="form-group">
-    		<label for="comment">디비검색: </label>
-    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력: 작업중 대기"></input>
-    		<button id="dbSearchBtn">디비검색</button>
-    	</div>
-        
-<br>
-      <div id="dbResult"></div>
-   
-</body>
- 
-

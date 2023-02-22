@@ -57,6 +57,14 @@ public class UserController {
 		return "hello";
 	  } 
 	  
+	  @RequestMapping("/updateForm/{id}")
+	  public String updateForm(	@RequestBody User user, Model model , @PathVariable Long id){
+		List<User> userList = userService.mongoFindAll();
+		System.out.println("userList"+ userList);
+		model.addAttribute("user",  userList);
+		return "hello";
+	  } 
+	  
 	  @ResponseBody
 		@DeleteMapping("/dbDelete/{id}")
 		public Long delete(@PathVariable Long id) {

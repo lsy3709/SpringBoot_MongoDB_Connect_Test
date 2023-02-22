@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://<계정>:<패스워드>@mongodbtutorial.c24ikv6.mongodb.net/blog3?retryWrites=true&w=majority

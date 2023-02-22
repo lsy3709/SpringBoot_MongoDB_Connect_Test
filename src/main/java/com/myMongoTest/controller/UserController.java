@@ -1,0 +1,50 @@
+package com.myMongoTest.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.myMongoTest.document.User;
+import com.myMongoTest.service.UserService;
+
+import lombok.RequiredArgsConstructor;
+
+@Controller
+@RequiredArgsConstructor
+public class UserController {
+
+	   private final UserService userService;
+	
+	@ResponseBody
+	  @RequestMapping("/") 
+	  public String home(){
+	    System.out.println("Hello Boot!!");
+	    userService.mongoInsert();
+	    return "Hello Boot!!"; 
+	  }
+
+	@ResponseBody
+	@PostMapping("/insertDb")
+	public ResponseEntity<String> replyInsert(	@RequestBody User user){
+		userService.mongoUserInsert(user);
+		System.out.println("몽공 디비 추가 확인");
+		return new ResponseEntity<String>("success",HttpStatus.OK);
+	}
+	
+	  @RequestMapping("/hello")
+	  public String hello(Model model ){
+		System.out.println("안녕하세요");
+		List<User> userList = userService.mongoFindAll();
+		System.out.println("userList"+ userList);
+		model.addAttribute("user",  userList);
+		return "hello";
+	  } 
+}

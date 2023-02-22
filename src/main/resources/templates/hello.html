@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+      <meta charset="utf-8"  />
+   <title>몽고디비 테스트 l입니다.</title>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+   <h1> 몽고디비 테스트입니다.</h1>
+   	<div class="form-group">
+    		<label for="comment">디비추가:</label>
+    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"></input>
+    		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력"></input>
+    		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력"></input>
+    		<button id="dbInsertBtn">디비추가</button>
+    	</div>
+        
+         	<div class="form-group">
+    		<label for="comment">디비검색: </label>
+    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력: 작업중 대기"></input>
+    		<button id="dbInsertBtn">디비검색</button>
+    	</div>
+        
+<br>
+     
+        <table class="table" th:object="${user}" border=1>
+            <thead>
+            <tr>
+                <td>아이디</td>
+                <td>제목</td>
+                <td>메세지</td>
+                <td>수정</td>
+                <td>삭제</td>
+            </tr>
+            </thead>
+            <tbody>
+             <tr th:each="user: ${user}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.title}"></td>
+                <td th:text="${user.message}"></td>
+                <td>	<button id="dbUpdateBtn">수정</button></td>
+                 <td>	<button id="dbDeleteBtn">삭제</button></td>
+            </tr>
+            </tbody>
+        </table>
+   
+</body>
+<script type="text/javascript">
+$("#dbInsertBtn").click(function(){
+	
+
+	var data={
+			"id":$("#dbId").val(),
+			"title":$("#dbTitle").val(),
+			"message":$("#dbMessage").val()
+			
+	}
+	
+	$.ajax({
+		type:"post",
+		url:"/insertDb",
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(data)
+	})
+	.done(function(resp){
+		alert("디비 추가 성공");
+		location.reload();
+			})
+	.fail(function(){
+		alert("디비 추가 실패")
+	});
+});
+
+$("#dbFindAllBtn").click(function(){
+
+	$.ajax({
+		type:"post",
+		url:"/insertDb",
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(data)
+	})
+	.done(function(resp){
+		alert("디비 추가 성공");
+			})
+	.fail(function(){
+		alert("디비 추가 실패")
+	});
+});
+</script>   

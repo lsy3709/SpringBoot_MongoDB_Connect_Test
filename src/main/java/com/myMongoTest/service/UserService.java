@@ -47,20 +47,25 @@ public class UserService {
     		Criteria criteria = new Criteria("_id");
     		criteria.is(Long.parseLong(searchDB.getSearchContent()));
     		
+    		//기존 1:1 검색
     		Query query = new Query(criteria);
     		userList=mongoTemplate.find(query, User.class);
     	} else if( searchDB.getSearchDB().equals("title")) {
-    		Criteria criteria = new Criteria("title");
-    		criteria.is(searchDB.getSearchContent());
     		
-    		Query query = new Query(criteria);
-    		userList=mongoTemplate.find(query, User.class);
+    		//like 검색. 
+    		Query searchQuery = new Query();
+    		 
+    		// LIKE '%[searchIndexInfoSearchParam.getTitleMain()]%' 와 같음
+    		searchQuery.addCriteria(Criteria.where("title").regex(searchDB.getSearchContent()));    
+    		userList=mongoTemplate.find(searchQuery, User.class);
+    		
     	} else if( searchDB.getSearchDB().equals("message")) {
-    		Criteria criteria = new Criteria("message");
-    		criteria.is(searchDB.getSearchContent());
-    		
-    		Query query = new Query(criteria);
-    		userList=mongoTemplate.find(query, User.class);
+    		//like 검색. 
+    		Query searchQuery = new Query();
+    		 
+    		// LIKE '%[searchIndexInfoSearchParam.getTitleMain()]%' 와 같음
+    		searchQuery.addCriteria(Criteria.where("message").regex(searchDB.getSearchContent()));    
+    		userList=mongoTemplate.find(searchQuery, User.class);
     	}
 		return userList;
         

@@ -20,7 +20,10 @@ $("#dbSearchBtn").click(function(){
 		data:JSON.stringify(searchData)
 	})
 	.done(function(resp){
-	 	 var str = "<table class='table table-hover mt-3' border=1>";
+	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
+				str +="<th>" +"아이디"+"</th>"
+				str +="<th>" +"제목"+"</th>"
+				str +="<th>" +"메세지"+"</th>"
 			$.each(resp,function(key,val){
 				str += "<tr>"
 				str += "<td>" + val.id + "</td>"
@@ -71,6 +74,9 @@ function dbUpdate(id){
 	.done(function(resp){
 		  location.href='/updateForm/id';
 				var str = "<table class='table table-hover mt-3' border=1>";
+				str +="<th>" +"아이디"+"</th>"
+				str +="<th>" +"제목"+"</th>"
+				str +="<th>" +"메세지"+"</th>"
 			$.each(resp,function(key,val){
 				str += "<tr>"
 				str += "<td>" + val.id + "</td>"
@@ -112,7 +118,12 @@ var init = function(){
 		})
 		.done(function(resp){
 			//alert("resp"+resp)
-			var str = "<table class='table table-hover mt-3' border=1>";
+			var str = "<table class='table table-hover mt-3  ' border=1>";
+				str +="<th>" +"아이디"+"</th>"
+				str +="<th>" +"제목"+"</th>"
+				str +="<th>" +"메세지"+"</th>"
+				str +="<th>" +"수정"+"</th>"
+				str +="<th>" +"삭제"+"</th>"
 			$.each(resp,function(key,val){
 				str += "<tr>"
 				str += "<td>" + val.id + "</td>"

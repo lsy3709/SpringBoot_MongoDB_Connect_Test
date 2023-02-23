@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.User;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,24 @@ public class UserService {
 //전체 검색
     public List<User> mongoFindAll() {
 		List<User> userList=mongoTemplate.findAll(User.class,"user");
+		//log.info("rList[0]"+rList.get(0));
+		return userList;
+        
+    }
+    
+ //조건 검색
+    public List<User> mongoSearchFindAll(SearchDB searchDB) {
+    	System.out.println("서비스 searchDB.getSearchDB(): "+searchDB.getSearchDB());
+    	System.out.println("서비스 searchDB.getSearchContent(): "+searchDB.getSearchContent());
+    	List<User> userList = null;
+    	if(searchDB.getSearchDB().equals("_id")) {
+    		Criteria criteria = new Criteria("_id");
+    		criteria.is(Long.parseLong(searchDB.getSearchContent()));
+    		
+    		Query query = new Query(criteria);
+    		userList=mongoTemplate.find(query, User.class);
+    	}
+//		List<User> userList=mongoTemplate.findAll(User.class,"user");
 		//log.info("rList[0]"+rList.get(0));
 		return userList;
         

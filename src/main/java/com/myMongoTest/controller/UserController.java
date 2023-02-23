@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.User;
 import com.myMongoTest.service.UserService;
 
@@ -53,6 +54,17 @@ public class UserController {
 	@GetMapping("/findAll")
 	public List<User> list( ){
 		List<User> userList = userService.mongoFindAll();
+		return userList;
+	}
+	
+	@ResponseBody
+	@PostMapping("/searchDb")
+	public List<User> searchlist( @RequestBody SearchDB searchDB){
+		System.out.println("searchDb실행전 getSearchDB:  " +searchDB.getSearchDB());
+		System.out.println("searchDb실행전 getSearchContent:  " +searchDB.getSearchContent());
+		List<User> userList = userService.mongoSearchFindAll(searchDB);
+		System.out.println("searchDb실행후 getSearchContent:  " +userList.get(0).getTitle());
+		System.out.println("searchDb실행후 getSearchContent:  " +userList.get(0).getMessage());
 		return userList;
 	}
 	

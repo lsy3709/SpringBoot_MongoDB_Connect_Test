@@ -6,6 +6,36 @@ function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
 	}
 
+$("#dbSearchBtn").click(function(){
+	
+			var searchData = {
+		"searchContent":$("#searchContent").val(),
+		"searchDB":$("#searchDB option:selected").val()
+	}
+	console.log(searchData)
+	$.ajax({
+		type:"post",
+		url:"/searchDb",
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(searchData)
+	})
+	.done(function(resp){
+	 	 var str = "<table class='table table-hover mt-3' border=1>";
+			$.each(resp,function(key,val){
+				str += "<tr>"
+				str += "<td>" + val.id + "</td>"
+				str += "<td>" + val.title + "</td>"
+				str += "<td>" + val.message + "</td>"
+				str += "</tr>"
+			})
+			str += "</table>"
+			$("#searchResult").html(str);
+			})
+	.fail(function(){
+		alert("디비 검색 실패")
+	});
+	});
+
 $("#listBtn").click(function(){
 	location.href='/hello'
 	});
@@ -24,7 +54,7 @@ $("#dbUpdateBtn").click(function(){
 		contentType:"application/json;charset=utf-8",
 		data:JSON.stringify(data)
 	})
-	.done(function(resp,data){
+	.done(function(resp){
 			location.href='/hello/'
 			})
 	.fail(function(){

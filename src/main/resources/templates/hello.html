@@ -19,11 +19,19 @@
         
          	<div class="form-group">
     		<label for="comment">디비검색: </label>
-    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력: 작업중 대기"></input>
+    		<select name="searchDB" id="searchDB">
+  <option value="message">메세지 검색</option>
+  <option value="title">제목 검색</option>
+  <option value="_id" selected="selected">ID 검색</option>
+</select>
+    		<input class="form-control"   id="searchContent" name="searchContent" placeholder="1 형식 입력: 작업중 대기"></input>
     		<button id="dbSearchBtn">디비검색</button>
     	</div>
         
 <br>
+<h2>검색 디비 목록</h2>
+<div id="searchResult"></div>
+<h2>기존 디비 전체 목록</h2>
       <div id="dbResult"></div>
    
 </body>

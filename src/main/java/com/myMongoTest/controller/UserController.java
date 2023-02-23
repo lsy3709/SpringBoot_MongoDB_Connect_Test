@@ -58,11 +58,12 @@ public class UserController {
 	  } 
 	  
 	  @RequestMapping("/updateForm/{id}")
-	  public String updateForm(	@RequestBody User user, Model model , @PathVariable Long id){
-		List<User> userList = userService.mongoFindAll();
-		System.out.println("userList"+ userList);
-		model.addAttribute("user",  userList);
-		return "hello";
+	  public String updateForm(	Model model , @PathVariable Long id){
+//		  public String updateForm(	){
+		User user = userService.mongoFindOne(id);
+		System.out.println("user"+ user);
+		model.addAttribute("user",  user);
+		return "updateForm";
 	  } 
 	  
 	  @ResponseBody

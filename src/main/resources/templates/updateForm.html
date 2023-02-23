@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+      <meta charset="utf-8"  />
+   <title>몽고디비+SpringBoot 연동 테스트 입니다.</title>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <script src="/js/util.js" defer ></script>
+	<link rel="stylesheet" type="text/css" href = "/css/basic.css">
+</head>
+<body>
+   <h1> 몽고디비(atlasCloud)+SpringBoot 연동 CRUD 테스트 입니다</h1>
+   	<div class="form-group">
+    		<label for="comment">디비수정:</label>
+    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${user.id}"></input>
+    		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력" th:value="${user.title}"></input>
+    		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력" th:value="${user.message}"></input>
+    		<button id="dbInsertBtn">디비수정</button>
+    	</div>
+                        
+<br>
+    		<button id="listBtn">목록가기</button>
+
+      <table >
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Message</th>
+  </tr>
+  <tr>
+    <td th:text="${user.id}"> </td>
+    <td th:text="${user.title}"> </td>
+    <td th:text="${user.message}"></td>
+  </tr>
+ 
+</table>
+   
+</body>
+ 
+

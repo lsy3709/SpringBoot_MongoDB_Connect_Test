@@ -1,8 +1,36 @@
-<script>
-
 $(document).ready(function(){
 		init()
 	})
+	
+function dbUpdateForm(id){
+	location.href='/updateForm/'+id;
+	}
+	
+function dbUpdate(id){
+	$.ajax({
+		type:"get",
+		url:"/updateForm/"+id,
+	})
+	.done(function(resp){
+		  location.href='/updateForm/id';
+				var str = "<table class='table table-hover mt-3' border=1>";
+			$.each(resp,function(key,val){
+				str += "<tr>"
+				str += "<td>" + val.id + "</td>"
+				str += "<td>" + val.title + "</td>"
+				str += "<td>" + val.message + "</td>"
+				str+= "<td><a href='javascript:dbUpdateGo("+val.id+")'>수정</a></td>"
+				
+				str += "</tr>"
+			})
+			str += "</table>"
+			$("#dbResult").html(str);
+		
+	})
+	.fail(function(){
+		
+	})
+}
 	
 function dbDel(id){
 	$.ajax({
@@ -33,7 +61,7 @@ var init = function(){
 				str += "<td>" + val.id + "</td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
-				str+= "<td><a href='javascript:dbUpdate("+val.id+")'>수정</a></td>"
+				str+= "<td><a href='javascript:dbUpdateForm("+val.id+")'>수정</a></td>"
 				str+= "<td><a href='javascript:dbDel("+val.id+")'>삭제</a></td>" 
 				
 				
@@ -82,5 +110,4 @@ $("#dbFindAllBtn").click(function(){
 	.fail(function(){
 		alert("디비 추가 실패")
 	});
-});
-</script>   
+});   

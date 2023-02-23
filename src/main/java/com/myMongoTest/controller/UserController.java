@@ -38,7 +38,6 @@ public class UserController {
 	@PostMapping("/insertDb")
 	public ResponseEntity<String> insertDb(	@RequestBody User user){
 		userService.mongoUserInsert(user);
-		System.out.println("몽고 디비 추가 확인");
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
@@ -46,7 +45,6 @@ public class UserController {
 	@PostMapping("/updateDb")
 	public ResponseEntity<String> updateDb(	@RequestBody User user){
 		userService.mongoUserUpdate(user);
-		System.out.println("몽고 디비 수정 확인");
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
@@ -60,28 +58,20 @@ public class UserController {
 	@ResponseBody
 	@PostMapping("/searchDb")
 	public List<User> searchlist( @RequestBody SearchDB searchDB){
-		System.out.println("searchDb실행전 getSearchDB:  " +searchDB.getSearchDB());
-		System.out.println("searchDb실행전 getSearchContent:  " +searchDB.getSearchContent());
 		List<User> userList = userService.mongoSearchFindAll(searchDB);
-		System.out.println("searchDb실행후 getSearchContent:  " +userList.get(0).getTitle());
-		System.out.println("searchDb실행후 getSearchContent:  " +userList.get(0).getMessage());
 		return userList;
 	}
 	
 	  @RequestMapping("/hello")
 	  public String hello(Model model ){
-		System.out.println("안녕하세요");
 		List<User> userList = userService.mongoFindAll();
-		System.out.println("userList"+ userList);
 		model.addAttribute("user",  userList);
 		return "hello";
 	  } 
 	  
 	  @RequestMapping("/updateForm/{id}")
 	  public String updateForm(	Model model , @PathVariable Long id){
-//		  public String updateForm(	){
 		User user = userService.mongoFindOne(id);
-		System.out.println("user"+ user);
 		model.addAttribute("user",  user);
 		return "updateForm";
 	  } 
@@ -89,9 +79,7 @@ public class UserController {
 	  @ResponseBody
 		@DeleteMapping("/dbDelete/{id}")
 		public Long delete(@PathVariable Long id) {
-			System.out.println("삭제 실행전: "+id);	
 			userService.deleteDb("_id", id);
-			System.out.println("삭제 실행후: "+id);
 			return id;
 	  
 }

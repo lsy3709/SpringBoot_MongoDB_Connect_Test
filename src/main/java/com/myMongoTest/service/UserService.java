@@ -49,9 +49,19 @@ public class UserService {
     		
     		Query query = new Query(criteria);
     		userList=mongoTemplate.find(query, User.class);
+    	} else if( searchDB.getSearchDB().equals("title")) {
+    		Criteria criteria = new Criteria("title");
+    		criteria.is(searchDB.getSearchContent());
+    		
+    		Query query = new Query(criteria);
+    		userList=mongoTemplate.find(query, User.class);
+    	} else if( searchDB.getSearchDB().equals("message")) {
+    		Criteria criteria = new Criteria("message");
+    		criteria.is(searchDB.getSearchContent());
+    		
+    		Query query = new Query(criteria);
+    		userList=mongoTemplate.find(query, User.class);
     	}
-//		List<User> userList=mongoTemplate.findAll(User.class,"user");
-		//log.info("rList[0]"+rList.get(0));
 		return userList;
         
     }

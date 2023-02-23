@@ -35,9 +35,17 @@ public class UserController {
 
 	@ResponseBody
 	@PostMapping("/insertDb")
-	public ResponseEntity<String> replyInsert(	@RequestBody User user){
+	public ResponseEntity<String> insertDb(	@RequestBody User user){
 		userService.mongoUserInsert(user);
-		System.out.println("몽공 디비 추가 확인");
+		System.out.println("몽고 디비 추가 확인");
+		return new ResponseEntity<String>("success",HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@PostMapping("/updateDb")
+	public ResponseEntity<String> updateDb(	@RequestBody User user){
+		userService.mongoUserUpdate(user);
+		System.out.println("몽고 디비 수정 확인");
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	

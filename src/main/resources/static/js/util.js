@@ -9,6 +9,29 @@ function dbUpdateForm(id){
 $("#listBtn").click(function(){
 	location.href='/hello'
 	});
+
+$("#dbUpdateBtn").click(function(){
+
+	var data={
+			"id":$("#dbId").val(),
+			"title":$("#dbTitle").val(),
+			"message":$("#dbMessage").val()
+	}
+	
+	$.ajax({
+		type:"post",
+		url:"/updateDb",
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(data)
+	})
+	.done(function(resp,data){
+			location.href='/hello/'
+			})
+	.fail(function(){
+		alert("디비 수정 실패")
+	});
+	});
+	
 	
 function dbUpdate(id){
 	$.ajax({

@@ -4,17 +4,19 @@
       <meta charset="utf-8"  />
    <title>몽고디비+SpringBoot 연동 테스트 입니다.</title>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <!-- 기본 js 등록 -->
    <script src="/js/util.js" defer ></script>
+   <!-- 기본 css 등록 -->
 	<link rel="stylesheet" type="text/css" href = "/css/basic.css">
 </head>
 <body>
    <h1> 몽고디비(atlasCloud)+SpringBoot 연동 CRUD 테스트 입니다</h1>
    	<div class="form-group">
     		<label for="comment">디비수정:</label>
-    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${user.id}"></input>
+    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${user.id}" readOnly></input>
     		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력" th:value="${user.title}"></input>
     		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력" th:value="${user.message}"></input>
-    		<button id="dbInsertBtn">수정적용하기</button>
+    		<button id="dbUpdateBtn">수정적용하기</button>
     	</div>
                         
 <br>

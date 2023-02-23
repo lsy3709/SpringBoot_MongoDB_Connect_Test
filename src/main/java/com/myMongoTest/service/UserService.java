@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.myMongoTest.document.User;
@@ -41,9 +42,21 @@ public class UserService {
 		User user = mongoTemplate.findById(id, User.class);
 		return user;
     }
-    
-public void mongoUpdate() {
-        
+ //하나 수정하기.
+public void mongoUserUpdate(User user) {
+	Query query = new Query();
+    Update update = new Update();
+
+    // where절 조건
+    query.addCriteria(Criteria.where("_id").is(user.getId()));
+    update.set("title",user.getTitle());
+    update.set("message", user.getMessage());
+    System.out.println("_id"+user.getId());
+    System.out.println("title"+user.getTitle());
+    System.out.println("message"+user.getMessage());
+
+    mongoTemplate.updateMulti(query, update, "user");
+
     }
 
 // 삭제

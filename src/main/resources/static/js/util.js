@@ -1,5 +1,6 @@
 $(document).ready(function(){
 		init()
+		showImage("IMG_1526.JPG")
 	})
 	
 	    function loadImage() {
@@ -15,9 +16,9 @@ $(document).ready(function(){
         }
 	
 	
-	function showImage (id) {
+	function showImage (filename) {
             $.ajax({
-                url: "/images/"+id,
+                url: "/images/"+filename,
                 type: "GET",
                 dataType: "arraybuffer",
                 success: function(data) {

@@ -36,9 +36,9 @@ public class ImageController {
         ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
         return new ResponseEntity<>(objectId, HttpStatus.OK);
     }
-    @GetMapping("/images/{id}")
-    public ResponseEntity<byte[]> downloadImage(@PathVariable String id) throws IOException {
-        Optional<GridFSFile> gridFSFile = Optional.ofNullable(gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id))));
+    @GetMapping("/images/{filename}")
+    public ResponseEntity<byte[]> downloadImage(@PathVariable String filename) throws IOException {
+        Optional<GridFSFile> gridFSFile = Optional.ofNullable(gridFsTemplate.findOne(new Query(Criteria.where("filename").is(filename))));
         if (gridFSFile.isPresent()) {
             GridFsResource resource = gridFsTemplate.getResource(gridFSFile.get().getFilename());
             byte[] bytes = IOUtils.toByteArray(resource.getInputStream());

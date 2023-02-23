@@ -5,6 +5,10 @@ $(document).ready(function(){
 function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
 	}
+
+$("#listBtn").click(function(){
+	location.href='/hello'
+	});
 	
 function dbUpdate(id){
 	$.ajax({

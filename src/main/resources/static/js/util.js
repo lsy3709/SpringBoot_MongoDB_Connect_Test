@@ -2,6 +2,35 @@ $(document).ready(function(){
 		init()
 	})
 	
+	    function loadImage() {
+            var input = document.getElementById("image");
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.getElementById("preview");
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+	
+	
+	function showImage (id) {
+            $.ajax({
+                url: "/images/"+id,
+                type: "GET",
+                dataType: "arraybuffer",
+                success: function(data) {
+                    var blob = new Blob([data], {type: "image/png"});
+                    var url = URL.createObjectURL(blob);
+                    $("#image1").attr("src", url);
+                },
+                error: function() {
+                    alert("Failed to load image");
+                }
+            });
+        }
+	
 function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
 	}

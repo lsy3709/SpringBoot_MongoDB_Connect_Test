@@ -1,3 +1,14 @@
+h1 {
+	  font-size: 3em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 50px;
+	}
 table, th, td {
   border:1px solid black;
+}
+
+#preview {
+	width: 100px;
+	height:150px;
 }

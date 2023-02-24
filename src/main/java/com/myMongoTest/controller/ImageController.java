@@ -58,9 +58,6 @@ public class ImageController {
     @ResponseBody
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> downloadImage(@PathVariable String id) throws IOException {
-    	System.out.println("===========================================");
-    	System.out.println("id 확인: "+ id);
-    	
     	GridFSFile gridFSFile = 	gridFsOperations.findOne(new Query(Criteria.where("filename").is(id)));
     	
         if (gridFSFile != null) {
@@ -77,16 +74,15 @@ public class ImageController {
 	@GetMapping("/findFileNameAll")
 	public List<String> findAllFilenames( ){
 		List<String> FileNameList =  imageService.findAllFilenames();
-		System.out.println(FileNameList);
 		return FileNameList;
 	}
     
 	  //파일 삭제  
     @ResponseBody
-  		@DeleteMapping("/deleteImage/{id}")
-  		public Long deleteImage(@PathVariable Long id) {
-    	imageService.deleteImage("_id", id);
-  			return id;
+  		@DeleteMapping("/deleteImage/{filename}")
+  		public String deleteImage(@PathVariable String filename) {
+    	imageService.deleteImage(filename);
+  			return filename;
   	  
   }
     

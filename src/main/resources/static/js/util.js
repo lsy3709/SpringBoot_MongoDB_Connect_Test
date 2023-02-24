@@ -2,6 +2,8 @@ $(document).ready(function(){
 		init()
 		FindAllFileName()
 		 $('#preview').hide();
+		 $('#previewVideo').hide();
+		 
 		 
 		   $(window).scroll(function() {
       if ($(this).scrollTop() > 100) {
@@ -10,7 +12,27 @@ $(document).ready(function(){
         $('#scroll-to-top').fadeOut();
       }
     });
+    
+
+    
 	})
+	
+	
+	    // 이미지 삭제하는 기능. 
+function imageDel(filename2){
+	console.log('호출여부 확인1')
+	$.ajax({
+		type:"delete",
+		url:"/images/deleteImage/"+filename2,
+	})
+	.done(function(resp){
+		alert(id+"번 이미지 삭제 완료");
+		location.href='/hello/'
+	})
+	.fail(function(){
+		alert("삭제 실패")
+	})
+}
 	
 	//스크롤 버튼 부드럽게 동작하기. 
 	 $('#scroll-to-top').click(function() {
@@ -21,16 +43,33 @@ $(document).ready(function(){
     // 파일 선택시, 선택된 이미지 미리보기 , 로드이미지 함수 출력시 해당 아이디 보여줌.
     // 평소에는 숨김.
 	    function loadImage() {
-		 $('#preview').show();
+		
+		
+		 
             var input = document.getElementById("image");
-            if (input.files && input.files[0]) {
+            console.log(input.files[0].name)
+            var fileStr = input.files[0].name;
+              var str2 = fileStr.substring(fileStr.lastIndexOf('.') + 1);
+              
+            if (input.files && input.files[0] &&str2 !='mp4') {
+				$('#preview').show();
+				$('#previewVideo').hide();
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     var img = document.getElementById("preview");
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(input.files[0]);
-            }
+            } else {
+				$('#previewVideo').show();
+				$('#preview').hide();
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.getElementById("previewVideo");
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+}
         }
 	
 	// 파일이미지 이름 모두 가져오기. 
@@ -39,15 +78,14 @@ function FindAllFileName () {
             $.ajax({
                 url: "/images/findFileNameAll",
                 type: "GET",
-                success: function(data) {
-					console.log(data)
+                })
+                .done (function(data) {
 					var html = '<table border=1>';
   html += '<tr><th>file</th><th>수정</th><th>삭제</th></tr>';
 					for (var i = 0; i < data.length; i++) {
 						html += '<tr>';
 					  var filename = data[i];
 					  var str = filename.substring(filename.lastIndexOf('.') + 1);
-					  console.log('str :  '+ str)
 					  if(str=='mp4'){
 						html += '<td>'+'<video controls src='+'/images/'+filename+'></video>'+'</td>';
 						
@@ -55,20 +93,14 @@ function FindAllFileName () {
 					  html += '<td>'+'<img src='+'/images/'+filename+'>'+'</td>';
 					  }
 					  html += "<td><a href='javascript:dbUpdateImageForm("+filename+")'>수정넣을예정</a></td>";
-					  html +="<td><a href='javascript:imageDel("+filename+")'>삭제 넣을 예정</a></td>";
+					  html+="<td><a href='javascript:imageDel("+filename+")'>삭제</a></td>";
 					   html += '</tr>';
-					   
-					   
 }
                html += '</table>';
                $('#ImageTest').html(html);
-                },
-                error: function(data) {
-	
-	
-                }
-            });
-        }
+                })
+                };
+        
 	
 	//유저 게시글 하나 수정 하는 폼 불러오기. 
 function dbUpdateForm(id){
@@ -189,20 +221,7 @@ function dbUpdate(id){
 	})
 }
 
-// 이미지 삭제하는 기능. 
-function imageDel(id){
-	$.ajax({
-		type:"delete",
-		url:"/images/deleteImage/"+id,
-	})
-	.done(function(resp){
-		alert(id+"번 이미지 삭제 완료");
-		location.href='/hello/'
-	})
-	.fail(function(){
-		alert("삭제 실패")
-	})
-}
+
 
 
 //유저 게시글 하나 삭제 기능. 	
@@ -243,7 +262,6 @@ var init = function(){
 				str += "<td>" + val.message + "</td>"
 				str+= "<td><a href='javascript:dbUpdateForm("+val.id+")'>수정</a></td>"
 				str+= "<td><a href='javascript:dbDel("+val.id+")'>삭제</a></td>" 
-				
 				
 				str += "</tr>"
 			})

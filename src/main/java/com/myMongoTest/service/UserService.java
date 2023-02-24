@@ -92,9 +92,7 @@ public void mongoUserUpdate(User user) {
     query.addCriteria(Criteria.where("_id").is(user.getId()));
     update.set("title",user.getTitle());
     update.set("message", user.getMessage());
-    System.out.println("_id"+user.getId());
-    System.out.println("title"+user.getTitle());
-    System.out.println("message"+user.getMessage());
+
 
     mongoTemplate.updateMulti(query, update, "user");
 

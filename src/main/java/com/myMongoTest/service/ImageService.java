@@ -38,12 +38,9 @@ public class ImageService {
     
 
  // 삭제
-    public void deleteImage(String key, Long value) {
-    	Criteria criteria = new Criteria(key);
-    	criteria.is(value);
-    	
-    	Query query = new Query(criteria);
-    	mongoTemplate.remove(query, "user");
+    public void deleteImage(String filename) {
+    	   Query query = Query.query(Criteria.where("filename").is(filename));
+    	    gridFsTemplate.delete(query);
     }
 
 }

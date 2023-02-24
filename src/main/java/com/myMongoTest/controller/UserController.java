@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.User;
 import com.myMongoTest.service.UserService;
@@ -33,7 +34,15 @@ public class UserController {
 	    userService.mongoInsert();
 	    return "Hello Boot!!"; 
 	  }
-
+	
+	@ResponseBody
+	@GetMapping("/findFileNameAll")
+	public List<String> findAllFilenames( ){
+		List<String> FileNameList =  userService.findAllFilenames();
+		System.out.println(FileNameList);
+		return FileNameList;
+	}
+	
 	@ResponseBody
 	@PostMapping("/insertDb")
 	public ResponseEntity<String> insertDb(	@RequestBody User user){

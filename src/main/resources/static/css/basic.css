@@ -13,7 +13,13 @@ table, th, td {
 	height:150px;
 }
 
-#image1 {
+ img {
 	width: 100px;
 	height:150px;
 }
+
+ video {
+	width: 200px;
+	height:150px;
+}
+ 

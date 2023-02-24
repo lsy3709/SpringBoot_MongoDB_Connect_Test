@@ -1,6 +1,6 @@
 $(document).ready(function(){
 		init()
-		showImage("P1235.png")
+		FindAllFileName()
 	})
 	
 	    function loadImage() {
@@ -16,29 +16,33 @@ $(document).ready(function(){
         }
 	
 	
-/*	function showImage (filename) {
-		console.log(filename)
+function FindAllFileName () {
             $.ajax({
-                url: "/images/"+filename,
+                url: "/findFileNameAll",
                 type: "GET",
-                responseType: 'arraybuffer',
                 success: function(data) {
-					console.log(data.length)
-					var byteArray = new Uint8Array(data);
-                    var blob = new Blob([byteArray], {type: 'image/png'});
-                    var imageUrl = URL.createObjectURL(blob);
-                 $("#image1").attr("src", imageUrl);
+					console.log(data)
+					for (var i = 0; i < data.length; i++) {
+					  var filename = data[i];
+					  var str = filename.substring(filename.lastIndexOf('.') + 1);
+					  console.log('str :  '+ str)
+					  if(str=='mp4'){
+						var video =$('<video>', {src: '/images/' + filename});
+						video.attr('controls', true);
+						$('#ImageTest').append(video);
+					} else {
+					  var img = $('<img>', {src: '/images/' + filename});
+					  $('#ImageTest').append(img);
+					  }
+}
               
                 },
                 error: function(data) {
 	
-	   var blob = new Blob([data], {type: "image/png"});
-                    var url = URL.createObjectURL(blob);
-                    $("#image1").attr("src", url);
-                    alert("Failed to load image");
+	
                 }
             });
-        }*/
+        }
 	
 function dbUpdateForm(id){
 	location.href='/updateForm/'+id;

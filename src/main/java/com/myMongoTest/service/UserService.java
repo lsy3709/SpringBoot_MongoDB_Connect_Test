@@ -1,13 +1,18 @@
 package com.myMongoTest.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.gridfs.GridFSFindIterable;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.User;
 
@@ -18,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final MongoTemplate mongoTemplate;
+    
+    private final GridFsTemplate gridFsTemplate;
 
 // 샘플 하나 추가. 
     public void mongoInsert() {
@@ -30,10 +37,20 @@ public class UserService {
         mongoTemplate.insert(user);
     }
     
+ //파일이름 모두 검색
+    public List<String> findAllFilenames() {
+        GridFSFindIterable files = gridFsTemplate.find(new Query());
+        List<String> filenames = new ArrayList<>();
+        for (GridFSFile file : files) {
+            filenames.add(file.getFilename());
+        }
+        System.out.println(filenames);
+        return filenames;
+    }
+    
 //전체 검색
     public List<User> mongoFindAll() {
 		List<User> userList=mongoTemplate.findAll(User.class,"user");
-		//log.info("rList[0]"+rList.get(0));
 		return userList;
         
     }

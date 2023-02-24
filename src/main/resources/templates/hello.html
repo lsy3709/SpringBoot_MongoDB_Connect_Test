@@ -40,26 +40,25 @@
     	</div>
     	
         <div class="container">
-    <h1>Image Upload</h1>
-    <form method="post" action="/images" enctype="multipart/form-data">
+<!--     <h1>Image Upload</h1> -->
+    <form id="my-form">
         <div class="form-group">
             <label for="file">Choose an image:</label>
             <input type="file" id="image" name="file" class="form-control-file" onchange="loadImage()">
         </div>
         <button id="uploadBtn" type="submit" class="btn btn-primary" >Upload</button>
-    </form>
+        </form>
 </div>
 
  <!-- <input type="file" id="image" onchange="loadImage()"> -->
     <br>
+    <button id="scroll-to-top" class="btn btn-primary">Top</button>
+    <div>
     <img id="preview" src="" alt="Image Preview">
+    </div>
     <br>
     <div id=ImageTest></div>
-<!--   <img src="/images/P1235.png" alt="My Image" name="image1" id="image1">
-  <img src="/images/childLook.gif" alt="My Image" name="image1" id="image1">
-  <video width="320" height="240" controls>
-  <source src="/images/sample.mp4" type="video/mp4">
-</video> -->
+
 <br>
 <h2>검색 디비 목록</h2>
 <div id="searchResult"></div>

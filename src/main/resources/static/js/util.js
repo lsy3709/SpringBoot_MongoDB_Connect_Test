@@ -1,9 +1,24 @@
 $(document).ready(function(){
 		init()
 		FindAllFileName()
+		 $('#preview').hide();
+		 
+		   $(window).scroll(function() {
+      if ($(this).scrollTop() > 100) {
+        $('#scroll-to-top').fadeIn();
+      } else {
+        $('#scroll-to-top').fadeOut();
+      }
+    });
 	})
 	
+	 $('#scroll-to-top').click(function() {
+      $('html, body').animate({scrollTop : 0},100);
+      return false;
+    });
+    
 	    function loadImage() {
+		 $('#preview').show();
             var input = document.getElementById("image");
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
@@ -22,20 +37,27 @@ function FindAllFileName () {
                 type: "GET",
                 success: function(data) {
 					console.log(data)
+					var html = '<table border=1>';
+  html += '<tr><th>file</th><th>수정</th><th>삭제</th></tr>';
 					for (var i = 0; i < data.length; i++) {
+						html += '<tr>';
 					  var filename = data[i];
 					  var str = filename.substring(filename.lastIndexOf('.') + 1);
 					  console.log('str :  '+ str)
 					  if(str=='mp4'){
-						var video =$('<video>', {src: '/images/' + filename});
-						video.attr('controls', true);
-						$('#ImageTest').append(video);
+						html += '<td>'+'<video controls src='+'/images/'+filename+'></video>'+'</td>';
+						
 					} else {
-					  var img = $('<img>', {src: '/images/' + filename});
-					  $('#ImageTest').append(img);
+					  html += '<td>'+'<img src='+'/images/'+filename+'>'+'</td>';
 					  }
+					  html += "<td><a href='javascript:dbUpdateImageForm("+filename+")'>수정넣을예정</a></td>";
+					  html +="<td><a href='javascript:dbImageDel("+filename+")'>삭제 넣을 예정</a></td>";
+					   html += '</tr>';
+					   
+					   
 }
-              
+               html += '</table>';
+               $('#ImageTest').html(html);
                 },
                 error: function(data) {
 	
@@ -47,6 +69,27 @@ function FindAllFileName () {
 function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
 	}
+
+$("#uploadBtn").click(function(){
+	    $('#my-form').on('submit', function(e) {
+      e.preventDefault();
+       var formData = new FormData(this);
+  $.ajax({
+        url: '/images',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          alert('업로드 성공');
+     location.href='/hello'
+        },
+        error: function(error) {
+          console.error(error);
+        }
+      });
+	});
+	});
 
 $("#dbSearchBtn").click(function(){
 	
@@ -199,6 +242,7 @@ $("#dbInsertBtn").click(function(){
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){
+		alert("디비 추가 성공")
 				init();
 			})
 	.fail(function(){

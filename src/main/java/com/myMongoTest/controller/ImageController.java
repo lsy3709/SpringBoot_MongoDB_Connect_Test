@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/images")
 public class ImageController {
 
@@ -35,11 +36,13 @@ public class ImageController {
     private GridFsOperations gridFsOperations;
 
     @PostMapping
-    public ResponseEntity<ObjectId> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
         InputStream inputStream = file.getInputStream();
         ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
-        return new ResponseEntity<>(objectId, HttpStatus.OK);
+        return new ResponseEntity<>( HttpStatus.OK);
     }
+    
+    @ResponseBody
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> downloadImage(@PathVariable String id) throws IOException {
     	System.out.println("===========================================");

@@ -37,16 +37,6 @@ public class UserService {
         mongoTemplate.insert(user);
     }
     
- //파일이름 모두 검색
-    public List<String> findAllFilenames() {
-        GridFSFindIterable files = gridFsTemplate.find(new Query());
-        List<String> filenames = new ArrayList<>();
-        for (GridFSFile file : files) {
-            filenames.add(file.getFilename());
-        }
-        System.out.println(filenames);
-        return filenames;
-    }
     
 //전체 검색
     public List<User> mongoFindAll() {

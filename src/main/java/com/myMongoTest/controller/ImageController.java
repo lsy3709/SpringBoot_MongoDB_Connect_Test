@@ -1,6 +1,10 @@
 package com.myMongoTest.controller;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
+import com.myMongoTest.service.ImageService;
+import com.myMongoTest.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
@@ -23,11 +27,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/images")
 public class ImageController {
+	
+	private final ImageService imageService;
 
     @Autowired
     private GridFsTemplate gridFsTemplate;
@@ -35,6 +43,8 @@ public class ImageController {
     @Autowired
     private GridFsOperations gridFsOperations;
 
+    // 파일이미지 등록.
+    // 뷰에서 선택된 파일이름으로 등록.
     @PostMapping
     public ResponseEntity uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
         InputStream inputStream = file.getInputStream();
@@ -42,22 +52,43 @@ public class ImageController {
         return new ResponseEntity<>( HttpStatus.OK);
     }
     
+    // 파일이름에 해당하는 이미지 또는 동영상, 몽고 디비에서 조회 후 존재하면 
+    // 파일을 가지고 와서 바이트로 변환해서 
+    // 뷰에 JSON으로 응답.
     @ResponseBody
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> downloadImage(@PathVariable String id) throws IOException {
     	System.out.println("===========================================");
     	System.out.println("id 확인: "+ id);
     	
-    	GridFSFile gridFSFile2 = 	gridFsOperations.findOne(new Query(Criteria.where("filename").is(id)));
+    	GridFSFile gridFSFile = 	gridFsOperations.findOne(new Query(Criteria.where("filename").is(id)));
     	
-        if (gridFSFile2 != null) {
-            GridFsResource resource = gridFsTemplate.getResource(gridFSFile2);
+        if (gridFSFile != null) {
+            GridFsResource resource = gridFsTemplate.getResource(gridFSFile);
             byte[] bytes = IOUtils.toByteArray(resource.getInputStream());
             return ResponseEntity.ok().body(bytes);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+    
+//전체 파일이름 불러오기
+	@ResponseBody
+	@GetMapping("/findFileNameAll")
+	public List<String> findAllFilenames( ){
+		List<String> FileNameList =  imageService.findAllFilenames();
+		System.out.println(FileNameList);
+		return FileNameList;
+	}
+    
+	  //파일 삭제  
+    @ResponseBody
+  		@DeleteMapping("/deleteImage/{id}")
+  		public Long deleteImage(@PathVariable Long id) {
+    	imageService.deleteImage("_id", id);
+  			return id;
+  	  
+  }
     
     
 }

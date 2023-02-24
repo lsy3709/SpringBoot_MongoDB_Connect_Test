@@ -36,14 +36,6 @@ public class UserController {
 	  }
 	
 	@ResponseBody
-	@GetMapping("/findFileNameAll")
-	public List<String> findAllFilenames( ){
-		List<String> FileNameList =  userService.findAllFilenames();
-		System.out.println(FileNameList);
-		return FileNameList;
-	}
-	
-	@ResponseBody
 	@PostMapping("/insertDb")
 	public ResponseEntity<String> insertDb(	@RequestBody User user){
 		userService.mongoUserInsert(user);

@@ -12,11 +12,14 @@ $(document).ready(function(){
     });
 	})
 	
+	//스크롤 버튼 부드럽게 동작하기. 
 	 $('#scroll-to-top').click(function() {
       $('html, body').animate({scrollTop : 0},100);
       return false;
     });
     
+    // 파일 선택시, 선택된 이미지 미리보기 , 로드이미지 함수 출력시 해당 아이디 보여줌.
+    // 평소에는 숨김.
 	    function loadImage() {
 		 $('#preview').show();
             var input = document.getElementById("image");
@@ -30,10 +33,11 @@ $(document).ready(function(){
             }
         }
 	
-	
+	// 파일이미지 이름 모두 가져오기. 
+	// 가져와서, innerHTML 으로 테이블 만들기. 
 function FindAllFileName () {
             $.ajax({
-                url: "/findFileNameAll",
+                url: "/images/findFileNameAll",
                 type: "GET",
                 success: function(data) {
 					console.log(data)
@@ -51,7 +55,7 @@ function FindAllFileName () {
 					  html += '<td>'+'<img src='+'/images/'+filename+'>'+'</td>';
 					  }
 					  html += "<td><a href='javascript:dbUpdateImageForm("+filename+")'>수정넣을예정</a></td>";
-					  html +="<td><a href='javascript:dbImageDel("+filename+")'>삭제 넣을 예정</a></td>";
+					  html +="<td><a href='javascript:imageDel("+filename+")'>삭제 넣을 예정</a></td>";
 					   html += '</tr>';
 					   
 					   
@@ -66,10 +70,13 @@ function FindAllFileName () {
             });
         }
 	
+	//유저 게시글 하나 수정 하는 폼 불러오기. 
 function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
 	}
 
+// 이미지 업로드 폼 클릭시 수행. 
+// 기본 서밋 버튼 동작 안하게 막고, 지정한 폼으로 등록 하게끔. 
 $("#uploadBtn").click(function(){
 	    $('#my-form').on('submit', function(e) {
       e.preventDefault();
@@ -91,8 +98,8 @@ $("#uploadBtn").click(function(){
 	});
 	});
 
+//검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
 $("#dbSearchBtn").click(function(){
-	
 			var searchData = {
 		"searchContent":$("#searchContent").val(),
 		"searchDB":$("#searchDB option:selected").val()
@@ -124,10 +131,12 @@ $("#dbSearchBtn").click(function(){
 	});
 	});
 
+// 메인 처럼 사용중. 
 $("#listBtn").click(function(){
 	location.href='/hello'
 	});
 
+// 유저 게시글 실제 업데이트 처리 부분. 
 $("#dbUpdateBtn").click(function(){
 
 	var data={
@@ -150,7 +159,7 @@ $("#dbUpdateBtn").click(function(){
 	});
 	});
 	
-	
+//수정 하는 폼에 임시로 테이블 만들어 보여주기.
 function dbUpdate(id){
 	$.ajax({
 		type:"get",
@@ -179,7 +188,24 @@ function dbUpdate(id){
 		
 	})
 }
-	
+
+// 이미지 삭제하는 기능. 
+function imageDel(id){
+	$.ajax({
+		type:"delete",
+		url:"/images/deleteImage/"+id,
+	})
+	.done(function(resp){
+		alert(id+"번 이미지 삭제 완료");
+		location.href='/hello/'
+	})
+	.fail(function(){
+		alert("삭제 실패")
+	})
+}
+
+
+//유저 게시글 하나 삭제 기능. 	
 function dbDel(id){
 	$.ajax({
 		type:"delete",
@@ -193,7 +219,8 @@ function dbDel(id){
 		alert("삭제 실패")
 	})
 }
-	
+
+// 메인에 유저 게시글 목록 , 돔 준비되면 항상 목록 출력해주는 기능. 	
 var init = function(){
 		$.ajax({
 			type:"get",
@@ -225,6 +252,7 @@ var init = function(){
 		})
 	};
 
+// 유저 게시글 등록 
 $("#dbInsertBtn").click(function(){
 	
 
@@ -250,18 +278,3 @@ $("#dbInsertBtn").click(function(){
 	});
 });
 
-$("#dbFindAllBtn").click(function(){
-
-	$.ajax({
-		type:"post",
-		url:"/insertDb",
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(data)
-	})
-	.done(function(resp){
-		alert("디비 추가 성공");
-			})
-	.fail(function(){
-		alert("디비 추가 실패")
-	});
-});   

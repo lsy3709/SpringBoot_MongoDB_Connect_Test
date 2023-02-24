@@ -26,7 +26,7 @@ function imageDel(filename2){
 		url:"/images/deleteImage/"+filename2,
 	})
 	.done(function(resp){
-		alert(id+"번 이미지 삭제 완료");
+		alert(filename2+"번 이미지 삭제 완료");
 		location.href='/hello/'
 	})
 	.fail(function(){
@@ -93,7 +93,7 @@ function FindAllFileName () {
 					  html += '<td>'+'<img src='+'/images/'+filename+'>'+'</td>';
 					  }
 					  html += "<td><a href='javascript:dbUpdateImageForm("+filename+")'>수정넣을예정</a></td>";
-					  html+="<td><a href='javascript:imageDel("+filename+")'>삭제</a></td>";
+					  html+="<td><a href=javascript:imageDel('"+filename+"')>삭제</a></td>";
 					   html += '</tr>';
 }
                html += '</table>';

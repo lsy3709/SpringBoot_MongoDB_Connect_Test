@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,9 @@ public class ImageController {
 
     @Autowired
     private GridFsTemplate gridFsTemplate;
+    
+    @Autowired
+    private GridFsOperations gridFsOperations;
 
     @PostMapping
     public ResponseEntity<ObjectId> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
@@ -36,15 +40,21 @@ public class ImageController {
         ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
         return new ResponseEntity<>(objectId, HttpStatus.OK);
     }
-    @GetMapping("/images/{filename}")
-    public ResponseEntity<byte[]> downloadImage(@PathVariable String filename) throws IOException {
-        Optional<GridFSFile> gridFSFile = Optional.ofNullable(gridFsTemplate.findOne(new Query(Criteria.where("filename").is(filename))));
-        if (gridFSFile.isPresent()) {
-            GridFsResource resource = gridFsTemplate.getResource(gridFSFile.get().getFilename());
+    @GetMapping("/{id}")
+    public ResponseEntity<byte[]> downloadImage(@PathVariable String id) throws IOException {
+    	System.out.println("===========================================");
+    	System.out.println("id 확인: "+ id);
+    	
+    	GridFSFile gridFSFile2 = 	gridFsOperations.findOne(new Query(Criteria.where("filename").is(id)));
+    	
+        if (gridFSFile2 != null) {
+            GridFsResource resource = gridFsTemplate.getResource(gridFSFile2);
             byte[] bytes = IOUtils.toByteArray(resource.getInputStream());
-            return ResponseEntity.ok().contentType(MediaType.valueOf(resource.getContentType())).body(bytes);
+            return ResponseEntity.ok().body(bytes);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    
 }

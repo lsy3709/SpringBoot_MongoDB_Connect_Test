@@ -1,6 +1,6 @@
 $(document).ready(function(){
 		init()
-		showImage("IMG_1526.JPG")
+		showImage("P1235.png")
 	})
 	
 	    function loadImage() {
@@ -16,21 +16,29 @@ $(document).ready(function(){
         }
 	
 	
-	function showImage (filename) {
+/*	function showImage (filename) {
+		console.log(filename)
             $.ajax({
                 url: "/images/"+filename,
                 type: "GET",
-                dataType: "arraybuffer",
+                responseType: 'arraybuffer',
                 success: function(data) {
-                    var blob = new Blob([data], {type: "image/png"});
+					console.log(data.length)
+					var byteArray = new Uint8Array(data);
+                    var blob = new Blob([byteArray], {type: 'image/png'});
+                    var imageUrl = URL.createObjectURL(blob);
+                 $("#image1").attr("src", imageUrl);
+              
+                },
+                error: function(data) {
+	
+	   var blob = new Blob([data], {type: "image/png"});
                     var url = URL.createObjectURL(blob);
                     $("#image1").attr("src", url);
-                },
-                error: function() {
                     alert("Failed to load image");
                 }
             });
-        }
+        }*/
 	
 function dbUpdateForm(id){
 	location.href='/updateForm/'+id;

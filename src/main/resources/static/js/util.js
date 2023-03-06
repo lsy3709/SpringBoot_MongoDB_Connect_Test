@@ -13,7 +13,13 @@ $(document).ready(function(){
       }
     });
     
-    	$("form").submit(function(event) {
+
+
+    
+	})
+	
+	$("#loginBtn").click(function(){
+	    	$("form").submit(function(event) {
 				event.preventDefault(); // 기본 동작 중지
 
 
@@ -21,11 +27,6 @@ $(document).ready(function(){
 		"id":$("#id").val(),
 		"password":$("#password").val()
 	}
-
-			/*	var id = $("#id").val();
-				var password = $("#password").val();
-				console.log(id)
-				console.log(password)*/
 
 				// 로그인 처리
 				$.ajax({
@@ -47,10 +48,7 @@ $(document).ready(function(){
 		
 			});
     });
-
-    
-	})
-	
+    });
 	
 	    // 이미지 삭제하는 기능. 
 function imageDel(filename2){

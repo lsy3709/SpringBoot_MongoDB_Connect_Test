@@ -22,6 +22,7 @@ import com.myMongoTest.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Controller
 @RequiredArgsConstructor
 public class UserController {
@@ -38,8 +39,7 @@ public class UserController {
 		@ResponseBody
 		@PostMapping("/login")
 		public ResponseEntity<String> login(	@RequestBody LoginForm loginForm){
-			System.out.println("loginForm id : "+ loginForm.getId());
-			System.out.println("loginForm pw: "+ loginForm.getPassword());
+			
 			if(loginForm.getId().equals("admin") && loginForm.getPassword().equals("1234")) {
 				return new ResponseEntity<String>("success",HttpStatus.OK);	
 			}

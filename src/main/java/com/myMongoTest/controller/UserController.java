@@ -40,7 +40,7 @@ public class UserController {
 		@PostMapping("/login")
 		public ResponseEntity<String> login(	@RequestBody LoginForm loginForm){
 			
-			if(loginForm.getId().equals("admin") && loginForm.getPassword().equals("1234")) {
+			if(loginForm.getId().equals("admin1234") && loginForm.getPassword().equals("1234qwer!!")) {
 				return new ResponseEntity<String>("success",HttpStatus.OK);	
 			}
 			  return new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);

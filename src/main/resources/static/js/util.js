@@ -118,7 +118,7 @@ function FindAllFileName () {
 						html += '<tr>';
 					  var filename = data[i];
 					  var str = filename.substring(filename.lastIndexOf('.') + 1);
-					  if(str=='mp4'){
+					  if(str=='mp4' or str=='mov'or str=='wmv' or str=='avi'){
 						html += '<td>'+'<video controls src='+'/images/'+filename+'></video>'+'</td>';
 						
 					} else {

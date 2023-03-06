@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.SearchDB;
+import com.myMongoTest.document.LoginForm;
 import com.myMongoTest.document.User;
 import com.myMongoTest.service.UserService;
 
@@ -27,13 +28,23 @@ public class UserController {
 
 	   private final UserService userService;
 	
-	@ResponseBody
+
 	  @RequestMapping("/") 
 	  public String home(){
-	    System.out.println("Hello Boot!!");
-	    userService.mongoInsert();
-	    return "Hello Boot!!"; 
+	    System.out.println("Hello Boot!! loginForm");
+	    return "loginForm"; 
 	  }
+	  
+		@ResponseBody
+		@PostMapping("/login")
+		public ResponseEntity<String> login(	@RequestBody LoginForm loginForm){
+			System.out.println("loginForm id : "+ loginForm.getId());
+			System.out.println("loginForm pw: "+ loginForm.getPassword());
+			if(loginForm.getId().equals("admin") && loginForm.getPassword().equals("1234")) {
+				return new ResponseEntity<String>("success",HttpStatus.OK);	
+			}
+			  return new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
+		}
 	
 	@ResponseBody
 	@PostMapping("/insertDb")
@@ -63,6 +74,7 @@ public class UserController {
 		return userList;
 	}
 	
+//	  @RequestMapping({"/hello", "/"})
 	  @RequestMapping("/hello")
 	  public String hello(Model model ){
 		List<User> userList = userService.mongoFindAll();

@@ -13,6 +13,40 @@ $(document).ready(function(){
       }
     });
     
+    	$("form").submit(function(event) {
+				event.preventDefault(); // 기본 동작 중지
+
+
+	var loginData = {
+		"id":$("#id").val(),
+		"password":$("#password").val()
+	}
+
+			/*	var id = $("#id").val();
+				var password = $("#password").val();
+				console.log(id)
+				console.log(password)*/
+
+				// 로그인 처리
+				$.ajax({
+					type: "POST",
+					url: "/login",
+					contentType:"application/json;charset=utf-8",
+					data:JSON.stringify(loginData),
+ 					success: function(result) {
+						// 로그인 성공 처리
+						alert("로그인 성공!");
+						location.href='/hello/'
+					},
+				        error: function(error) {
+          
+						// 로그인 실패 처리
+						alert("로그인 실패: ");
+						location.href='/'
+					}
+		
+			});
+    });
 
     
 	})

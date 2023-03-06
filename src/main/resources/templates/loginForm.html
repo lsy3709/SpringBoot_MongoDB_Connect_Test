@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+      <meta charset="utf-8"  />
+   <title>몽고디비+SpringBoot 연동 테스트 입니다.</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Login Form</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	   <!-- 기본 js 등록 -->
+   <script src="/js/util.js" defer ></script>
+	<style>
+		.container {
+			margin-top: 50px;
+		}
+	</style>
+</head>
+<body>
+<h1>현재 테스트 관리자 계정 하나만 있음.</h1>
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-md-6 col-sm-8">
+				<form>
+					<div class="form-group">
+						<label for="id">ID:</label>
+						<input type="text" class="form-control" id="id" placeholder="Enter ID">
+					</div>
+					<div class="form-group">
+						<label for="password">Password:</label>
+						<input type="password" class="form-control" id="password" placeholder="Enter Password">
+					</div>
+					<button type="submit" class="btn btn-primary">Login</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

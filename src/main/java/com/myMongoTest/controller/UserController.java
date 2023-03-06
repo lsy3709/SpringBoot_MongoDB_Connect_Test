@@ -82,6 +82,13 @@ public class UserController {
 		return "hello";
 	  } 
 	  
+	  @RequestMapping("/main")
+	  public String main(Model model ){
+		List<User> userList = userService.mongoFindAll();
+		model.addAttribute("user",  userList);
+		return "main";
+	  } 
+	  
 	  @RequestMapping("/updateForm/{id}")
 	  public String updateForm(	Model model , @PathVariable Long id){
 		User user = userService.mongoFindOne(id);

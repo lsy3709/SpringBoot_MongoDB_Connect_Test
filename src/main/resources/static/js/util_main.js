@@ -113,7 +113,7 @@ function FindAllFileName () {
                 })
                 .done (function(data) {
 					var html = '<table border=1>';
-  html += '<tr><th>file</th><th>수정</th><th>삭제</th></tr>';
+  html += '<tr><th>강의영상1</th><th>강의영상2</th></tr>';
 					for (var i = 0; i < data.length; i++) {
 						html += '<tr>';
 					  var filename = data[i];
@@ -124,8 +124,7 @@ function FindAllFileName () {
 					else {
 					  html += '<td>'+'<img src='+'/images/'+filename+'>'+'</td>';
 					  }
-					  html += "<td><a href='javascript:dbUpdateImageForm("+filename+")'>수정넣을예정</a></td>";
-					  html+="<td><a href=javascript:imageDel('"+filename+"')>삭제</a></td>";
+					  html += "<td>강의영상2예정</td>";
 					   html += '</tr>';
 }
                html += '</table>';
@@ -285,16 +284,11 @@ var init = function(){
 				str +="<th>" +"아이디"+"</th>"
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
-				str +="<th>" +"수정"+"</th>"
-				str +="<th>" +"삭제"+"</th>"
 			$.each(resp,function(key,val){
 				str += "<tr>"
 				str += "<td>" + val.id + "</td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
-				str+= "<td><a href='javascript:dbUpdateForm("+val.id+")'>수정</a></td>"
-				str+= "<td><a href='javascript:dbDel("+val.id+")'>삭제</a></td>" 
-				
 				str += "</tr>"
 			})
 			str += "</table>"

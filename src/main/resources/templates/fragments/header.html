@@ -5,21 +5,22 @@
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-  <a class="navbar-brand" href="/main">Home</a>
+  <a class="navbar-brand" href="/">Home</a>
 
   <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0 ">
-      <li class="nav-item active">
-        <a class="nav-link" href="/hello">Admin </a>
+
+      <li class="nav-item active"  th:if="${isAdmin}">
+        <a class="nav-link" href="/admin">Admin </a>
       </li>
    <li class="nav-item">
-        <a class="nav-link" href="/joinForm">회원가입 더미</a>
+        <a class="nav-link" href="/joinForm">회원가입</a>
       </li>
             <li class="nav-item">
-        <a class="nav-link" href="/">로그인 더미</a>
+        <a class="nav-link" href="/login">로그인</a>
       </li>
           <li class="nav-item">
-        <a class="nav-link" href="#">로그아웃 더미</a>
+        <a class="nav-link" href="/logout">로그아웃</a>
       </li>
     </ul>
   </div>

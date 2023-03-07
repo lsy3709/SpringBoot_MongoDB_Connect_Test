@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import com.myMongoTest.constant.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,5 +29,6 @@ public class User2 {
     private String email;
 	
     private String password;
+    private String role;
     // 수강한 과목 리스트 넣을 예정.
 }

@@ -37,13 +37,13 @@ $(document).ready(function(){
  					success: function(result) {
 						// 로그인 성공 처리
 						alert("로그인 성공!");
-						location.href='/hello/'
+						location.href='/'
 					},
 				        error: function(error) {
           
 						// 로그인 실패 처리
 						alert("로그인 실패: ");
-						location.href='/'
+						location.href='/login'
 					}
 		
 			});
@@ -58,21 +58,24 @@ $("#joinBtn").click(function(){
 	var data={
 			"email":$("#email").val(),
 			"password":$("#password").val(),
+			"role":$("#role").val(),
 	}
 	console.log(data.email);
 	console.log(data.password);
+	console.log(data.role);
 	
 	$.ajax({
 		type:"post",
-		url:"/joinUser2",
+		url:"/joinUser",
 		contentType:"application/json;charset=utf-8",
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){
 		alert("회원가입 성공")
-				location.href='/main'
+				location.href='/'
 			})
-	.fail(function(){
+	.fail(function(resp){
+		console.log("요청 왔나요?");
 		alert("다른 메일로 가입해주세요.")
 		location.href='/joinForm'
 	});
@@ -88,7 +91,7 @@ function imageDel(filename2){
 	})
 	.done(function(resp){
 		alert(filename2+"번 이미지 삭제 완료");
-		location.href='/hello/'
+		location.href='/admin'
 	})
 	.fail(function(){
 		alert("삭제 실패")
@@ -186,7 +189,7 @@ $("#uploadBtn").click(function(){
         contentType: false,
         success: function(response) {
           alert('업로드 성공');
-     location.href='/hello'
+     location.href='/admin'
         },
         error: function(error) {
           console.error(error);
@@ -230,7 +233,7 @@ $("#dbSearchBtn").click(function(){
 
 // 메인 처럼 사용중. 
 $("#listBtn").click(function(){
-	location.href='/hello'
+	location.href='/'
 	});
 
 // 유저 게시글 실제 업데이트 처리 부분. 
@@ -249,7 +252,7 @@ $("#dbUpdateBtn").click(function(){
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){
-			location.href='/hello/'
+			location.href='/'
 			})
 	.fail(function(){
 		alert("디비 수정 실패")

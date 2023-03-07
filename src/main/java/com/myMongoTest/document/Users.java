@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Document("user")
-public class User {
+public class Users{
     
     private Long id;
     private String title;

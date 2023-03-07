@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.LoginForm;
-import com.myMongoTest.document.User;
+import com.myMongoTest.document.Users;
 import com.myMongoTest.document.User2;
 import com.myMongoTest.service.UserService;
 
@@ -30,85 +32,77 @@ public class UserController {
 
 	   private final UserService userService;
 	
-
-	  @RequestMapping("/") 
-	  public String home(){
-	    System.out.println("Hello Boot!! loginForm");
-	    return "loginForm"; 
-	  }
+	    @GetMapping(value = "/login/error")
+	    public String loginError(Model model){
+	        model.addAttribute("loginErrorMsg", "아이디 또는 비밀번호를 확인해주세요");
+	        return "loginForm";
+	    }
 	  
-		@ResponseBody
-		@PostMapping("/login")
-		public ResponseEntity<String> login(	@RequestBody LoginForm loginForm){
-			
-			if(loginForm.getId().equals("admin1234") && loginForm.getPassword().equals("1234qwer!!")) {
-				return new ResponseEntity<String>("success",HttpStatus.OK);	
-			}
-			  return new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
-		}
+	    @GetMapping(value = "/login")
+	    public String loginMember(){
+	        return "loginForm";
+	    }
 	
 	@ResponseBody
 	@PostMapping("/insertDb")
-	public ResponseEntity<String> insertDb(	@RequestBody User user){
+	public ResponseEntity<String> insertDb(	@RequestBody Users user){
 		userService.mongoUserInsert(user);
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
 	@ResponseBody
-	@PostMapping("/joinUser2")
-	public ResponseEntity<String> joinUser2(	@RequestBody User2 user){
-		System.out.println("user getId: "+user.getId());
-		System.out.println("user getEmail : "+user.getEmail());
-		System.out.println("user getPassword : "+user.getPassword());
-		
-		if(userService.mongoFindOneUser2Email(user) == null) {
+	@PostMapping("/joinUser")
+	public ResponseEntity<String> joinUser(	@RequestBody User2 user){
+		System.out.println("요청이 왔나요?");
+		String email = user.getEmail();
+		System.out.println("user.getEmail()"+user.getEmail());
+		System.out.println("user.getPassword()"+user.getPassword());
+		System.out.println("user.getRole()"+user.getRole());
+		if(userService.mongoFindOneUser2Email(email) == null) {
 		
 			userService.mongoUser2Insert(user);
 			return new ResponseEntity<String>("success",HttpStatus.OK);
 		}
-		
-//			User2 user2 = userService.mongoFindOneUser2Email(user);
-//			System.out.println("user2 : "+user2.getEmail());
-//		
-//			if (!user2.getEmail().equals(user.getEmail())) {
-//				System.out.println("추가 작업 실행 됨.");
-//			}
-				
 		return ResponseEntity.badRequest().build();
 	}
 	
 	@ResponseBody
 	@PostMapping("/updateDb")
-	public ResponseEntity<String> updateDb(	@RequestBody User user){
+	public ResponseEntity<String> updateDb(	@RequestBody Users user){
 		userService.mongoUserUpdate(user);
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
 	@ResponseBody
 	@GetMapping("/findAll")
-	public List<User> list( ){
-		List<User> userList = userService.mongoFindAll();
+	public List<Users> list( ){
+		List<Users> userList = userService.mongoFindAll();
 		return userList;
 	}
 	
 	@ResponseBody
 	@PostMapping("/searchDb")
-	public List<User> searchlist( @RequestBody SearchDB searchDB){
-		List<User> userList = userService.mongoSearchFindAll(searchDB);
+	public List<Users> searchlist( @RequestBody SearchDB searchDB){
+		List<Users> userList = userService.mongoSearchFindAll(searchDB);
 		return userList;
 	}
 	
-//	  @RequestMapping({"/hello", "/"})
-	  @RequestMapping("/hello")
+
+	  @RequestMapping("/admin")
 	  public String hello(Model model ){
-		List<User> userList = userService.mongoFindAll();
+		List<Users> userList = userService.mongoFindAll();
 		model.addAttribute("user",  userList);
-		return "hello";
+		return "admin";
 	  } 
 	  
-	  @RequestMapping("/main")
+	  @RequestMapping("/")
 	  public String main(Model model ){
-		List<User> userList = userService.mongoFindAll();
+		  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		    boolean isAdmin = authentication.getAuthorities().stream()
+		                            .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+		    // isAdmin 변수를 Model에 추가
+		    model.addAttribute("isAdmin", isAdmin);
+		List<Users> userList = userService.mongoFindAll();
 		model.addAttribute("user",  userList);
 		return "main";
 	  } 
@@ -120,7 +114,7 @@ public class UserController {
 	  
 	  @RequestMapping("/updateForm/{id}")
 	  public String updateForm(	Model model , @PathVariable Long id){
-		User user = userService.mongoFindOne(id);
+		Users user = userService.mongoFindOne(id);
 		model.addAttribute("user",  user);
 		return "updateForm";
 	  } 

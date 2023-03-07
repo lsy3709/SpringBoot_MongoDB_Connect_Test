@@ -37,34 +37,20 @@ $(document).ready(function(){
  					success: function(result) {
 						// 로그인 성공 처리
 						alert("로그인 성공!");
-						location.href='/hello/'
+						location.href='/'
 					},
 				        error: function(error) {
           
 						// 로그인 실패 처리
 						alert("로그인 실패: ");
-						location.href='/'
+						location.href='/login'
 					}
 		
 			});
     });
     });
 	
-	    // 이미지 삭제하는 기능. 
-function imageDel(filename2){
-	console.log('호출여부 확인1')
-	$.ajax({
-		type:"delete",
-		url:"/images/deleteImage/"+filename2,
-	})
-	.done(function(resp){
-		alert(filename2+"번 이미지 삭제 완료");
-		location.href='/hello/'
-	})
-	.fail(function(){
-		alert("삭제 실패")
-	})
-}
+
 	
 	//스크롤 버튼 부드럽게 동작하기. 
 	 $('#scroll-to-top').click(function() {
@@ -72,37 +58,7 @@ function imageDel(filename2){
       return false;
     });
     
-    // 파일 선택시, 선택된 이미지 미리보기 , 로드이미지 함수 출력시 해당 아이디 보여줌.
-    // 평소에는 숨김.
-	    function loadImage() {
-		
-		
-		 
-            var input = document.getElementById("image");
-            console.log(input.files[0].name)
-            var fileStr = input.files[0].name;
-              var str2 = fileStr.substring(fileStr.lastIndexOf('.') + 1);
-              
-            if (input.files && input.files[0] &&str2 !='mp4' &&str2 !='mov' &&str2 !='avi' &&str2 !='wmv' &&str2 !='MOV') {
-				$('#preview').show();
-				$('#previewVideo').hide();
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var img = document.getElementById("preview");
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-				$('#previewVideo').show();
-				$('#preview').hide();
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var img = document.getElementById("previewVideo");
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-}
-        }
+    
 	
 	// 파일이미지 이름 모두 가져오기. 
 	// 가져와서, innerHTML 으로 테이블 만들기. 
@@ -142,28 +98,6 @@ function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
 	}
 
-// 이미지 업로드 폼 클릭시 수행. 
-// 기본 서밋 버튼 동작 안하게 막고, 지정한 폼으로 등록 하게끔. 
-$("#uploadBtn").click(function(){
-	    $('#my-form').on('submit', function(e) {
-      e.preventDefault();
-       var formData = new FormData(this);
-  $.ajax({
-        url: '/images',
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-          alert('업로드 성공');
-     location.href='/hello'
-        },
-        error: function(error) {
-          console.error(error);
-        }
-      });
-	});
-	});
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
 $("#dbSearchBtn").click(function(){
@@ -200,7 +134,7 @@ $("#dbSearchBtn").click(function(){
 
 // 메인 처럼 사용중. 
 $("#listBtn").click(function(){
-	location.href='/hello'
+	location.href='/'
 	});
 
 // 유저 게시글 실제 업데이트 처리 부분. 
@@ -219,7 +153,7 @@ $("#dbUpdateBtn").click(function(){
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){
-			location.href='/hello/'
+			location.href='/'
 			})
 	.fail(function(){
 		alert("디비 수정 실패")

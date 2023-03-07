@@ -21,6 +21,8 @@ repositories {
 }
 
 dependencies {
+ implementation 'org.springframework.boot:spring-boot-starter-security:2.6.2'
+ implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.4.RELEASE'
 implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.3'
 	implementation 'commons-io:commons-io:2.11.0'

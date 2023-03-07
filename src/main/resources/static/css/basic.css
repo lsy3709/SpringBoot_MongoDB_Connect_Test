@@ -30,3 +30,8 @@ table, th, td {
   display: none;
 }
  
+   .card-text{
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }

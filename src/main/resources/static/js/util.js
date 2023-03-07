@@ -24,10 +24,11 @@ $(document).ready(function(){
 
 
 	var loginData = {
-		"id":$("#id").val(),
+		"email":$("#email").val(),
 		"password":$("#password").val()
 	}
-
+	console.log(loginData.email);
+	console.log(loginData.password);
 				// 로그인 처리
 				$.ajax({
 					type: "POST",

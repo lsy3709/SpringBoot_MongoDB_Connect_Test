@@ -18,6 +18,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.LoginForm;
 import com.myMongoTest.document.User;
+import com.myMongoTest.document.User2;
 import com.myMongoTest.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,29 @@ public class UserController {
 	public ResponseEntity<String> insertDb(	@RequestBody User user){
 		userService.mongoUserInsert(user);
 		return new ResponseEntity<String>("success",HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@PostMapping("/joinUser2")
+	public ResponseEntity<String> joinUser2(	@RequestBody User2 user){
+		System.out.println("user getId: "+user.getId());
+		System.out.println("user getEmail : "+user.getEmail());
+		System.out.println("user getPassword : "+user.getPassword());
+		
+		if(userService.mongoFindOneUser2Email(user) == null) {
+		
+			userService.mongoUser2Insert(user);
+			return new ResponseEntity<String>("success",HttpStatus.OK);
+		}
+		
+//			User2 user2 = userService.mongoFindOneUser2Email(user);
+//			System.out.println("user2 : "+user2.getEmail());
+//		
+//			if (!user2.getEmail().equals(user.getEmail())) {
+//				System.out.println("추가 작업 실행 됨.");
+//			}
+				
+		return ResponseEntity.badRequest().build();
 	}
 	
 	@ResponseBody

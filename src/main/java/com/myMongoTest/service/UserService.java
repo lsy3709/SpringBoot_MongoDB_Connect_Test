@@ -15,6 +15,7 @@ import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.User;
+import com.myMongoTest.document.User2;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,11 @@ public class UserService {
     
 //하나 추가. 
     public void mongoUserInsert(User user) {
+        mongoTemplate.insert(user);
+    }
+    
+  //하나 추가. 
+    public void mongoUser2Insert(User2 user) {
         mongoTemplate.insert(user);
     }
     
@@ -76,6 +82,17 @@ public class UserService {
     	}
 		return userList;
         
+    }
+    
+  //유저 찾기
+    public User2 mongoFindOneUser2Email(User2 user) {
+    	Criteria criteria = new Criteria("email");
+		criteria.is(user.getEmail());
+		
+		//기존 1:1 검색
+		Query query = new Query(criteria);
+		User2 user2 = mongoTemplate.findOne(query, User2.class);
+		return user2;
     }
     
 //하나 찾기

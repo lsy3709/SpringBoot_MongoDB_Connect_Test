@@ -49,6 +49,35 @@ $(document).ready(function(){
 			});
     });
     });
+    
+    // 유저  등록 
+$("#joinBtn").click(function(){
+	 	$("form").submit(function(event) {
+				event.preventDefault(); // 기본 동작 중지
+				
+	var data={
+			"email":$("#email").val(),
+			"password":$("#password").val(),
+	}
+	console.log(data.email);
+	console.log(data.password);
+	
+	$.ajax({
+		type:"post",
+		url:"/joinUser2",
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(data)
+	})
+	.done(function(resp){
+		alert("회원가입 성공")
+				location.href='/main'
+			})
+	.fail(function(){
+		alert("다른 메일로 가입해주세요.")
+		location.href='/joinForm'
+	});
+	});
+});
 	
 	    // 이미지 삭제하는 기능. 
 function imageDel(filename2){
@@ -305,6 +334,7 @@ var init = function(){
 			$("#dbResult").html(str);
 		})
 	};
+
 
 
 // 유저 게시글 등록 

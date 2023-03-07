@@ -18,17 +18,17 @@ $(document).ready(function(){
     
 	})
 	
-	$("#loginBtn").click(function(){
+/*	$("#loginBtn").click(function(){
 	    	$("form").submit(function(event) {
 				event.preventDefault(); // 기본 동작 중지
 
+var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
 
 	var loginData = {
 		"email":$("#email").val(),
 		"password":$("#password").val()
 	}
-	console.log(loginData.email);
-	console.log(loginData.password);
 				// 로그인 처리
 				$.ajax({
 					type: "POST",
@@ -49,21 +49,21 @@ $(document).ready(function(){
 		
 			});
     });
-    });
+    });*/
     
-    // 유저  등록 
+   /* // 유저  등록 
 $("#joinBtn").click(function(){
 	 	$("form").submit(function(event) {
 				event.preventDefault(); // 기본 동작 중지
+				
+				var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
 				
 	var data={
 			"email":$("#email").val(),
 			"password":$("#password").val(),
 			"role":$("#role").val(),
 	}
-	console.log(data.email);
-	console.log(data.password);
-	console.log(data.role);
 	
 	$.ajax({
 		type:"post",
@@ -76,16 +76,17 @@ $("#joinBtn").click(function(){
 				location.href='/'
 			})
 	.fail(function(resp){
-		console.log("요청 왔나요?");
 		alert("다른 메일로 가입해주세요.")
 		location.href='/joinForm'
 	});
-	});
-});
+	}); 
+});*/
 	
 	    // 이미지 삭제하는 기능. 
 function imageDel(filename2){
-	console.log('호출여부 확인1')
+	
+	var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
 	$.ajax({
 		type:"delete",
 		url:"/images/deleteImage/"+filename2,
@@ -181,6 +182,10 @@ function dbUpdateForm(id){
 $("#uploadBtn").click(function(){
 	    $('#my-form').on('submit', function(e) {
       e.preventDefault();
+      
+      var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+      
        var formData = new FormData(this);
   $.ajax({
         url: '/images',
@@ -201,6 +206,10 @@ $("#uploadBtn").click(function(){
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
 $("#dbSearchBtn").click(function(){
+	
+	var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            
 			var searchData = {
 		"searchContent":$("#searchContent").val(),
 		"searchDB":$("#searchDB option:selected").val()
@@ -239,6 +248,9 @@ $("#listBtn").click(function(){
 
 // 유저 게시글 실제 업데이트 처리 부분. 
 $("#dbUpdateBtn").click(function(){
+	
+	var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
 
 	var data={
 			"id":$("#dbId").val(),
@@ -344,6 +356,8 @@ var init = function(){
 // 유저 게시글 등록 
 $("#dbInsertBtn").click(function(){
 	
+	var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
 
 	var data={
 			"id":$("#dbId").val(),

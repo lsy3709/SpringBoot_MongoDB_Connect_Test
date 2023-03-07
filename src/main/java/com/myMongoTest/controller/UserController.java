@@ -50,9 +50,16 @@ public class UserController {
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
-	@ResponseBody
+	  
+	  @RequestMapping("/joinForm")
+	  public String joinForm(Model model ){
+		  model.addAttribute("User2", new User2());
+		  System.out.println("joinFomr");
+		return "joinForm";
+	  } 
+	
 	@PostMapping("/joinUser")
-	public ResponseEntity<String> joinUser(	@RequestBody User2 user){
+	public String joinUser(User2 user){
 		System.out.println("요청이 왔나요?");
 		String email = user.getEmail();
 		System.out.println("user.getEmail()"+user.getEmail());
@@ -61,9 +68,9 @@ public class UserController {
 		if(userService.mongoFindOneUser2Email(email) == null) {
 		
 			userService.mongoUser2Insert(user);
-			return new ResponseEntity<String>("success",HttpStatus.OK);
+			return "redirect:/";
 		}
-		return ResponseEntity.badRequest().build();
+		return "/joinForm";
 	}
 	
 	@ResponseBody
@@ -106,11 +113,7 @@ public class UserController {
 		model.addAttribute("user",  userList);
 		return "main";
 	  } 
-	  
-	  @RequestMapping("/joinForm")
-	  public String joinForm(Model model ){
-		return "joinForm";
-	  } 
+
 	  
 	  @RequestMapping("/updateForm/{id}")
 	  public String updateForm(	Model model , @PathVariable Long id){

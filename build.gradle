@@ -21,6 +21,7 @@ repositories {
 }
 
 dependencies {
+implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.3'
 	implementation 'commons-io:commons-io:2.11.0'
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.11.0'

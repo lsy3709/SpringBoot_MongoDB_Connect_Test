@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/default_layout}">
+<!-- <head>
       <meta charset="utf-8"  />
    <title>관리자페이지 </title>
    <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,9 +17,9 @@
       crossorigin="anonymous"></script>
          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       
-   <!-- 기본 js 등록 -->
+   기본 js 등록
    <script src="/js/util_main.js" defer ></script>
-   <!-- 기본 css 등록 -->
+   기본 css 등록
 	<link rel="stylesheet" type="text/css" href = "/css/basic.css">
    
    <style>
@@ -30,8 +32,8 @@
   
     </style>
    
-</head>
-<body>
+</head> -->
+<!-- <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -54,7 +56,8 @@
       </li>
     </ul>
   </div>
-</nav>
+</nav> -->
+<body><th:block layout:fragment="content">
    <h1 > 미니 인프런 프로젝트 관리자 모드</h1>
    <h2>Springboot 2.7.8, AWS Lightsail AMI2, docker mongodb 6.0.4, SSL 설정, 도메인설정.</h2>
 
@@ -108,7 +111,7 @@
 <div id="searchResult"></div>
 <h2>기존 디비 전체 목록</h2>
       <div id="dbResult"></div>
-   
+     </th:block>
 </body>
  
 

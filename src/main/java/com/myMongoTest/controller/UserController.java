@@ -89,6 +89,11 @@ public class UserController {
 		return "main";
 	  } 
 	  
+	  @RequestMapping("/joinForm")
+	  public String joinForm(Model model ){
+		return "joinForm";
+	  } 
+	  
 	  @RequestMapping("/updateForm/{id}")
 	  public String updateForm(	Model model , @PathVariable Long id){
 		User user = userService.mongoFindOne(id);

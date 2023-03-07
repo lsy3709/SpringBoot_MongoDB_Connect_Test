@@ -112,22 +112,26 @@ function FindAllFileName () {
                 type: "GET",
                 })
                 .done (function(data) {
-					var html = '<table border=1>';
-  html += '<tr><th>강의영상1</th><th>강의영상2</th></tr>';
+					var html = '<div class="row">';
 					for (var i = 0; i < data.length; i++) {
-						html += '<tr>';
+						html += '<div class="col-md-4 margin"> ';
+						html += '<div class="card"> ';
 					  var filename = data[i];
 					  var str = filename.substring(filename.lastIndexOf('.') + 1);
 					  if(str=='mp4' || str=='mov' || str=='MOV' || str=='avi' || str=='wmv'){
-						html += '<td>'+'<video controls src='+'/images/'+filename+'></video>'+'</td>';
+						html += '<video controls src='+'/images/'+filename+'></video>';
 					}
 					else {
-					  html += '<td>'+'<img src='+'/images/'+filename+'>'+'</td>';
+					  html += '<img src='+'/images/'+filename+'>';
 					  }
-					  html += "<td>강의영상2예정</td>";
-					   html += '</tr>';
+					  html +=  '<div class="card-body">';
+					  html +=  '<h4 class="card-title">'+filename+'</h4>';
+					  html +=  '<p class="card-text">강의설명 준비중</p>';
+					  html += '</div>';
+					  html += '</div>';
+					  html += '</div>';
 }
-               html += '</table>';
+               html += '</div>';
                $('#ImageTest').html(html);
                 })
                 };

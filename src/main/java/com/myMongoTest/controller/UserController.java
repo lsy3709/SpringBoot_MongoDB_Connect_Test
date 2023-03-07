@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	   private final UserService userService;
+	   private final PasswordEncoder passwordEncoder;
 	
 	    @GetMapping(value = "/login/error")
 	    public String loginError(Model model){
@@ -59,12 +61,10 @@ public class UserController {
 	  } 
 	
 	@PostMapping("/joinUser")
-	public String joinUser(User2 user){
-		System.out.println("요청이 왔나요?");
+	public String joinUser(User2 user ){
 		String email = user.getEmail();
-		System.out.println("user.getEmail()"+user.getEmail());
-		System.out.println("user.getPassword()"+user.getPassword());
-		System.out.println("user.getRole()"+user.getRole());
+		String password = passwordEncoder.encode(user.getPassword());
+		user.setPassword(password);
 		if(userService.mongoFindOneUser2Email(email) == null) {
 		
 			userService.mongoUser2Insert(user);
@@ -104,11 +104,6 @@ public class UserController {
 	  
 	  @RequestMapping("/")
 	  public String main(Model model ){
-		  Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		    boolean isAdmin = authentication.getAuthorities().stream()
-		                            .anyMatch(a -> a.getAuthority().equals("ADMIN"));
-		    // isAdmin 변수를 Model에 추가
-		    model.addAttribute("isAdmin", isAdmin);
 		List<Users> userList = userService.mongoFindAll();
 		model.addAttribute("user",  userList);
 		return "main";

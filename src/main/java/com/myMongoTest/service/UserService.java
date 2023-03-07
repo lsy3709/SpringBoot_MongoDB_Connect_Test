@@ -22,6 +22,7 @@ import com.myMongoTest.document.User2;
 import com.myMongoTest.document.Users;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RequiredArgsConstructor
 @Service
@@ -90,17 +91,18 @@ public class UserService implements UserDetailsService{
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    	
+    	  System.out.println("로그인 하나요?");
         User2 user2 = mongoFindOneUser2Email(email);
 
         if(user2 == null){
             throw new UsernameNotFoundException(email);
         }
+        
 
         return User.builder()
                 .username(user2.getEmail())
                 .password(user2.getPassword())
-                .roles(user2.getRole().toString())
+                .roles(user2.getRole())
                 .build();
     }
     

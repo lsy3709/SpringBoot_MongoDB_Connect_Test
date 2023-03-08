@@ -24,6 +24,10 @@ function imageDel(filename2){
             var header = $("meta[name='_csrf_header']").attr("content");
 	$.ajax({
 		type:"delete",
+		beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 		url:"/images/deleteImage/"+filename2,
 	})
 	.done(function(resp){

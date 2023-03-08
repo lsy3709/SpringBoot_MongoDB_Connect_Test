@@ -1,19 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-      <meta charset="utf-8"  />
-   <title>몽고디비+SpringBoot 연동 테스트 입니다.</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-   <!-- 기본 js 등록 -->
-   <script src="/js/util.js" defer ></script>
-   <!-- 기본 css 등록 -->
-	<link rel="stylesheet" type="text/css" href = "/css/basic.css">
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/default_layout2}">
+
+<body><th:block layout:fragment="content">
+   <h1 > 미니 인프런 프로젝트 관리자 모드</h1>
+   <h2>Springboot 2.7.8, AWS Lightsail AMI2, docker mongodb 6.0.4, SSL 설정, 도메인설정.</h2>
+   <h2>Spring Security 적용, thymeleaf 적용.</h2>
+   
 <body>
-   <h1> 몽고디비(atlasCloud)+SpringBoot 연동 CRUD 테스트 입니다</h1>
    	<div class="form-group">
     		<label for="comment">디비수정:</label>
     		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${user.id}" readOnly></input>
@@ -42,7 +37,7 @@
  </tbody>
 </table>
 
-
+     </th:block>
    
 </body>
  

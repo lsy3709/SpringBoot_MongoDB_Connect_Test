@@ -40,7 +40,7 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .mvcMatchers("/css/**", "/js/**").permitAll()
                 .mvcMatchers("/", "/main", "/login", "/joinUser","/joinForm","/findAll","/images/**").permitAll()
-                .mvcMatchers("/admin").hasRole("ADMIN")
+                .mvcMatchers("/admin","/images").hasRole("ADMIN")
                 .anyRequest().authenticated()
         ;
 

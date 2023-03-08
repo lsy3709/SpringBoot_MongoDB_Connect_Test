@@ -12,75 +12,10 @@ $(document).ready(function(){
         $('#scroll-to-top').fadeOut();
       }
     });
-    
-
 
     
 	})
-	
-/*	$("#loginBtn").click(function(){
-	    	$("form").submit(function(event) {
-				event.preventDefault(); // 기본 동작 중지
 
-var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-
-	var loginData = {
-		"email":$("#email").val(),
-		"password":$("#password").val()
-	}
-				// 로그인 처리
-				$.ajax({
-					type: "POST",
-					url: "/login",
-					contentType:"application/json;charset=utf-8",
-					data:JSON.stringify(loginData),
- 					success: function(result) {
-						// 로그인 성공 처리
-						alert("로그인 성공!");
-						location.href='/'
-					},
-				        error: function(error) {
-          
-						// 로그인 실패 처리
-						alert("로그인 실패: ");
-						location.href='/login'
-					}
-		
-			});
-    });
-    });*/
-    
-   /* // 유저  등록 
-$("#joinBtn").click(function(){
-	 	$("form").submit(function(event) {
-				event.preventDefault(); // 기본 동작 중지
-				
-				var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-				
-	var data={
-			"email":$("#email").val(),
-			"password":$("#password").val(),
-			"role":$("#role").val(),
-	}
-	
-	$.ajax({
-		type:"post",
-		url:"/joinUser",
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(data)
-	})
-	.done(function(resp){
-		alert("회원가입 성공")
-				location.href='/'
-			})
-	.fail(function(resp){
-		alert("다른 메일로 가입해주세요.")
-		location.href='/joinForm'
-	});
-	}); 
-});*/
 	
 	    // 이미지 삭제하는 기능. 
 function imageDel(filename2){
@@ -110,8 +45,6 @@ function imageDel(filename2){
     // 평소에는 숨김.
 	    function loadImage() {
 		
-		
-		 
             var input = document.getElementById("image");
             console.log(input.files[0].name)
             var fileStr = input.files[0].name;
@@ -191,15 +124,27 @@ $("#uploadBtn").click(function(){
         url: '/images',
         type: 'POST',
         data: formData,
+       
         processData: false,
         contentType: false,
-        success: function(response) {
+           beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+     success  : function(result, status){
           alert('업로드 성공');
-     location.href='/admin'
+     location.href='/'
         },
-        error: function(error) {
-          console.error(error);
-        }
+  error : function(jqXHR, status, error){
+
+                    if(jqXHR.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href='/members/login';
+                    } else{
+                        alert(jqXHR.responseText);
+                    }
+
+                }
       });
 	});
 	});
@@ -218,6 +163,10 @@ $("#dbSearchBtn").click(function(){
 	$.ajax({
 		type:"post",
 		url:"/searchDb",
+		    beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 		contentType:"application/json;charset=utf-8",
 		data:JSON.stringify(searchData)
 	})
@@ -261,6 +210,10 @@ $("#dbUpdateBtn").click(function(){
 	$.ajax({
 		type:"post",
 		url:"/updateDb",
+		    beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 		contentType:"application/json;charset=utf-8",
 		data:JSON.stringify(data)
 	})
@@ -369,6 +322,10 @@ $("#dbInsertBtn").click(function(){
 	$.ajax({
 		type:"post",
 		url:"/insertDb",
+		    beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 		contentType:"application/json;charset=utf-8",
 		data:JSON.stringify(data)
 	})

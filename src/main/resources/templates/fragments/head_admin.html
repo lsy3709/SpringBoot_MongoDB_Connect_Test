@@ -19,6 +19,10 @@
 
          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                <!-- 기본 js 등록 -->
+               
+                   <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+               
    <script src="/js/util.js" defer ></script>
 
    <!-- 기본 css 등록 -->

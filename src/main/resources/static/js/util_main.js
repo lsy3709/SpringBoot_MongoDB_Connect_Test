@@ -18,39 +18,6 @@ $(document).ready(function(){
     
 	})
 	
-	$("#loginBtn").click(function(){
-	    	$("form").submit(function(event) {
-				event.preventDefault(); // 기본 동작 중지
-
-
-	var loginData = {
-		"id":$("#id").val(),
-		"password":$("#password").val()
-	}
-
-				// 로그인 처리
-				$.ajax({
-					type: "POST",
-					url: "/login",
-					contentType:"application/json;charset=utf-8",
-					data:JSON.stringify(loginData),
- 					success: function(result) {
-						// 로그인 성공 처리
-						alert("로그인 성공!");
-						location.href='/'
-					},
-				        error: function(error) {
-          
-						// 로그인 실패 처리
-						alert("로그인 실패: ");
-						location.href='/login'
-					}
-		
-			});
-    });
-    });
-	
-
 	
 	//스크롤 버튼 부드럽게 동작하기. 
 	 $('#scroll-to-top').click(function() {
@@ -101,6 +68,9 @@ function dbUpdateForm(id){
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
 $("#dbSearchBtn").click(function(){
+	      var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            
 			var searchData = {
 		"searchContent":$("#searchContent").val(),
 		"searchDB":$("#searchDB option:selected").val()
@@ -110,6 +80,10 @@ $("#dbSearchBtn").click(function(){
 		type:"post",
 		url:"/searchDb",
 		contentType:"application/json;charset=utf-8",
+		           beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 		data:JSON.stringify(searchData)
 	})
 	.done(function(resp){
@@ -140,6 +114,9 @@ $("#listBtn").click(function(){
 // 유저 게시글 실제 업데이트 처리 부분. 
 $("#dbUpdateBtn").click(function(){
 
+      var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
 	var data={
 			"id":$("#dbId").val(),
 			"title":$("#dbTitle").val(),
@@ -150,6 +127,10 @@ $("#dbUpdateBtn").click(function(){
 		type:"post",
 		url:"/updateDb",
 		contentType:"application/json;charset=utf-8",
+		           beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){
@@ -238,6 +219,8 @@ var init = function(){
 // 유저 게시글 등록 
 $("#dbInsertBtn").click(function(){
 	
+	      var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
 
 	var data={
 			"id":$("#dbId").val(),
@@ -250,6 +233,10 @@ $("#dbInsertBtn").click(function(){
 		type:"post",
 		url:"/insertDb",
 		contentType:"application/json;charset=utf-8",
+		  beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){

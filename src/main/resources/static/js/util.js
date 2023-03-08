@@ -264,9 +264,16 @@ function dbUpdate(id){
 
 //유저 게시글 하나 삭제 기능. 	
 function dbDel(id){
+	      var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+	
 	$.ajax({
 		type:"delete",
 		url:"/dbDelete/"+id,
+		       beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
 	})
 	.done(function(resp){
 		alert(id+"번 글 삭제 완료");

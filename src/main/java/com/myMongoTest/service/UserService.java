@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -51,7 +52,10 @@ public class UserService implements UserDetailsService{
     
 //전체 검색
     public List<Users> mongoFindAll() {
-		List<Users> userList=mongoTemplate.findAll(Users.class,"user");
+    	Query query = new Query();
+    	query.with(Sort.by(Sort.Direction.DESC, "id"));
+
+     	List<Users> userList=mongoTemplate.find(query,Users.class);
 		return userList;
         
     }

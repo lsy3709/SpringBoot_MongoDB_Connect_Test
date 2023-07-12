@@ -20,7 +20,7 @@ import lombok.Setter;
 @Document("user")
 public class Users{
     
-    private Long id;
+	private Long id;
     private String title;
     private String message;
 }

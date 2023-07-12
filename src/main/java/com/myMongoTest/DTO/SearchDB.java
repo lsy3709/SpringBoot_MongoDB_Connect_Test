@@ -11,8 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SearchDB {
 	
-	String searchContent;
-	String searchDB;
+	private String searchContent;
+	private String searchDB;
 	
 
 }

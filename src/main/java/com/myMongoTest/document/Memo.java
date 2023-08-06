@@ -1,5 +1,7 @@
 package com.myMongoTest.document;
 
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,4 +24,6 @@ public class Memo {
 	
 	private String title;
 	private String message;
+	private String dateField;
+	
 	}

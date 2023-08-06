@@ -1,6 +1,8 @@
 package com.myMongoTest.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +44,18 @@ public class UserService implements UserDetailsService{
         mongoTemplate.insert(user1);
     }
     
+    // Convert Date to String
+    public String dateToString(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.format(date);
+    }
+
+    // Convert String to Date
+    public Date stringToDate(String dateString) throws Exception {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.parse(dateString);
+    }
+    
 //하나 추가. 
 //	private Long id;
 //    private String title;
@@ -57,6 +71,9 @@ public class UserService implements UserDetailsService{
 //	private String title;
 //	private String message;
     public void mongoMemoInsert(Memo memo) {
+    	Date date = new Date();
+    	String converDate = dateToString(date);
+    	memo.setDateField(converDate);
         mongoTemplate.insert(memo);
     }
     

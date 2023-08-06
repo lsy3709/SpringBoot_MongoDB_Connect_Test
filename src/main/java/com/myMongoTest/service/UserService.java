@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.SearchDB;
+import com.myMongoTest.document.Memo;
 import com.myMongoTest.document.User2;
 import com.myMongoTest.document.Users;
 
@@ -40,11 +43,25 @@ public class UserService implements UserDetailsService{
     }
     
 //하나 추가. 
+//	private Long id;
+//    private String title;
+//    private String message;
     public void mongoUserInsert(Users user) {
         mongoTemplate.insert(user);
     }
     
+  // 메모 하나 추가. 
+//	@Id
+//	private ObjectId id;
+//	
+//	private String title;
+//	private String message;
+    public void mongoMemoInsert(Memo memo) {
+        mongoTemplate.insert(memo);
+    }
+    
   //하나 추가. 
+    
     public void mongoUser2Insert(User2 user) {
         mongoTemplate.insert(user);
     }
@@ -62,8 +79,8 @@ public class UserService implements UserDetailsService{
     
  //조건 검색
     public List<Users> mongoSearchFindAll(SearchDB searchDB) {
-    	System.out.println("서비스 searchDB.getSearchDB(): "+searchDB.getSearchDB());
-    	System.out.println("서비스 searchDB.getSearchContent(): "+searchDB.getSearchContent());
+//    	System.out.println("서비스 searchDB.getSearchDB(): "+searchDB.getSearchDB());
+//    	System.out.println("서비스 searchDB.getSearchContent(): "+searchDB.getSearchContent());
     	List<Users> userList = null;
     	if(searchDB.getSearchDB().equals("_id")) {
     		Criteria criteria = new Criteria("_id");

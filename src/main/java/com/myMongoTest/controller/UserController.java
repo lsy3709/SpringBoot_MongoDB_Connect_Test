@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.myMongoTest.DTO.SearchDB;
+import com.myMongoTest.document.Memo;
 import com.myMongoTest.document.User2;
 import com.myMongoTest.document.Users;
 import com.myMongoTest.service.UserService;
@@ -48,11 +49,18 @@ public class UserController {
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
+	@ResponseBody
+	@PostMapping("/insertMemo")
+	public ResponseEntity<String> insertMemo(	@RequestBody Memo memo){
+		userService.mongoMemoInsert(memo);
+		return new ResponseEntity<String>("success",HttpStatus.OK);
+	}
+	
 	  
 	  @RequestMapping("/joinForm")
 	  public String joinForm(Model model ){
 		  model.addAttribute("User2", new User2());
-		  System.out.println("joinFomr");
+//		  System.out.println("joinFomr");
 		return "joinForm";
 	  } 
 	

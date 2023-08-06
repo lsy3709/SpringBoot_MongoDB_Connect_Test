@@ -19,7 +19,8 @@ $(document).ready(function(){
 	
 	    // 이미지 삭제하는 기능. 
 function imageDel(filename2){
-	
+	 var shouldDeleteImage = confirm("정말 삭제 할까요?  " + filename2 + "?");
+	  if (shouldDeleteImage){
 	var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
 	$.ajax({
@@ -37,6 +38,7 @@ function imageDel(filename2){
 	.fail(function(){
 		alert("삭제 실패")
 	})
+	}
 }
 	
 	//스크롤 버튼 부드럽게 동작하기. 
@@ -50,7 +52,7 @@ function imageDel(filename2){
 	    function loadImage() {
 		
             var input = document.getElementById("image");
-            console.log(input.files[0].name)
+            /*console.log(input.files[0].name)*/
             var fileStr = input.files[0].name;
               var str2 = fileStr.substring(fileStr.lastIndexOf('.') + 1);
               
@@ -163,7 +165,7 @@ $("#dbSearchBtn").click(function(){
 		"searchContent":$("#searchContent").val(),
 		"searchDB":$("#searchDB option:selected").val()
 	}
-	console.log(searchData)
+	/*console.log(searchData)*/
 	$.ajax({
 		type:"post",
 		url:"/searchDb",
@@ -196,7 +198,7 @@ $("#dbSearchBtn").click(function(){
 
 // 메인 처럼 사용중. 
 $("#listBtn").click(function(){
-	location.href='/'
+	location.href='/admin'
 	});
 
 // 유저 게시글 실제 업데이트 처리 부분. 
@@ -222,7 +224,7 @@ $("#dbUpdateBtn").click(function(){
 		data:JSON.stringify(data)
 	})
 	.done(function(resp){
-			location.href='/'
+			location.href='/admin'
 			})
 	.fail(function(){
 		alert("디비 수정 실패")
@@ -264,6 +266,8 @@ function dbUpdate(id){
 
 //유저 게시글 하나 삭제 기능. 	
 function dbDel(id){
+	  var shouldDelete = confirm("정말 삭제 할까요?  " + id + "?");
+	  if (shouldDelete){
 	      var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
 	
@@ -282,6 +286,8 @@ function dbDel(id){
 	.fail(function(){
 		alert("삭제 실패")
 	})
+	}
+	
 }
 
 // 메인에 유저 게시글 목록 , 돔 준비되면 항상 목록 출력해주는 기능. 	
@@ -324,7 +330,7 @@ $("#dbInsertBtn").click(function(){
             var header = $("meta[name='_csrf_header']").attr("content");
 
 	var data={
-			"id":$("#dbId").val(),
+			/*"id":$("#dbId").val(),*/
 			"title":$("#dbTitle").val(),
 			"message":$("#dbMessage").val()
 			
@@ -332,7 +338,7 @@ $("#dbInsertBtn").click(function(){
 	
 	$.ajax({
 		type:"post",
-		url:"/insertDb",
+		url:"/insertMemo",
 		    beforeSend : function(xhr){
                     /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
                     xhr.setRequestHeader(header, token);

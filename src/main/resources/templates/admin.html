@@ -10,7 +10,7 @@ layout:decorate="~{layout/default_layout2}">
 
    	<div class="form-group" >
     		<label for="comment">디비추가:</label>
-    		<input  class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"></input>
+    		<!-- <input  class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"></input> -->
     		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력"></input>
     		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력"></input>
     		<br>
@@ -21,10 +21,10 @@ layout:decorate="~{layout/default_layout2}">
     		<label for="comment">디비검색: </label>
     		<select name="searchDB" id="searchDB">
   <option value="message">메세지 검색</option>
-  <option value="title">제목 검색</option>
-  <option value="_id" selected="selected">ID 검색</option>
+  <option value="title" selected>제목 검색</option>
+  <option value="_id" >ID 검색</option>
 </select>
-    		<input class="form-control"   id="searchContent" name="searchContent" placeholder="1 형식 입력: 작업중 대기"></input>
+    		<input class="form-control"   id="searchContent" name="searchContent" placeholder="기본 제목으로 검색"></input>
     		<br>
     		<button id="dbSearchBtn" class="btn btn-primary">디비검색</button>
     		<br>

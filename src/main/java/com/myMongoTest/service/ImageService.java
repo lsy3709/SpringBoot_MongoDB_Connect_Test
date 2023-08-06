@@ -32,7 +32,7 @@ public class ImageService {
         for (GridFSFile file : files) {
             filenames.add(file.getFilename());
         }
-        System.out.println(filenames);
+//        System.out.println(filenames);
         return filenames;
     }
     

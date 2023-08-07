@@ -115,6 +115,14 @@ function FindAllFileName () {
 function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
 	}
+function dbUpdateFormMemo(id){
+	var id2 = '64d03d6b803f8d7c19df36a1'
+	location.href='/updateFormMemo/'+id2;
+}
+
+// function dbUpdateFormMemo(id){
+// 	location.href='/updateFormMemo/'+id;
+// }
 
 // 이미지 업로드 폼 클릭시 수행. 
 // 기본 서밋 버튼 동작 안하게 막고, 지정한 폼으로 등록 하게끔. 
@@ -230,6 +238,35 @@ $("#dbUpdateBtn").click(function(){
 		alert("디비 수정 실패")
 	});
 	});
+
+$("#dbUpdateBtn2").click(function(){
+
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+
+	var data={
+		"id":$("#dbId").val(),
+		"title":$("#dbTitle").val(),
+		"message":$("#dbMessage").val()
+	}
+
+	$.ajax({
+		type:"post",
+		url:"/updateDb",
+		beforeSend : function(xhr){
+			/* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+			xhr.setRequestHeader(header, token);
+		},
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(data)
+	})
+		.done(function(resp){
+			location.href='/admin'
+		})
+		.fail(function(){
+			alert("디비 수정 실패")
+		});
+});
 	
 //수정 하는 폼에 임시로 테이블 만들어 보여주기.
 function dbUpdate(id){
@@ -264,6 +301,8 @@ function dbUpdate(id){
 
 
 
+
+
 //유저 게시글 하나 삭제 기능. 	
 function dbDel(id){
 	  var shouldDelete = confirm("정말 삭제 할까요?  " + id + "?");
@@ -294,25 +333,29 @@ function dbDel(id){
 var init = function(){
 		$.ajax({
 			type:"get",
-			url:"/findAll",
+			url:"/findAllMemo",
 			dataType:"JSON",
 			contentType:"application/json;charset=utf-8",
 		})
 		.done(function(resp){
 			//alert("resp"+resp)
 			var str = "<table class='table table-hover mt-3  ' border=1>";
-				str +="<th>" +"아이디"+"</th>"
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
+				str +="<th>" +"날짜"+"</th>"
 				str +="<th>" +"수정"+"</th>"
 				str +="<th>" +"삭제"+"</th>"
 			$.each(resp,function(key,val){
+				console.log("val.id : "+ val.id)
+				console.log("val.title: "+ val.title)
+				console.log("val.message: "+ val.message)
+				console.log("val.dateField: "+ val.dateField)
 				str += "<tr>"
-				str += "<td>" + val.id + "</td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
-				str+= "<td><a href='javascript:dbUpdateForm("+val.id+")'>수정</a></td>"
-				str+= "<td><a href='javascript:dbDel("+val.id+")'>삭제</a></td>" 
+				str += "<td>" + val.dateField + "</td>"
+				str+= "<td><a href='javascript:dbUpdateFormMemo("+val.title+")'>수정</a></td>"
+				str+= "<td><a href='javascript:dbDel("+val.id+")'>삭제</a></td>"
 				
 				str += "</tr>"
 			})

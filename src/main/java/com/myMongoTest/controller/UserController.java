@@ -2,6 +2,7 @@ package com.myMongoTest.controller;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -83,12 +84,26 @@ public class UserController {
 		userService.mongoUserUpdate(user);
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
+
+	@ResponseBody
+	@PostMapping("/updateMemo")
+	public ResponseEntity<String> updateDb(	@RequestBody Users user){
+		userService.mongoUserUpdate(user);
+		return new ResponseEntity<String>("success",HttpStatus.OK);
+	}
 	
 	@ResponseBody
 	@GetMapping("/findAll")
 	public List<Users> list( ){
 		List<Users> userList = userService.mongoFindAll();
 		return userList;
+	}
+
+	@ResponseBody
+	@GetMapping("/findAllMemo")
+	public List<Memo> listMemo( ){
+		List<Memo> memoList = userService.mongoFindAllMemo();
+		return memoList;
 	}
 	
 	@ResponseBody
@@ -119,9 +134,19 @@ public class UserController {
 		Users user = userService.mongoFindOne(id);
 		model.addAttribute("user",  user);
 		return "updateForm";
-	  } 
-	  
-	  @ResponseBody
+	  }
+
+	@RequestMapping("/updateFormMemo/{id}")
+	public String updateFormMemo(	Model model , @PathVariable String id){
+		System.out.println("id : "+ id);
+		ObjectId objectId = new ObjectId(id);
+		System.out.println("objectId : "+ objectId);
+		Memo memo = userService.mongoFindOneMemo(objectId);
+		model.addAttribute("memo",  memo);
+		return "updateForm";
+	}
+
+	@ResponseBody
 		@DeleteMapping("/dbDelete/{id}")
 		public Long delete(@PathVariable Long id) {
 			userService.deleteDb("_id", id);

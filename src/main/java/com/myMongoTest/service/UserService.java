@@ -93,6 +93,15 @@ public class UserService implements UserDetailsService{
 		return userList;
         
     }
+    //전체 검색
+    public List<Memo> mongoFindAllMemo() {
+        Query query = new Query();
+        query.with(Sort.by(Sort.Direction.DESC, "id"));
+
+        List<Memo> memoList=mongoTemplate.find(query,Memo.class);
+        return memoList;
+
+    }
     
  //조건 검색
     public List<Users> mongoSearchFindAll(SearchDB searchDB) {
@@ -159,6 +168,11 @@ public class UserService implements UserDetailsService{
     public Users mongoFindOne(Long id) {
 		Users user = mongoTemplate.findById(id, Users.class);
 		return user;
+    }
+
+    public Memo mongoFindOneMemo(ObjectId id) {
+        Memo memo = mongoTemplate.findById(id, Memo.class);
+        return memo;
     }
  //하나 수정하기.
 public void mongoUserUpdate(Users user) {

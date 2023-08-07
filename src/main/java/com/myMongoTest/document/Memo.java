@@ -25,5 +25,5 @@ public class Memo {
 	private String title;
 	private String message;
 	private String dateField;
-	
-	}
+
+}

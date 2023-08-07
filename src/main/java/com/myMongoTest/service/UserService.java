@@ -129,7 +129,7 @@ public class UserService implements UserDetailsService{
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    	  System.out.println("로그인 하나요?");
+//    	  System.out.println("로그인 하나요?");
         User2 user2 = mongoFindOneUser2Email(email);
 
         if(user2 == null){

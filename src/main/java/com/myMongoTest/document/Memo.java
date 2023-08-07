@@ -20,7 +20,7 @@ import lombok.Setter;
 public class Memo {
    
 	@Id
-	private ObjectId id;
+	private String id;
 	
 	private String title;
 	private String message;

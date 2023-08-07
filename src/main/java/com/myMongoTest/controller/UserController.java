@@ -87,8 +87,8 @@ public class UserController {
 
 	@ResponseBody
 	@PostMapping("/updateMemo")
-	public ResponseEntity<String> updateDb(	@RequestBody Users user){
-		userService.mongoUserUpdate(user);
+	public ResponseEntity<String> updateMemo(	@RequestBody Memo memo){
+		userService.mongoMemoUpdate(memo);
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 	
@@ -148,7 +148,7 @@ public class UserController {
 
 	@ResponseBody
 		@DeleteMapping("/dbDelete/{id}")
-		public Long delete(@PathVariable Long id) {
+		public String delete(@PathVariable String id) {
 			userService.deleteDb("_id", id);
 			return id;
 	  

@@ -189,13 +189,28 @@ public void mongoUserUpdate(Users user) {
 
     }
 
+//메모 하나 수정하기.
+public void mongoMemoUpdate(Memo memo) {
+	Query query = new Query();
+   Update update = new Update();
+
+   // where절 조건
+   query.addCriteria(Criteria.where("_id").is(memo.getId()));
+   update.set("title",memo.getTitle());
+   update.set("message", memo.getMessage());
+
+
+   mongoTemplate.updateMulti(query, update, "memo");
+
+   }
+
 // 삭제
-public void deleteDb(String key, Long value) {
+public void deleteDb(String key, String value) {
 	Criteria criteria = new Criteria(key);
 	criteria.is(value);
 	
 	Query query = new Query(criteria);
-	mongoTemplate.remove(query, "user");
+	mongoTemplate.remove(query, "memo");
 }
 
 

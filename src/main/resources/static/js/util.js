@@ -112,12 +112,12 @@ function FindAllFileName () {
         
 	
 	//유저 게시글 하나 수정 하는 폼 불러오기. 
-function dbUpdateForm(id){
+/*function dbUpdateForm(id){
 	location.href='/updateForm/'+id;
-	}
+	}*/
+
 function dbUpdateFormMemo(id){
-	var id2 = '64d03d6b803f8d7c19df36a1'
-	location.href='/updateFormMemo/'+id2;
+	location.href='/updateFormMemo/'+id;
 }
 
 // function dbUpdateFormMemo(id){
@@ -252,7 +252,7 @@ $("#dbUpdateBtn2").click(function(){
 
 	$.ajax({
 		type:"post",
-		url:"/updateDb",
+		url:"/updateMemo",
 		beforeSend : function(xhr){
 			/* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
 			xhr.setRequestHeader(header, token);
@@ -346,16 +346,18 @@ var init = function(){
 				str +="<th>" +"수정"+"</th>"
 				str +="<th>" +"삭제"+"</th>"
 			$.each(resp,function(key,val){
-				console.log("val.id : "+ val.id)
+		/*		console.log("val.id : "+ val.id)
 				console.log("val.title: "+ val.title)
 				console.log("val.message: "+ val.message)
 				console.log("val.dateField: "+ val.dateField)
+				var id2= val.id
+				console.log(typeof(id2))*/
 				str += "<tr>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"
-				str+= "<td><a href='javascript:dbUpdateFormMemo("+val.title+")'>수정</a></td>"
-				str+= "<td><a href='javascript:dbDel("+val.id+")'>삭제</a></td>"
+				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
+				str+= "<td><a href=javascript:dbDel('"+val.id+"')>삭제</a></td>"
 				
 				str += "</tr>"
 			})

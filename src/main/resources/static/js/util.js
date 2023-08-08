@@ -186,14 +186,14 @@ $("#dbSearchBtn").click(function(){
 	})
 	.done(function(resp){
 	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
-				str +="<th>" +"아이디"+"</th>"
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
+				str +="<th>" +"등록일"+"</th>"
 			$.each(resp,function(key,val){
 				str += "<tr>"
-				str += "<td>" + val.id + "</td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
+				str += "<td>" + val.dateField + "</td>"
 				str += "</tr>"
 			})
 			str += "</table>"
@@ -240,33 +240,36 @@ $("#dbUpdateBtn").click(function(){
 	});
 
 $("#dbUpdateBtn2").click(function(){
+	var shouldUpdate = confirm("정말 수정 할까요?");
+	if (shouldUpdate) {
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
 
-	var token = $("meta[name='_csrf']").attr("content");
-	var header = $("meta[name='_csrf_header']").attr("content");
+		var data = {
+			"id": $("#dbId").val(),
+			"title": $("#dbTitle").val(),
+			"message": $("#dbMessage").val()
+		}
 
-	var data={
-		"id":$("#dbId").val(),
-		"title":$("#dbTitle").val(),
-		"message":$("#dbMessage").val()
-	}
-
-	$.ajax({
-		type:"post",
-		url:"/updateMemo",
-		beforeSend : function(xhr){
-			/* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-			xhr.setRequestHeader(header, token);
-		},
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(data)
-	})
-		.done(function(resp){
-			location.href='/admin'
+		$.ajax({
+			type: "post",
+			url: "/updateMemo",
+			beforeSend: function (xhr) {
+				/* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+				xhr.setRequestHeader(header, token);
+			},
+			contentType: "application/json;charset=utf-8",
+			data: JSON.stringify(data)
 		})
-		.fail(function(){
-			alert("디비 수정 실패")
-		});
+			.done(function (resp) {
+				location.href = '/admin'
+			})
+			.fail(function () {
+				alert("디비 수정 실패")
+			});
+	}
 });
+
 	
 //수정 하는 폼에 임시로 테이블 만들어 보여주기.
 function dbUpdate(id){
@@ -286,15 +289,15 @@ function dbUpdate(id){
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
 				str+= "<td><a href='javascript:dbUpdateGo("+val.id+")'>수정</a></td>"
-				
+
 				str += "</tr>"
 			})
 			str += "</table>"
 			$("#dbResult").html(str);
-		
+
 	})
 	.fail(function(){
-		
+
 	})
 }
 
@@ -305,7 +308,7 @@ function dbUpdate(id){
 
 //유저 게시글 하나 삭제 기능. 	
 function dbDel(id){
-	  var shouldDelete = confirm("정말 삭제 할까요?  " + id + "?");
+	  var shouldDelete = confirm("정말 삭제 할까요?");
 	  if (shouldDelete){
 	      var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
@@ -319,7 +322,7 @@ function dbDel(id){
                 },
 	})
 	.done(function(resp){
-		alert(id+"번 글 삭제 완료");
+		alert("글 삭제 완료");
 		init();
 	})
 	.fail(function(){

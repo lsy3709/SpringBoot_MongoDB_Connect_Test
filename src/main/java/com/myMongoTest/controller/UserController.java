@@ -108,9 +108,9 @@ public class UserController {
 	
 	@ResponseBody
 	@PostMapping("/searchDb")
-	public List<Users> searchlist( @RequestBody SearchDB searchDB){
-		List<Users> userList = userService.mongoSearchFindAll(searchDB);
-		return userList;
+	public List<Memo> searchlist( @RequestBody SearchDB searchDB){
+		List<Memo> memoList = userService.mongoSearchFindAll(searchDB);
+		return memoList;
 	}
 	
 

@@ -104,25 +104,25 @@ public class UserService implements UserDetailsService{
     }
     
  //조건 검색
-    public List<Users> mongoSearchFindAll(SearchDB searchDB) {
+    public List<Memo> mongoSearchFindAll(SearchDB searchDB) {
 //    	System.out.println("서비스 searchDB.getSearchDB(): "+searchDB.getSearchDB());
 //    	System.out.println("서비스 searchDB.getSearchContent(): "+searchDB.getSearchContent());
-    	List<Users> userList = null;
+    	List<Memo> memoList = null;
     	if(searchDB.getSearchDB().equals("_id")) {
     		Criteria criteria = new Criteria("_id");
     		criteria.is(Long.parseLong(searchDB.getSearchContent()));
     		
     		//기존 1:1 검색
     		Query query = new Query(criteria);
-    		userList=mongoTemplate.find(query, Users.class);
+            memoList=mongoTemplate.find(query, Memo.class);
     	} else if( searchDB.getSearchDB().equals("title")) {
     		
     		//like 검색. 
     		Query searchQuery = new Query();
     		 
     		// LIKE '%[searchIndexInfoSearchParam.getTitleMain()]%' 와 같음
-    		searchQuery.addCriteria(Criteria.where("title").regex(searchDB.getSearchContent()));    
-    		userList=mongoTemplate.find(searchQuery, Users.class);
+    		searchQuery.addCriteria(Criteria.where("title").regex(searchDB.getSearchContent()));
+            memoList=mongoTemplate.find(searchQuery, Memo.class);
     		
     	} else if( searchDB.getSearchDB().equals("message")) {
     		//like 검색. 
@@ -130,9 +130,9 @@ public class UserService implements UserDetailsService{
     		 
     		// LIKE '%[searchIndexInfoSearchParam.getTitleMain()]%' 와 같음
     		searchQuery.addCriteria(Criteria.where("message").regex(searchDB.getSearchContent()));    
-    		userList=mongoTemplate.find(searchQuery, Users.class);
+    		memoList=mongoTemplate.find(searchQuery, Memo.class);
     	}
-		return userList;
+		return memoList;
         
     }
     

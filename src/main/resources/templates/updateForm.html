@@ -11,7 +11,7 @@ layout:decorate="~{layout/default_layout2}">
 <body>
    	<div class="form-group">
     		<label for="comment">디비수정:</label>
-    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${memo.id}" readOnly></input>
+    		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${memo.id}" hidden="hidden"></input>
     		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력" th:value="${memo.title}"></input>
     		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력" th:value="${memo.message}"></input>
     		<button id="dbUpdateBtn2" class="text-bg-primary">수정적용하기</button>

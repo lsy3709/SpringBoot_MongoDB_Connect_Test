@@ -124,6 +124,65 @@ function dbUpdateFormMemo(id){
 // 	location.href='/updateFormMemo/'+id;
 // }
 
+//메모 with 이미지
+$("#uploadDBWithImageBtn").click(function(){
+	$('#my-form').on('submit', function(e) {
+		e.preventDefault();
+
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+
+
+		// var formData = new FormData(this);
+
+		var formData = new FormData();
+
+		var data={
+			/*"id":$("#dbId").val(),*/
+			"title":$("#dbTitle").val(),
+			"message":$("#dbMessage").val()
+
+		}
+
+		let file = null;
+		let fileInput = document.getElementById("image");
+
+		if (fileInput.length > 0) {
+			file = $('#image')[0].files[0]
+		}
+		formData.append('file',file);
+		formData.append('key', new Blob([ JSON.stringify(data) ], {type : "application/json"}));
+
+		$.ajax({
+			url: '/insertMemoWithImage',
+			type: 'POST',
+			data: formData,
+
+			processData: false,
+			contentType: false,
+			beforeSend : function(xhr){
+				/* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+				xhr.setRequestHeader(header, token);
+			},
+			success  : function(result, status){
+				alert('업로드 성공');
+				location.href='/admin'
+			},
+			error : function(jqXHR, status, error){
+
+				if(jqXHR.status == '401'){
+					alert('로그인 후 이용해주세요');
+					location.href='/members/login';
+				} else{
+					alert(jqXHR.responseText);
+				}
+
+			}
+		});
+	});
+});
+
+
 // 이미지 업로드 폼 클릭시 수행. 
 // 기본 서밋 버튼 동작 안하게 막고, 지정한 폼으로 등록 하게끔. 
 $("#uploadBtn").click(function(){

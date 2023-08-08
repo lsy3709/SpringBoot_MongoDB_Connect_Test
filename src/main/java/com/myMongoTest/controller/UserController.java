@@ -1,20 +1,22 @@
 package com.myMongoTest.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.myMongoTest.service.ImageService;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.Memo;
@@ -23,6 +25,7 @@ import com.myMongoTest.document.Users;
 import com.myMongoTest.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Controller
@@ -31,6 +34,14 @@ public class UserController {
 
 	   private final UserService userService;
 	   private final PasswordEncoder passwordEncoder;
+
+	private final ImageService imageService;
+
+	@Autowired
+	private GridFsTemplate gridFsTemplate;
+
+	@Autowired
+	private GridFsOperations gridFsOperations;
 	
 	    @GetMapping(value = "/login/error")
 	    public String loginError(Model model){
@@ -49,7 +60,36 @@ public class UserController {
 		userService.mongoUserInsert(user);
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
+
+//	@PostMapping
+//	public ResponseEntity uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+//		InputStream inputStream = file.getInputStream();
+//		ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
+//		return new ResponseEntity<>( HttpStatus.OK);
+//	}
 	
+	@ResponseBody
+	@PostMapping("/insertMemoWithImage")
+	public ResponseEntity insertMemoWithImage (@RequestPart(value = "key") Memo memo,
+											   @RequestPart(value = "file",required = false) MultipartFile file) throws IOException {
+
+		System.out.println("memo getTitle : " + memo.getTitle());
+		System.out.println("memo getMessage : " + memo.getMessage());
+		System.out.println("memo getDateField: " + memo.getDateField());
+		System.out.println("memo getFile: " + memo.getFile());
+		System.out.println("file : " + file);
+
+		InputStream inputStream = file.getInputStream();
+		ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
+		String objectIdToString = objectId.toString();
+
+		userService.mongoMemoInsert(memo);
+
+
+
+
+		return new ResponseEntity<>( HttpStatus.OK);
+	}
 	@ResponseBody
 	@PostMapping("/insertMemo")
 	public ResponseEntity<String> insertMemo(	@RequestBody Memo memo){

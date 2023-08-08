@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @AllArgsConstructor
@@ -25,5 +26,6 @@ public class Memo {
 	private String title;
 	private String message;
 	private String dateField;
+	private MultipartFile file;
 
 }

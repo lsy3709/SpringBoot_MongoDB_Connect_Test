@@ -87,7 +87,7 @@ function FindAllFileName () {
                 .done (function(data) {
 					var html = '<div class="row">';
 					for (var i = 0; i < data.length; i++) {
-						html += '<div class="col-md-4 margin"> ';
+						html += '<div class="col-md-2 margin"> ';
 						html += '<div class="card"> ';
 					  var filename = data[i];
 					  var str = filename.substring(filename.lastIndexOf('.') + 1);
@@ -124,9 +124,10 @@ var init = function(){
 		.done(function(resp){
 			//alert("resp"+resp)
 			var str = "<table class='table table-hover mt-3  ' border=1>";
+			str +="<th>" +"대표사진"+"</th>"
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
-				str +="<th>" +"날짜"+"</th>"
+				str +="<th>" +"등록일"+"</th>"
 				str +="<th>" +"수정"+"</th>"
 				str +="<th>" +"삭제"+"</th>"
 			$.each(resp,function(key,val){
@@ -137,6 +138,7 @@ var init = function(){
 				var id2= val.id
 				console.log(typeof(id2))*/
 				str += "<tr>"
+				str += "<td>" + val.imageFileName + "</td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"
@@ -321,158 +323,3 @@ function dbDel(id){
 	
 }
 
-
-//수정 하는 폼에 임시로 테이블 만들어 보여주기.
-// 현재 사용 안하는 중. 메모로 변경했음.
-/*
-function dbUpdate(id){
-	$.ajax({
-		type:"get",
-		url:"/updateForm/"+id,
-	})
-	.done(function(resp){
-		  location.href='/updateForm/id';
-				var str = "<table class='table table-hover mt-3' border=1>";
-				str +="<th>" +"아이디"+"</th>"
-				str +="<th>" +"제목"+"</th>"
-				str +="<th>" +"메세지"+"</th>"
-			$.each(resp,function(key,val){
-				str += "<tr>"
-				str += "<td>" + val.id + "</td>"
-				str += "<td>" + val.title + "</td>"
-				str += "<td>" + val.message + "</td>"
-				str+= "<td><a href='javascript:dbUpdateGo("+val.id+")'>수정</a></td>"
-
-				str += "</tr>"
-			})
-			str += "</table>"
-			$("#dbResult").html(str);
-
-	})
-	.fail(function(){
-
-	})
-}
-*/
-
-
-	//유저 게시글 하나 수정 하는 폼 불러오기. 
-/*function dbUpdateForm(id){
-	location.href='/updateForm/'+id;
-	}*/
-	
-// function dbUpdateFormMemo(id){
-// 	location.href='/updateFormMemo/'+id;
-// }
-
-// 이미지 업로드 폼 클릭시 수행. 
-// 기본 서밋 버튼 동작 안하게 막고, 지정한 폼으로 등록 하게끔.
-// 이미지만 업로드시 , 현재 사용 안하는 중. 
-/*
-$("#uploadBtn").click(function(){
-	    $('#my-form').on('submit', function(e) {
-      e.preventDefault();
-      
-      var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-      
-       var formData = new FormData(this);
-  $.ajax({
-        url: '/images',
-        type: 'POST',
-        data: formData,
-       
-        processData: false,
-        contentType: false,
-           beforeSend : function(xhr){
-                 // 데이터를 전송하기 전에 헤더에 csrf값을 설정 
-                    xhr.setRequestHeader(header, token);
-                },
-     success  : function(result, status){
-          alert('업로드 성공');
-     location.href='/'
-        },
-  error : function(jqXHR, status, error){
-
-                    if(jqXHR.status == '401'){
-                        alert('로그인 후 이용해주세요');
-                        location.href='/members/login';
-                    } else{
-                        alert(jqXHR.responseText);
-                    }
-
-                }
-      });
-	});
-	});
-	*/
-
-
-// 유저 게시글 실제 업데이트 처리 부분. 
-// 현재 사용 안하는 중. 샘플 코드로 
-/*
-$("#dbUpdateBtn").click(function(){
-	
-	var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-
-	var data={
-			"id":$("#dbId").val(),
-			"title":$("#dbTitle").val(),
-			"message":$("#dbMessage").val()
-	}
-	
-	$.ajax({
-		type:"post",
-		url:"/updateDb",
-		    beforeSend : function(xhr){
-                 // 데이터를 전송하기 전에 헤더에 csrf값을 설정 
-                    xhr.setRequestHeader(header, token);
-                },
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(data)
-	})
-	.done(function(resp){
-			location.href='/admin'
-			})
-	.fail(function(){
-		alert("디비 수정 실패")
-	});
-	});
-
-*/
-
-//메모 게시글 등록, 메모만 
-// 현재 사용 안하는 중.
-/*
-$("#dbInsertBtn").click(function(){
-	
-	var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-
-	var data={
-			//"id":$("#dbId").val(),
-			"title":$("#dbTitle").val(),
-			"message":$("#dbMessage").val()
-			
-	}
-	
-	$.ajax({
-		type:"post",
-		url:"/insertMemo",
-		    beforeSend : function(xhr){
-              //       데이터를 전송하기 전에 헤더에 csrf값을 설정 
-                    xhr.setRequestHeader(header, token);
-                },
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(data)
-	})
-	.done(function(resp){
-		alert("디비 추가 성공")
-				init();
-			})
-	.fail(function(){
-		alert("디비 추가 실패")
-	});
-});
-*/

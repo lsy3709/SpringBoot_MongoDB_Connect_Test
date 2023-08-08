@@ -27,5 +27,6 @@ public class Memo {
 	private String message;
 	private String dateField;
 	private String imageFileObjectId;
+	private String imageFileName;
 
 }

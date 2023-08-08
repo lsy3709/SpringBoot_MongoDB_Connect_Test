@@ -4,9 +4,9 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 layout:decorate="~{layout/default_layout2}">
 
 <body><th:block layout:fragment="content">
-   <h1 > 미니 인프런 프로젝트 관리자 모드</h1>
-   <h2>Springboot 2.7.8, AWS Lightsail AMI2, docker mongodb 6.0.4, SSL 설정, 도메인설정.</h2>
-   <h2>Spring Security 적용, thymeleaf 적용.</h2>
+   <h1 >냉장고 및 물품 관리</h1>
+   <!-- <h2>Springboot 2.7.8, AWS Lightsail AMI2, docker mongodb 6.0.4, SSL 설정, 도메인설정.</h2>
+   <h2>Spring Security 적용, thymeleaf 적용.</h2> -->
 
   <!-- 	<div class="form-group" >
 
@@ -16,7 +16,7 @@ layout:decorate="~{layout/default_layout2}">
     <div class="form-group">
         <!--     <h1>Image Upload</h1> -->
         <form id="my-form">
-            <label for="comment">디비추가: 대표사진 한장 추가해주세요.</label>
+            <label for="comment">메모 추가: 대표사진 한장 추가가능해요.</label>
             <!-- <input  class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"></input> -->
             <input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력"></input>
             <input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력"></input>
@@ -37,7 +37,7 @@ layout:decorate="~{layout/default_layout2}">
     <div id="ImageTest" ></div>
 <br>
          	<div class="form-group">
-    		<label for="comment">디비검색: </label>
+    		<label for="comment">검색: </label>
     		<select name="searchDB" id="searchDB">
   <option value="message">메세지 검색</option>
   <option value="title" selected>제목 검색</option>
@@ -45,12 +45,12 @@ layout:decorate="~{layout/default_layout2}">
 </select>
     		<input class="form-control"   id="searchContent" name="searchContent" placeholder="기본 제목으로 검색"></input>
     		<br>
-    		<button id="dbSearchBtn" class="btn btn-primary">디비검색</button>
+    		<button id="dbSearchBtn" class="btn btn-primary">검색하기</button>
     		<br>
     	</div>
 
     <br>
-    <h2>검색 디비 목록</h2>
+    <h2>검색 목록</h2>
     <div id="searchResult"></div>
 
  <!-- <input type="file" id="image" onchange="loadImage()"> -->
@@ -58,7 +58,7 @@ layout:decorate="~{layout/default_layout2}">
     <button id="scroll-to-top" class="btn btn-primary">Top</button>
 
 
-<h2>기존 디비 전체 목록</h2>
+<h2>전체 목록</h2>
       <div id="dbResult"></div>
      </th:block>
 </body>

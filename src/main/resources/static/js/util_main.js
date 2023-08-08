@@ -60,10 +60,6 @@ function FindAllFileName () {
                 };
         
 	
-	//유저 게시글 하나 수정 하는 폼 불러오기. 
-function dbUpdateForm(id){
-	location.href='/updateForm/'+id;
-	}
 
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.

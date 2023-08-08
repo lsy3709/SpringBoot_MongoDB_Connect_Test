@@ -144,12 +144,10 @@ $("#uploadDBWithImageBtn").click(function(){
 
 		}
 
-		let file = null;
-		let fileInput = document.getElementById("image");
-
-		if (fileInput.length > 0) {
-			file = $('#image')[0].files[0]
-		}
+            var input = document.getElementById("image");
+            /*console.log(input.files[0].name)*/
+            var file = input.files[0];
+		
 		formData.append('file',file);
 		formData.append('key', new Blob([ JSON.stringify(data) ], {type : "application/json"}));
 

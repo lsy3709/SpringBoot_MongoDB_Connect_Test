@@ -26,6 +26,6 @@ public class Memo {
 	private String title;
 	private String message;
 	private String dateField;
-	private MultipartFile file;
+	private String imageFileObjectId;
 
 }

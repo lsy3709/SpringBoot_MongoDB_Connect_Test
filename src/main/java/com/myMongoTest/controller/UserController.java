@@ -73,15 +73,17 @@ public class UserController {
 	public ResponseEntity insertMemoWithImage (@RequestPart(value = "key") Memo memo,
 											   @RequestPart(value = "file",required = false) MultipartFile file) throws IOException {
 
-		System.out.println("memo getTitle : " + memo.getTitle());
-		System.out.println("memo getMessage : " + memo.getMessage());
-		System.out.println("memo getDateField: " + memo.getDateField());
-		System.out.println("memo getFile: " + memo.getFile());
-		System.out.println("file : " + file);
+//		System.out.println("memo getTitle : " + memo.getTitle());
+//		System.out.println("memo getMessage : " + memo.getMessage());
+//		System.out.println("memo getDateField: " + memo.getDateField());
+//		System.out.println("memo getFile: " + memo.getFile());
+//		System.out.println("file : " + file);
 
 		InputStream inputStream = file.getInputStream();
 		ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
 		String objectIdToString = objectId.toString();
+		System.out.println("objectIdToString : " + objectIdToString);
+		memo.setImageFileObjectId(objectIdToString);
 
 		userService.mongoMemoInsert(memo);
 

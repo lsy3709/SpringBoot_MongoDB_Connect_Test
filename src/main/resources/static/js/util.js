@@ -110,19 +110,52 @@ function FindAllFileName () {
                 })
                 };
         
+        
+        // 메인에 유저 게시글 목록 , 돔 준비되면 항상 목록 출력해주는 기능. 	
+// 메모 및 등록날짜, 수정 버튼 부분 문자열 부분 큰따옴표안에 작은 따옴표 수정. 
+// 자바스크립트 앞에 작은 따옴표 생략 했음.
+var init = function(){
+		$.ajax({
+			type:"get",
+			url:"/findAllMemo",
+			dataType:"JSON",
+			contentType:"application/json;charset=utf-8",
+		})
+		.done(function(resp){
+			//alert("resp"+resp)
+			var str = "<table class='table table-hover mt-3  ' border=1>";
+				str +="<th>" +"제목"+"</th>"
+				str +="<th>" +"메세지"+"</th>"
+				str +="<th>" +"날짜"+"</th>"
+				str +="<th>" +"수정"+"</th>"
+				str +="<th>" +"삭제"+"</th>"
+			$.each(resp,function(key,val){
+		/*		console.log("val.id : "+ val.id)
+				console.log("val.title: "+ val.title)
+				console.log("val.message: "+ val.message)
+				console.log("val.dateField: "+ val.dateField)
+				var id2= val.id
+				console.log(typeof(id2))*/
+				str += "<tr>"
+				str += "<td>" + val.title + "</td>"
+				str += "<td>" + val.message + "</td>"
+				str += "<td>" + val.dateField + "</td>"
+				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
+				str+= "<td><a href=javascript:dbDel('"+val.id+"')>삭제</a></td>"
+				
+				str += "</tr>"
+			})
+			str += "</table>"
+			$("#dbResult").html(str);
+		})
+	};
 	
-	//유저 게시글 하나 수정 하는 폼 불러오기. 
-/*function dbUpdateForm(id){
-	location.href='/updateForm/'+id;
-	}*/
+
 
 function dbUpdateFormMemo(id){
 	location.href='/updateFormMemo/'+id;
 }
 
-// function dbUpdateFormMemo(id){
-// 	location.href='/updateFormMemo/'+id;
-// }
 
 //메모 with 이미지
 $("#uploadDBWithImageBtn").click(function(){
@@ -181,44 +214,7 @@ $("#uploadDBWithImageBtn").click(function(){
 });
 
 
-// 이미지 업로드 폼 클릭시 수행. 
-// 기본 서밋 버튼 동작 안하게 막고, 지정한 폼으로 등록 하게끔. 
-$("#uploadBtn").click(function(){
-	    $('#my-form').on('submit', function(e) {
-      e.preventDefault();
-      
-      var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-      
-       var formData = new FormData(this);
-  $.ajax({
-        url: '/images',
-        type: 'POST',
-        data: formData,
-       
-        processData: false,
-        contentType: false,
-           beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-     success  : function(result, status){
-          alert('업로드 성공');
-     location.href='/'
-        },
-  error : function(jqXHR, status, error){
 
-                    if(jqXHR.status == '401'){
-                        alert('로그인 후 이용해주세요');
-                        location.href='/members/login';
-                    } else{
-                        alert(jqXHR.responseText);
-                    }
-
-                }
-      });
-	});
-	});
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
 $("#dbSearchBtn").click(function(){
@@ -265,37 +261,8 @@ $("#dbSearchBtn").click(function(){
 $("#listBtn").click(function(){
 	location.href='/admin'
 	});
-
-// 유저 게시글 실제 업데이트 처리 부분. 
-$("#dbUpdateBtn").click(function(){
 	
-	var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-
-	var data={
-			"id":$("#dbId").val(),
-			"title":$("#dbTitle").val(),
-			"message":$("#dbMessage").val()
-	}
-	
-	$.ajax({
-		type:"post",
-		url:"/updateDb",
-		    beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(data)
-	})
-	.done(function(resp){
-			location.href='/admin'
-			})
-	.fail(function(){
-		alert("디비 수정 실패")
-	});
-	});
-
+// 메모 수정창에서, 수정시 호출되는 함수.
 $("#dbUpdateBtn2").click(function(){
 	var shouldUpdate = confirm("정말 수정 할까요?");
 	if (shouldUpdate) {
@@ -328,7 +295,36 @@ $("#dbUpdateBtn2").click(function(){
 });
 
 	
+//메모 게시글 하나 삭제 기능. 	
+function dbDel(id){
+	  var shouldDelete = confirm("정말 삭제 할까요?");
+	  if (shouldDelete){
+	      var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+	
+	$.ajax({
+		type:"delete",
+		url:"/dbDelete/"+id,
+		       beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+	})
+	.done(function(resp){
+		alert("글 삭제 완료");
+		init();
+	})
+	.fail(function(){
+		alert("삭제 실패")
+	})
+	}
+	
+}
+
+
 //수정 하는 폼에 임시로 테이블 만들어 보여주기.
+// 현재 사용 안하는 중. 메모로 변경했음.
+/*
 function dbUpdate(id){
 	$.ajax({
 		type:"get",
@@ -357,85 +353,105 @@ function dbUpdate(id){
 
 	})
 }
+*/
 
 
-
-
-
-
-//유저 게시글 하나 삭제 기능. 	
-function dbDel(id){
-	  var shouldDelete = confirm("정말 삭제 할까요?");
-	  if (shouldDelete){
-	      var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
+	//유저 게시글 하나 수정 하는 폼 불러오기. 
+/*function dbUpdateForm(id){
+	location.href='/updateForm/'+id;
+	}*/
 	
-	$.ajax({
-		type:"delete",
-		url:"/dbDelete/"+id,
-		       beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+// function dbUpdateFormMemo(id){
+// 	location.href='/updateFormMemo/'+id;
+// }
+
+// 이미지 업로드 폼 클릭시 수행. 
+// 기본 서밋 버튼 동작 안하게 막고, 지정한 폼으로 등록 하게끔.
+// 이미지만 업로드시 , 현재 사용 안하는 중. 
+/*
+$("#uploadBtn").click(function(){
+	    $('#my-form').on('submit', function(e) {
+      e.preventDefault();
+      
+      var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+      
+       var formData = new FormData(this);
+  $.ajax({
+        url: '/images',
+        type: 'POST',
+        data: formData,
+       
+        processData: false,
+        contentType: false,
+           beforeSend : function(xhr){
+                 // 데이터를 전송하기 전에 헤더에 csrf값을 설정 
                     xhr.setRequestHeader(header, token);
                 },
-	})
-	.done(function(resp){
-		alert("글 삭제 완료");
-		init();
-	})
-	.fail(function(){
-		alert("삭제 실패")
-	})
+     success  : function(result, status){
+          alert('업로드 성공');
+     location.href='/'
+        },
+  error : function(jqXHR, status, error){
+
+                    if(jqXHR.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href='/members/login';
+                    } else{
+                        alert(jqXHR.responseText);
+                    }
+
+                }
+      });
+	});
+	});
+	*/
+
+
+// 유저 게시글 실제 업데이트 처리 부분. 
+// 현재 사용 안하는 중. 샘플 코드로 
+/*
+$("#dbUpdateBtn").click(function(){
+	
+	var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+	var data={
+			"id":$("#dbId").val(),
+			"title":$("#dbTitle").val(),
+			"message":$("#dbMessage").val()
 	}
 	
-}
-
-// 메인에 유저 게시글 목록 , 돔 준비되면 항상 목록 출력해주는 기능. 	
-var init = function(){
-		$.ajax({
-			type:"get",
-			url:"/findAllMemo",
-			dataType:"JSON",
-			contentType:"application/json;charset=utf-8",
-		})
-		.done(function(resp){
-			//alert("resp"+resp)
-			var str = "<table class='table table-hover mt-3  ' border=1>";
-				str +="<th>" +"제목"+"</th>"
-				str +="<th>" +"메세지"+"</th>"
-				str +="<th>" +"날짜"+"</th>"
-				str +="<th>" +"수정"+"</th>"
-				str +="<th>" +"삭제"+"</th>"
-			$.each(resp,function(key,val){
-		/*		console.log("val.id : "+ val.id)
-				console.log("val.title: "+ val.title)
-				console.log("val.message: "+ val.message)
-				console.log("val.dateField: "+ val.dateField)
-				var id2= val.id
-				console.log(typeof(id2))*/
-				str += "<tr>"
-				str += "<td>" + val.title + "</td>"
-				str += "<td>" + val.message + "</td>"
-				str += "<td>" + val.dateField + "</td>"
-				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
-				str+= "<td><a href=javascript:dbDel('"+val.id+"')>삭제</a></td>"
-				
-				str += "</tr>"
+	$.ajax({
+		type:"post",
+		url:"/updateDb",
+		    beforeSend : function(xhr){
+                 // 데이터를 전송하기 전에 헤더에 csrf값을 설정 
+                    xhr.setRequestHeader(header, token);
+                },
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(data)
+	})
+	.done(function(resp){
+			location.href='/admin'
 			})
-			str += "</table>"
-			$("#dbResult").html(str);
-		})
-	};
+	.fail(function(){
+		alert("디비 수정 실패")
+	});
+	});
 
+*/
 
-
-// 유저 게시글 등록 
+//메모 게시글 등록, 메모만 
+// 현재 사용 안하는 중.
+/*
 $("#dbInsertBtn").click(function(){
 	
 	var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
 
 	var data={
-			/*"id":$("#dbId").val(),*/
+			//"id":$("#dbId").val(),
 			"title":$("#dbTitle").val(),
 			"message":$("#dbMessage").val()
 			
@@ -445,7 +461,7 @@ $("#dbInsertBtn").click(function(){
 		type:"post",
 		url:"/insertMemo",
 		    beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+              //       데이터를 전송하기 전에 헤더에 csrf값을 설정 
                     xhr.setRequestHeader(header, token);
                 },
 		contentType:"application/json;charset=utf-8",
@@ -459,4 +475,4 @@ $("#dbInsertBtn").click(function(){
 		alert("디비 추가 실패")
 	});
 });
-
+*/

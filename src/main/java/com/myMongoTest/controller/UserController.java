@@ -79,11 +79,13 @@ public class UserController {
 //		System.out.println("memo getFile: " + memo.getFile());
 //		System.out.println("file : " + file);
 
+		if(file != null) {
 		InputStream inputStream = file.getInputStream();
 		ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
 		String objectIdToString = objectId.toString();
-		System.out.println("objectIdToString : " + objectIdToString);
+//		System.out.println("objectIdToString : " + objectIdToString);
 		memo.setImageFileObjectId(objectIdToString);
+		}
 
 		userService.mongoMemoInsert(memo);
 
@@ -180,9 +182,9 @@ public class UserController {
 
 	@RequestMapping("/updateFormMemo/{id}")
 	public String updateFormMemo(	Model model , @PathVariable String id){
-		System.out.println("id : "+ id);
+//		System.out.println("id : "+ id);
 		ObjectId objectId = new ObjectId(id);
-		System.out.println("objectId : "+ objectId);
+//		System.out.println("objectId : "+ objectId);
 		Memo memo = userService.mongoFindOneMemo(objectId);
 		model.addAttribute("memo",  memo);
 		return "updateForm";

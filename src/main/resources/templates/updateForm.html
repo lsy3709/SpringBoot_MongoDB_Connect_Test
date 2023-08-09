@@ -4,25 +4,47 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 layout:decorate="~{layout/default_layout2}">
 
 <body><th:block layout:fragment="content">
-   <h1 > 미니 인프런 프로젝트 관리자 모드</h1>
-   <h2>Springboot 2.7.8, AWS Lightsail AMI2, docker mongodb 6.0.4, SSL 설정, 도메인설정.</h2>
-   <h2>Spring Security 적용, thymeleaf 적용.</h2>
+    <h1 >관리자: 냉장고 및 물품 관리 수정페이지</h1>
    
 <body>
    	<div class="form-group">
-    		<label for="comment">디비수정:</label>
+    		<label for="comment">메모수정:제목, 메세지 </label>
     		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${memo.id}" hidden="hidden"></input>
     		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력" th:value="${memo.title}"></input>
     		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력" th:value="${memo.message}"></input>
-    		<button id="dbUpdateBtn2" class="text-bg-primary">수정적용하기</button>
+        <div class="form-group">
+            <label for="file">Choose an image:</label>
+            <input type="file" id="image" name="file" class="form-control-file" onchange="loadImage()">
+        </div>
+        <button id="uploadDBWithImageBtn" type="submit" class="btn btn-primary" >수정적용하기</button>
+    		<!--<button id="dbUpdateBtn2" class="text-bg-primary">수정적용하기</button>-->
     	</div>
+    <div>
+        <img id="preview" src="" alt="Image Preview">
+        <video id="previewVideo" controls src=""></video>
+    </div>
+    <br>
+    <img id="imgId" th:src="${memo.imageFileName}" alt="첨부이미지" th:if="${memo.imageFileName != null}" />
+    <br>
+    <img id="imgId2" src="/images/"+ th:utext="${memo.imageFileName}" alt="첨부이미지"  />
+    <br>
+    <img id="imgId3" src="/images/childLook.gif"+  alt="첨부이미지"  />
+    <br>
+    <img id="imgId4" src="/images/"+  alt="첨부이미지"  />
+
+
+    <br>
+<!--    <div id="ImageOne" ></div>-->
                         
 <br>
     		<button id="listBtn" class="text-bg-primary">목록가기</button>
 <br>
+
+
 <br>
    <table class="table  table-hover " >
   <tr>
+      <th>이미지파일명</th>
     <th>제목</th>
     <th>메세지</th>
     <th>등록일</th>
@@ -30,6 +52,7 @@ layout:decorate="~{layout/default_layout2}">
   </thead>
   <tbody>
   <tr>
+      <td th:text="${memo.imageFileName}"> </td>
     <td th:text="${memo.title}"> </td>
     <td th:text="${memo.message}"></td>
       <td th:text="${memo.dateField}"></td>

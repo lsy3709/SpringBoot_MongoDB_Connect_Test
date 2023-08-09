@@ -68,7 +68,15 @@ public class ImageController {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
+    //하나 파일이름 불러오기
+//    @ResponseBody
+//    @GetMapping("/findFileNameOne")
+//    public String findOneFilenames( ){
+//        String FileName =  imageService.findOneFilename();
+//        return FileName;
+//    }
+
 //전체 파일이름 불러오기
 	@ResponseBody
 	@GetMapping("/findFileNameAll")

@@ -1,6 +1,7 @@
 $(document).ready(function(){
 		init()
 		FindAllFileName()
+	// FindOneFileName("childLook.gif")
 		 $('#preview').hide();
 		 $('#previewVideo').hide();
 		 
@@ -109,6 +110,39 @@ function FindAllFileName () {
                $('#ImageTest').html(html);
                 })
                 };
+
+		//이미지 하나 가져오기.
+function FindOneFileName (imageName1) {
+	$.ajax({
+		url: "/images/"+imageName1,
+		type: "GET",
+	})
+		.done (function(data) {
+			var html = '<div class="row">';
+
+				html += '<div class="col-md-2 margin"> ';
+				html += '<div class="card"> ';
+				console.log("data : " + data)
+				var filename = data;
+				var str = filename.substring(filename.lastIndexOf('.') + 1);
+				if(str=='mp4' || str=='mov' || str=='MOV' || str=='avi' || str=='wmv'){
+					html += '<video controls src='+'/images/'+filename+'></video>';
+				}
+				else {
+					html += '<img src='+'/images/'+filename+'>';
+				}
+				html +=  '<div class="card-body">';
+				html +=  '<h4 class="card-title">'+filename+'</h4>';
+				html +=  '<p class="card-text">강의설명 준비중</p>';
+				html+="<a href=javascript:imageDel('"+filename+"')>삭제</a>";
+				html += '</div>';
+				html += '</div>';
+				html += '</div>';
+
+			html += '</div>';
+			$('#ImageOne').html(html);
+		})
+};
         
         
         // 메인에 유저 게시글 목록 , 돔 준비되면 항상 목록 출력해주는 기능. 	

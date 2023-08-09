@@ -35,6 +35,17 @@ public class ImageService {
 //        System.out.println(filenames);
         return filenames;
     }
+
+    //파일이름 하나 검색
+//    public String findOneFilename(String filename) {
+//        Query query = Query.query(Criteria.where("filename").is(filename));
+//        List<String> filenames = new ArrayList<>();
+//        for (GridFSFile file : files) {
+//            filenames.add(file.getFilename());
+//        }
+////        System.out.println(filenames);
+//        return filenames;
+//    }
     
 
  // 삭제

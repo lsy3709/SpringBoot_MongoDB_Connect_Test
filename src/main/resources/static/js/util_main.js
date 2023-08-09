@@ -1,6 +1,6 @@
 $(document).ready(function(){
-		init()
-		FindAllFileName()
+		// init()
+		// FindAllFileName()
 		 $('#preview').hide();
 		 $('#previewVideo').hide();
 		 

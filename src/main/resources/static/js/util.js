@@ -60,6 +60,7 @@ function imageDel(filename2){
             if (input.files && input.files[0] &&str2 !='mp4' &&str2 !='mov' &&str2 !='avi' &&str2 !='wmv' &&str2 !='MOV') {
 				$('#preview').show();
 				$('#previewVideo').hide();
+				$('#imgId4').hide();
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     var img = document.getElementById("preview");
@@ -69,6 +70,7 @@ function imageDel(filename2){
             } else {
 				$('#previewVideo').show();
 				$('#preview').hide();
+				$('#imgId4').hide();
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     var img = document.getElementById("previewVideo");
@@ -304,32 +306,45 @@ $("#listBtn").click(function(){
 $("#dbUpdateBtn2").click(function(){
 	var shouldUpdate = confirm("정말 수정 할까요?");
 	if (shouldUpdate) {
+		$('#my-form').on('submit', function(e) {
+			e.preventDefault();
 		var token = $("meta[name='_csrf']").attr("content");
 		var header = $("meta[name='_csrf_header']").attr("content");
+
+		var formData = new FormData();
 
 		var data = {
 			"id": $("#dbId").val(),
 			"title": $("#dbTitle").val(),
 			"message": $("#dbMessage").val()
 		}
+				var input = document.getElementById("image");
+				var file = input.files[0];
+				formData.append('file',file);
+				formData.append('key', new Blob([ JSON.stringify(data) ], {type : "application/json"}));
 
 		$.ajax({
 			type: "post",
-			url: "/updateMemo",
+			url: "/updateWithMemo",
+			data: formData,
+			processData: false,
+			contentType: false,
 			beforeSend: function (xhr) {
 				/* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
 				xhr.setRequestHeader(header, token);
 			},
-			contentType: "application/json;charset=utf-8",
-			data: JSON.stringify(data)
+
+
 		})
 			.done(function (resp) {
+				alert('디비 수정 완료');
 				location.href = '/admin'
 			})
 			.fail(function () {
 				alert("디비 수정 실패")
 			});
-	}
+			}
+		)};
 });
 
 	

@@ -198,6 +198,7 @@ public void mongoMemoUpdate(Memo memo) {
    query.addCriteria(Criteria.where("_id").is(memo.getId()));
    update.set("title",memo.getTitle());
    update.set("message", memo.getMessage());
+    update.set("imageFileName", memo.getImageFileName());
 
 
    mongoTemplate.updateMulti(query, update, "memo");

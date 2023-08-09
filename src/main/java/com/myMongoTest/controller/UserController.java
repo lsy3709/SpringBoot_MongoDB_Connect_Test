@@ -175,7 +175,71 @@ public class UserController {
 		userService.mongoMemoUpdate(memo);
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
-	
+	@ResponseBody
+	@PostMapping("/updateWithMemo")
+	public ResponseEntity<String> updateWithMemo(	@RequestPart(value = "key") Memo memo,
+													 @RequestPart(value = "file",required = false) MultipartFile file) throws IOException{
+		String filename = "";
+		System.out.println("Memo 의 아이디 확인.: " + memo.getId());
+		ObjectId objectId2 = new ObjectId(memo.getId());
+		Memo loadMemo = userService.mongoFindOneMemo(objectId2);
+		System.out.println("loadMemo 의 이미지 확인.: " + loadMemo.getImageFileName());
+
+		if (file != null) {
+			//원본이미지
+			filename = file.getOriginalFilename();
+			System.out.println("이미지 삭제할 파일 명: " + loadMemo.getImageFileName());
+			imageService.deleteImage(loadMemo.getImageFileName());
+			System.out.println("이미지 추가할 파일 명: " + filename);
+			String str = filename.substring(filename.lastIndexOf(".") + 1);
+			if (!str.equals("mp4") && !str.equals("mov") && !str.equals("MOV") && !str.equals("avi") && !str.equals("wmv")) {
+
+				InputStream inputStream = file.getInputStream();
+				//썸네일 작업
+				BufferedImage bo_img = ImageIO.read(inputStream);
+//		    double ratio = 3;
+//	        int width = (int) (bo_img.getWidth() / ratio);
+//	        int height = (int) (bo_img.getHeight() / ratio);
+				int newWidth = 200; // 새로운 너비
+				int newHeight = 200; // 새로운 높이
+
+				// 200x200 리사이즈 된 이미지
+				BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+				Graphics2D graphics2D = resizedImage.createGraphics();
+				graphics2D.drawImage(bo_img, 0, 0, newWidth, newHeight, null);
+				graphics2D.dispose();
+
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				ImageIO.write(resizedImage, "jpg", outputStream);
+				InputStream reSizeInputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+				ObjectId objectId = gridFsTemplate.store(reSizeInputStream, file.getOriginalFilename(), file.getContentType());
+				String objectIdToString = objectId.toString();
+//		System.out.println("objectIdToString : " + objectIdToString);
+				String imageFileName = file.getOriginalFilename();
+				memo.setImageFileObjectId(objectIdToString);
+				System.out.println("setImageFileName 실행되기전 1 imageFileName: " + imageFileName);
+				System.out.println("setImageFileName 실행되기전 2 file.getOriginalFilename(): " + file.getOriginalFilename());
+				System.out.println("setImageFileName 실행되기전 3 memo.getImageFileName(): " + memo.getImageFileName());
+				memo.setImageFileName(imageFileName);
+				userService.mongoMemoUpdate(memo);
+			} else {
+				InputStream inputStream = file.getInputStream();
+				ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
+				String objectIdToString = objectId.toString();
+//		System.out.println("objectIdToString : " + objectIdToString);
+				String imageFileName = file.getOriginalFilename();
+				memo.setImageFileObjectId(objectIdToString);
+				memo.setImageFileName(imageFileName);
+				userService.mongoMemoUpdate(memo);
+			}
+
+		}
+
+
+		return new ResponseEntity<String>("success",HttpStatus.OK);
+	}
+
 	@ResponseBody
 	@GetMapping("/findAll")
 	public List<Users> list( ){

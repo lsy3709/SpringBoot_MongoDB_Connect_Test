@@ -8,6 +8,7 @@ layout:decorate="~{layout/default_layout2}">
    
 <body>
    	<div class="form-group">
+        <form id="my-form">
     		<label for="comment">메모수정:제목, 메세지 </label>
     		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${memo.id}" hidden="hidden"></input>
     		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력" th:value="${memo.title}"></input>
@@ -16,8 +17,9 @@ layout:decorate="~{layout/default_layout2}">
             <label for="file">Choose an image:</label>
             <input type="file" id="image" name="file" class="form-control-file" onchange="loadImage()">
         </div>
-        <button id="uploadDBWithImageBtn" type="submit" class="btn btn-primary" >수정적용하기</button>
+        <button id="dbUpdateBtn2" type="submit" class="btn btn-primary" >수정적용하기</button>
     		<!--<button id="dbUpdateBtn2" class="text-bg-primary">수정적용하기</button>-->
+        </form>
     	</div>
     <div>
         <img id="preview" src="" alt="Image Preview">
@@ -26,6 +28,7 @@ layout:decorate="~{layout/default_layout2}">
     <br>
 
     <img id="imgId4" src=""+  alt="첨부이미지"  />
+    <!--자바스크립트 코드이용해서, 이미지 태그 속성값에 타임리프 객체 내용 넣기-->
     <script th:inline="javascript">
 
         /*<![CDATA[*/
@@ -52,7 +55,6 @@ layout:decorate="~{layout/default_layout2}">
 <br>
    <table class="table  table-hover " >
   <tr>
-      <th>이미지파일명</th>
     <th>제목</th>
     <th>메세지</th>
     <th>등록일</th>
@@ -60,7 +62,6 @@ layout:decorate="~{layout/default_layout2}">
   </thead>
   <tbody>
   <tr>
-      <td th:text="${memo.imageFileName}"> </td>
     <td th:text="${memo.title}"> </td>
     <td th:text="${memo.message}"></td>
       <td th:text="${memo.dateField}"></td>

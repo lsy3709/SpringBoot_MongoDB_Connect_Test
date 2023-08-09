@@ -275,11 +275,13 @@ $("#dbSearchBtn").click(function(){
 	})
 	.done(function(resp){
 	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
+				str +="<th>" +"대표사진"+"</th>"
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
 				str +="<th>" +"등록일"+"</th>"
 			$.each(resp,function(key,val){
 				str += "<tr>"
+				str += "<td>" +"<img src=/images/"+val.imageFileName+ "></td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"

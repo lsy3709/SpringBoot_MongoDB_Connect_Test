@@ -28,7 +28,7 @@ public class SecurityConfig {
     	
     	http.formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/")
+                .defaultSuccessUrl("/admin")
                 .usernameParameter("email")
                 .failureUrl("/login/error")
                 .and()

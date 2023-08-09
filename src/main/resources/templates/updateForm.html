@@ -24,14 +24,22 @@ layout:decorate="~{layout/default_layout2}">
         <video id="previewVideo" controls src=""></video>
     </div>
     <br>
-    <img id="imgId" th:src="${memo.imageFileName}" alt="첨부이미지" th:if="${memo.imageFileName != null}" />
-    <br>
-    <img id="imgId2" src="/images/"+ th:utext="${memo.imageFileName}" alt="첨부이미지"  />
-    <br>
-    <img id="imgId3" src="/images/childLook.gif"+  alt="첨부이미지"  />
-    <br>
-    <img id="imgId4" src="/images/"+  alt="첨부이미지"  />
 
+    <img id="imgId4" src=""+  alt="첨부이미지"  />
+    <script th:inline="javascript">
+
+        /*<![CDATA[*/
+
+        var message = [[${memo.imageFileName}]];
+        var imgElement = document.getElementById("imgId4");
+        var newUrl = "/images/"+message;
+        imgElement.src = newUrl;
+
+
+
+        /*]]>*/
+
+    </script>
 
     <br>
 <!--    <div id="ImageOne" ></div>-->

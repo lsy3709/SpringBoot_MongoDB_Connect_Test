@@ -177,7 +177,7 @@ var init = function(){
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"
 				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
-				str+= "<td><a href=javascript:dbDel('"+val.id+"')>삭제</a></td>"
+				str+= "<td><a href=javascript:dbDel('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
 				
 				str += "</tr>"
 			})
@@ -332,7 +332,7 @@ $("#dbUpdateBtn2").click(function(){
 
 	
 //메모 게시글 하나 삭제 기능. 	
-function dbDel(id){
+function dbDel(id,imageFileName){
 	  var shouldDelete = confirm("정말 삭제 할까요?");
 	  if (shouldDelete){
 	      var token = $("meta[name='_csrf']").attr("content");
@@ -340,7 +340,7 @@ function dbDel(id){
 	
 	$.ajax({
 		type:"delete",
-		url:"/dbDelete/"+id,
+		url:"/dbDelete/"+id+"/"+imageFileName,
 		       beforeSend : function(xhr){
                     /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
                     xhr.setRequestHeader(header, token);

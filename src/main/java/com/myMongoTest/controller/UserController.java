@@ -86,53 +86,53 @@ public class UserController {
 //		System.out.println("memo getDateField: " + memo.getDateField());
 //		System.out.println("memo getFile: " + memo.getFile());
 //		System.out.println("file : " + file);
-		String filename =  file.getOriginalFilename();
-		String str =filename.substring(filename.lastIndexOf(".")+1);
-		System.out.println("str : " + str);
+		String filename = "";
 
-		if(file != null && !str.equals("mp4")&& !str.equals("mov")&& !str.equals("MOV")&& !str.equals("avi")&& !str.equals("wmv")) {
+
+		if (file != null) {
 			//원본이미지
-		InputStream inputStream = file.getInputStream();
-		//썸네일 작업 
-		  BufferedImage bo_img = ImageIO.read(inputStream);
+			filename = file.getOriginalFilename();
+			String str = filename.substring(filename.lastIndexOf(".") + 1);
+			if (!str.equals("mp4") && !str.equals("mov") && !str.equals("MOV") && !str.equals("avi") && !str.equals("wmv")) {
+
+				InputStream inputStream = file.getInputStream();
+				//썸네일 작업
+				BufferedImage bo_img = ImageIO.read(inputStream);
 //		    double ratio = 3;
 //	        int width = (int) (bo_img.getWidth() / ratio);
 //	        int height = (int) (bo_img.getHeight() / ratio);
-	      int newWidth = 200; // 새로운 너비
-	        int newHeight = 200; // 새로운 높이
+				int newWidth = 200; // 새로운 너비
+				int newHeight = 200; // 새로운 높이
 
-	        // 200x200 리사이즈 된 이미지 
-	        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-	        Graphics2D graphics2D = resizedImage.createGraphics();
-	        graphics2D.drawImage(bo_img, 0, 0, newWidth, newHeight, null);
-	        graphics2D.dispose();
+				// 200x200 리사이즈 된 이미지
+				BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+				Graphics2D graphics2D = resizedImage.createGraphics();
+				graphics2D.drawImage(bo_img, 0, 0, newWidth, newHeight, null);
+				graphics2D.dispose();
 
-	        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	        ImageIO.write(resizedImage, "jpg", outputStream);
-	        InputStream reSizeInputStream = new ByteArrayInputStream(outputStream.toByteArray());
-	        
-		ObjectId objectId = gridFsTemplate.store(reSizeInputStream, file.getOriginalFilename(), file.getContentType());
-		String objectIdToString = objectId.toString();
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				ImageIO.write(resizedImage, "jpg", outputStream);
+				InputStream reSizeInputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+				ObjectId objectId = gridFsTemplate.store(reSizeInputStream, file.getOriginalFilename(), file.getContentType());
+				String objectIdToString = objectId.toString();
 //		System.out.println("objectIdToString : " + objectIdToString);
-		String imageFileName = file.getOriginalFilename();
-		memo.setImageFileObjectId(objectIdToString);
-		memo.setImageFileName(imageFileName);
-		} else {
-			InputStream inputStream = file.getInputStream();
-		ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
-		String objectIdToString = objectId.toString();
+				String imageFileName = file.getOriginalFilename();
+				memo.setImageFileObjectId(objectIdToString);
+				memo.setImageFileName(imageFileName);
+			} else {
+				InputStream inputStream = file.getInputStream();
+				ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
+				String objectIdToString = objectId.toString();
 //		System.out.println("objectIdToString : " + objectIdToString);
-		String imageFileName = file.getOriginalFilename();
-		memo.setImageFileObjectId(objectIdToString);
-		memo.setImageFileName(imageFileName);
+				String imageFileName = file.getOriginalFilename();
+				memo.setImageFileObjectId(objectIdToString);
+				memo.setImageFileName(imageFileName);
+			}
+
 		}
-
 		userService.mongoMemoInsert(memo);
-
-
-
-
-		return new ResponseEntity<>( HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	@ResponseBody
 	@PostMapping("/insertMemo")
@@ -231,9 +231,11 @@ public class UserController {
 	}
 
 	@ResponseBody
-		@DeleteMapping("/dbDelete/{id}")
-		public String delete(@PathVariable String id) {
+		@DeleteMapping("/dbDelete/{id}/{imageFileName}")
+		public String delete(@PathVariable String id,@PathVariable String imageFileName) {
+
 			userService.deleteDb("_id", id);
+			imageService.deleteImage(imageFileName);
 			return id;
 	  
 }

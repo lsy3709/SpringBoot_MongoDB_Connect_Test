@@ -48,10 +48,16 @@ public class ImageService {
 //    }
     
 
- // 삭제
+ // 삭제 파일명으로 삭제
     public void deleteImage(String filename) {
     	   Query query = Query.query(Criteria.where("filename").is(filename));
     	    gridFsTemplate.delete(query);
+    }
+
+    //삭제, ObjectId로 삭제
+    public void deleteImageByObjectId(String objectId) {
+        Query query = Query.query(Criteria.where("_id").is(objectId));
+        gridFsTemplate.delete(query);
     }
 
 }

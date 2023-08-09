@@ -138,7 +138,7 @@ var init = function(){
 				var id2= val.id
 				console.log(typeof(id2))*/
 				str += "<tr>"
-				str += "<td>" + val.imageFileName + "</td>"
+				str += "<td>" +"<img src=/images/"+val.imageFileName+ "></td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"

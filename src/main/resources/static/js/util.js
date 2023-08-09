@@ -1,6 +1,6 @@
 $(document).ready(function(){
 		init()
-		FindAllFileName()
+		// FindAllFileName()
 	// FindOneFileName("childLook.gif")
 		 $('#preview').hide();
 		 $('#previewVideo').hide();

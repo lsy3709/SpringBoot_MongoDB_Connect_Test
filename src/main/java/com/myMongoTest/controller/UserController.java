@@ -180,20 +180,27 @@ public class UserController {
 	public ResponseEntity<String> updateWithMemo(	@RequestPart(value = "key") Memo memo,
 													 @RequestPart(value = "file",required = false) MultipartFile file) throws IOException{
 		String filename = "";
-		System.out.println("Memo 의 아이디 확인.: " + memo.getId());
+//		System.out.println("Memo 의 아이디 확인.: " + memo.getId());
 		ObjectId objectId2 = new ObjectId(memo.getId());
 		Memo loadMemo = userService.mongoFindOneMemo(objectId2);
-		System.out.println("loadMemo 의 이미지 확인.: " + loadMemo.getImageFileName());
+//		System.out.println("loadMemo 의 이미지 확인.: " + loadMemo.getImageFileName());
 
+		//파일이 있는 경우
 		if (file != null) {
 			//원본이미지
 			filename = file.getOriginalFilename();
-			System.out.println("이미지 삭제할 파일 명: " + loadMemo.getImageFileName());
+//			System.out.println("이미지 삭제할 파일 명: " + loadMemo.getImageFileName());
 			imageService.deleteImage(loadMemo.getImageFileName());
-			System.out.println("이미지 추가할 파일 명: " + filename);
+//			System.out.println("이미지 추가할 파일 명: " + filename);
 			String str = filename.substring(filename.lastIndexOf(".") + 1);
+			
+			// 파일이 있다면 -> 영상 파일이 아니라면
 			if (!str.equals("mp4") && !str.equals("mov") && !str.equals("MOV") && !str.equals("avi") && !str.equals("wmv")) {
-
+				
+//				System.out.println("Memo 의 아이디 확인.: " + memo.getId());
+//				System.out.println("Memo 의 타이틀 확인.: " + memo.getTitle());
+//				System.out.println("Memo 의 메세지 확인.: " + memo.getMessage());
+				
 				InputStream inputStream = file.getInputStream();
 				//썸네일 작업
 				BufferedImage bo_img = ImageIO.read(inputStream);
@@ -218,12 +225,16 @@ public class UserController {
 //		System.out.println("objectIdToString : " + objectIdToString);
 				String imageFileName = file.getOriginalFilename();
 				memo.setImageFileObjectId(objectIdToString);
-				System.out.println("setImageFileName 실행되기전 1 imageFileName: " + imageFileName);
-				System.out.println("setImageFileName 실행되기전 2 file.getOriginalFilename(): " + file.getOriginalFilename());
-				System.out.println("setImageFileName 실행되기전 3 memo.getImageFileName(): " + memo.getImageFileName());
+//				System.out.println(" 이미지 파일 o, 영상파일 x ->setImageFileName 실행되기전 1 imageFileName: " + imageFileName);
+//				System.out.println("이미지 파일 o, 영상파일 x ->setImageFileName 실행되기전 2 file.getOriginalFilename(): " + file.getOriginalFilename());
+//				System.out.println("이미지 파일 o, 영상파일 x ->setImageFileName 실행되기전 3 memo.getImageFileName(): " + memo.getImageFileName());
 				memo.setImageFileName(imageFileName);
 				userService.mongoMemoUpdate(memo);
-			} else {
+			} else  {
+				//파일은 있지만, 영상파일이면
+//				System.out.println("이미지 파일 x, 영상파일 o ->수정하는 부분 getId :  " + memo.getId());
+//				System.out.println("이미지 파일 x, 영상파일 o -> 수정하는 부분 getTitle :  " + memo.getTitle());
+//				System.out.println("이미지 파일 x, 영상파일 o -> 수정하는 부분 getMessage : " + memo.getMessage());
 				InputStream inputStream = file.getInputStream();
 				ObjectId objectId = gridFsTemplate.store(inputStream, file.getOriginalFilename(), file.getContentType());
 				String objectIdToString = objectId.toString();
@@ -232,11 +243,18 @@ public class UserController {
 				memo.setImageFileObjectId(objectIdToString);
 				memo.setImageFileName(imageFileName);
 				userService.mongoMemoUpdate(memo);
-			}
-
+			} 	
+				} //전체 if 문 파일이 있다면, 
+		
+		// 전체 이미지 파일 없다면
+		else if (file == null) {
+//			System.out.println("이미지 파일 x, 영상파일 x -> 수정하는 부분 getId :  " + memo.getId());
+//			System.out.println("이미지 파일 x, 영상파일 x -> 수정하는 부분 getTitle :  " + memo.getTitle());
+//			System.out.println("이미지 파일 x, 영상파일 x -> 수정하는 부분 getMessage : " + memo.getMessage());
+//			System.out.println("이미지 파일 x, 영상파일 x -> 수정하는 부분 getImageFileName : " + memo.getImageFileName());
+			memo.setImageFileName(loadMemo.getImageFileName());
+			userService.mongoMemoUpdate(memo);
 		}
-
-
 		return new ResponseEntity<String>("success",HttpStatus.OK);
 	}
 

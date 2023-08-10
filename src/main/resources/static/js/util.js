@@ -160,7 +160,7 @@ var init = function(){
 		.done(function(resp){
 			//alert("resp"+resp)
 			var str = "<table class='table table-hover mt-3  ' border=1>";
-			str +="<th>" +"대표사진"+"</th>"
+			str +="<th>" +"사진"+"</th>"
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
 				str +="<th>" +"등록일"+"</th>"
@@ -277,7 +277,7 @@ $("#dbSearchBtn").click(function(){
 	})
 	.done(function(resp){
 	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
-				str +="<th>" +"대표사진"+"</th>"
+				str +="<th>" +"사진"+"</th>"
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
 				str +="<th>" +"등록일"+"</th>"

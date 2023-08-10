@@ -7,6 +7,11 @@ layout:decorate="~{layout/default_layout2}">
     <h1 > 수정페이지</h1>
    
 <body>
+  <style>
+   body {
+   background-image:url('/image/balloon.jpg')
+   }
+   </style>
    	<div class="form-group">
    	 <div id=inputForm>
         <form id="my-form">
@@ -14,6 +19,7 @@ layout:decorate="~{layout/default_layout2}">
     		<label for="comment">메모수정:제목, 메세지 </label>
     		<input class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"  th:value="${memo.id}" hidden="hidden"></input>
     		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력" th:value="${memo.title}"></input>
+    		<br>
     		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력" th:value="${memo.message}"></input>
         <div class="form-group">
             <label for="file">Choose an image:</label>

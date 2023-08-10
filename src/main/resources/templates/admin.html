@@ -5,8 +5,13 @@ layout:decorate="~{layout/default_layout2}">
 
 <body><th:block layout:fragment="content">
    <h1 >냉장고 및 물품 관리</h1>
-   
    <style>
+   body {
+   background-image:url('/image/balloon.jpg')
+   }
+   </style>
+   <!-- 이미지자동변경 -->
+   <!-- <style>
   body {
     margin: 0;
     padding: 0;
@@ -32,7 +37,7 @@ layout:decorate="~{layout/default_layout2}">
   }
 
   setInterval(changeBackground, 3000); // 5초마다 배경 변경
-</script>
+</script> -->
    
    <!-- <h2>Springboot 2.7.8, AWS Lightsail AMI2, docker mongodb 6.0.4, SSL 설정, 도메인설정.</h2>
    <h2>Spring Security 적용, thymeleaf 적용.</h2> -->

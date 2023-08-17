@@ -281,12 +281,16 @@ $("#dbSearchBtn").click(function(){
 				str +="<th>" +"제목"+"</th>"
 				str +="<th>" +"메세지"+"</th>"
 				str +="<th>" +"등록일"+"</th>"
+				str +="<th>" +"수정"+"</th>"
+				str +="<th>" +"삭제"+"</th>"
 			$.each(resp,function(key,val){
 				str += "<tr>"
 				str += "<td>" +"<img src=/images/"+val.imageFileName+ "></td>"
 				str += "<td>" + val.title + "</td>"
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"
+				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
+				str+= "<td><a href=javascript:dbDel('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
 				str += "</tr>"
 			})
 			str += "</table>"
@@ -373,4 +377,73 @@ function dbDel(id,imageFileName){
 	}
 	
 }
+
+//검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
+//반찬 먼저 테스트
+$("#dbSearchBtn2").click(function(){
+	
+	var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            
+            /*alert("테스트 : "+$(this).attr("value"));	*/
+            var searchCon = ' ';
+            var searchCon =  $(this).attr("value");
+            alert(" searchCon1 " + searchCon);
+            
+            if (searchCon == "반찬"){
+	        alert(" searchCon 2" + searchCon);
+	        		var searchData = {
+		"searchContent":"반찬",
+		"searchDB":"title"
+	}
+} else if (searchCon == "음료") {
+	  alert(" searchCon " + searchCon);
+	        		var searchData = {
+		"searchContent":"음료",
+		"searchDB":"title"
+	}
+}
+            
+	/*		var searchData = {
+		"searchContent":"반찬",
+		"searchDB":"title"
+	}*/
+	/*console.log(searchData)*/
+	        alert(" searchData " + searchData.searchContent + searchData.searchDB);
+	$.ajax({
+		type:"post",
+		url:"/searchDb",
+		    beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+		contentType:"application/json;charset=utf-8",
+		data:JSON.stringify(searchData)
+	})
+	.done(function(resp){
+	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
+				str +="<th>" +"사진"+"</th>"
+				str +="<th>" +"제목"+"</th>"
+				str +="<th>" +"메세지"+"</th>"
+				str +="<th>" +"등록일"+"</th>"
+				str +="<th>" +"수정"+"</th>"
+				str +="<th>" +"삭제"+"</th>"
+			$.each(resp,function(key,val){
+				str += "<tr>"
+				str += "<td>" +"<img src=/images/"+val.imageFileName+ "></td>"
+				str += "<td>" + val.title + "</td>"
+				str += "<td>" + val.message + "</td>"
+				str += "<td>" + val.dateField + "</td>"
+				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
+				str+= "<td><a href=javascript:dbDel('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
+				str += "</tr>"
+			})
+			str += "</table>"
+			$("#searchResult").html(str);
+			})
+	.fail(function(){
+		alert("디비 검색 실패")
+	});
+	});
+
 

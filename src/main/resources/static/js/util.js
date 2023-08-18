@@ -4,6 +4,8 @@ $(document).ready(function(){
 	// FindOneFileName("childLook.gif")
 		 $('#preview').hide();
 		 $('#previewVideo').hide();
+	$('#findSearchMemoCount2').hide();
+
 		 
 		 
 		   $(window).scroll(function() {
@@ -261,7 +263,7 @@ $("#uploadDBWithImageBtn").click(function(){
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
 $("#dbSearchBtn").click(function(){
-	
+	$('#findSearchMemoCount2').show();
 	var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
             
@@ -281,6 +283,7 @@ $("#dbSearchBtn").click(function(){
 		data:JSON.stringify(searchData)
 	})
 	.done(function(resp){
+		var str4 = resp.length
 	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
 				str +="<th>" +"사진"+"</th>"
 				str +="<th>" +"제목"+"</th>"
@@ -300,6 +303,7 @@ $("#dbSearchBtn").click(function(){
 			})
 			str += "</table>"
 			$("#searchResult").html(str);
+		$("#findSearchMemoCount").html(str4);
 			})
 	.fail(function(){
 		alert("디비 검색 실패")
@@ -387,7 +391,7 @@ function dbDel(id,imageFileName){
 //반찬 먼저 테스트
 $("#dbSearchBtn2").on('click','#ban', function(){
 /*$("#dbSearchBtn2").click(function(){*/
-	
+	$('#findSearchMemoCount2').show();
 	var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
             
@@ -460,6 +464,7 @@ else if (searchCon == "간식") {
 		data:JSON.stringify(searchData)
 	})
 	.done(function(resp){
+		var str3 = resp.length
 	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
 				str +="<th>" +"사진"+"</th>"
 				str +="<th>" +"제목"+"</th>"
@@ -479,6 +484,8 @@ else if (searchCon == "간식") {
 			})
 			str += "</table>"
 			$("#searchResult").html(str);
+		$("#findSearchMemoCount").html(str3);
+
 			})
 	.fail(function(){
 		alert("디비 검색 실패")

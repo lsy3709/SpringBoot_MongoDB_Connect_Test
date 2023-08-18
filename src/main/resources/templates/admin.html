@@ -53,9 +53,9 @@ layout:decorate="~{layout/default_layout2}">
         <div id=inputForm>
             <label for="comment">메모 추가: 대표사진 한장 추가가능해요.</label>
             <!-- <input  class="form-control"   id="dbId" name="dbId" placeholder="1 형식 입력"></input> -->
-            <input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력"></input>
+            <input class="form-control"   id="dbTitle" name="dbTitle"placeholder="ex)제목_반찬,음료,과일,재료,소스,냉동,간식등"></input>
             <br>
-            <input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력"></input>
+            <input class="form-control"   id="dbMessage" name="dbMessage" placeholder="유통기한등 메모"></input>
             <br>
             <div class="form-group">
                 <label for="file">Choose an image:</label>
@@ -106,7 +106,7 @@ layout:decorate="~{layout/default_layout2}">
 
     <br>
     <h2>검색 목록</h2>
-    <h3>검색 count : <span id="findSearchMemoCount"></span></h3>
+    <h3 id="findSearchMemoCount2">검색 count : <span id="findSearchMemoCount"></span></h3>
     <div id="searchResult"></div>
 
  <!-- <input type="file" id="image" onchange="loadImage()"> -->

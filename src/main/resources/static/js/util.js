@@ -390,10 +390,10 @@ $("#dbSearchBtn2").click(function(){
             var searchCon =  $(this).attr("value");
             alert(" searchCon1 " + searchCon);
             
-            if (searchCon == "반찬"){
+            if (searchCon == "음료"){
 	        alert(" searchCon 2" + searchCon);
 	        		var searchData = {
-		"searchContent":"반찬",
+		"searchContent":"음료",
 		"searchDB":"title"
 	}
 } else if (searchCon == "음료") {

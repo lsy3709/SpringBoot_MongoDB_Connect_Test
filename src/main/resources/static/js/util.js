@@ -386,20 +386,54 @@ $("#dbSearchBtn2").on('click','#ban', function(){
 	var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
             
-            alert("테스트 : "+$(this).attr("value"));	
+            // alert("테스트 : "+$(this).attr("value"));
             var searchCon =  $(this).attr("value");
-            alert(" searchCon1 " + searchCon);
+            // alert(" searchCon1 " + searchCon);
             
-            if (searchCon == "음료"){
-	        alert(" searchCon 2" + searchCon);
+            if (searchCon == "반찬"){
+	        // alert(" searchCon 2" + searchCon);
+	        		var searchData = {
+		"searchContent":"반찬",
+		"searchDB":"title"
+	}
+} else if (searchCon == "음료") {
+	  // alert(" searchCon " + searchCon);
 	        		var searchData = {
 		"searchContent":"음료",
 		"searchDB":"title"
 	}
-} else if (searchCon == "음료") {
-	  alert(" searchCon " + searchCon);
-	        		var searchData = {
-		"searchContent":"음료",
+} else if (searchCon == "과일") {
+				// alert(" searchCon " + searchCon);
+				var searchData = {
+					"searchContent":"과일",
+					"searchDB":"title"
+				}
+			}
+else if (searchCon == "재료") {
+	// alert(" searchCon " + searchCon);
+	var searchData = {
+		"searchContent":"재료",
+		"searchDB":"title"
+	}
+}
+else if (searchCon == "소스") {
+	// alert(" searchCon " + searchCon);
+	var searchData = {
+		"searchContent":"소스",
+		"searchDB":"title"
+	}
+}
+else if (searchCon == "냉동") {
+	// alert(" searchCon " + searchCon);
+	var searchData = {
+		"searchContent":"냉동",
+		"searchDB":"title"
+	}
+}
+else if (searchCon == "간식") {
+	// alert(" searchCon " + searchCon);
+	var searchData = {
+		"searchContent":"간식",
 		"searchDB":"title"
 	}
 }
@@ -409,7 +443,7 @@ $("#dbSearchBtn2").on('click','#ban', function(){
 		"searchDB":"title"
 	}*/
 	/*console.log(searchData)*/
-	        alert(" searchData " + searchData.searchContent + searchData.searchDB);
+	        // alert(" searchData " + searchData.searchContent + searchData.searchDB);
 	$.ajax({
 		type:"post",
 		url:"/searchDb",

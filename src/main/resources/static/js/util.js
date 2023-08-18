@@ -380,13 +380,14 @@ function dbDel(id,imageFileName){
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
 //반찬 먼저 테스트
-$("#dbSearchBtn2").click(function(){
+$("#dbSearchBtn2").on('click','#ban', function(){
+/*$("#dbSearchBtn2").click(function(){*/
 	
 	var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
             
-            alert("테스트 : "+$(this.id).attr("value"));	
-            var searchCon =  $(this.id).attr("value");
+            alert("테스트 : "+$(this).attr("value"));	
+            var searchCon =  $(this).attr("value");
             alert(" searchCon1 " + searchCon);
             
             if (searchCon == "음료"){

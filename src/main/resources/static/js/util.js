@@ -385,9 +385,8 @@ $("#dbSearchBtn2").click(function(){
 	var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
             
-            /*alert("테스트 : "+$(this).attr("value"));	*/
-            var searchCon = ' ';
-            var searchCon =  $(this).attr("value");
+            alert("테스트 : "+$(this.id).attr("value"));	
+            var searchCon =  $(this.id).attr("value");
             alert(" searchCon1 " + searchCon);
             
             if (searchCon == "음료"){

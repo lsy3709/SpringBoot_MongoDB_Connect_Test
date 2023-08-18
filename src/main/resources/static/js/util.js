@@ -298,7 +298,7 @@ $("#dbSearchBtn").click(function(){
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"
 				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
-				str+= "<td><a href=javascript:dbDel('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
+				str+= "<td><a href=javascript:dbDel2('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
 				str += "</tr>"
 			})
 			str += "</table>"
@@ -314,6 +314,10 @@ $("#dbSearchBtn").click(function(){
 $("#listBtn").click(function(){
 	location.href='/admin'
 	});
+
+var init2 = function(){
+	location.href='/admin'
+}
 	
 // 메모 수정창에서, 수정시 호출되는 함수.
 $("#dbUpdateBtn2").click(function(){
@@ -385,6 +389,31 @@ function dbDel(id,imageFileName){
 	})
 	}
 	
+}
+
+function dbDel2(id,imageFileName){
+	var shouldDelete = confirm("정말 삭제 할까요?");
+	if (shouldDelete){
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+
+		$.ajax({
+			type:"delete",
+			url:"/dbDelete/"+id+"/"+imageFileName,
+			beforeSend : function(xhr){
+				/* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+				xhr.setRequestHeader(header, token);
+			},
+		})
+			.done(function(resp){
+				alert("글 삭제 완료");
+				init2();
+			})
+			.fail(function(){
+				alert("삭제 실패")
+			})
+	}
+
 }
 
 //검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
@@ -479,7 +508,7 @@ else if (searchCon == "간식") {
 				str += "<td>" + val.message + "</td>"
 				str += "<td>" + val.dateField + "</td>"
 				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
-				str+= "<td><a href=javascript:dbDel('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
+				str+= "<td><a href=javascript:dbDel2('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
 				str += "</tr>"
 			})
 			str += "</table>"

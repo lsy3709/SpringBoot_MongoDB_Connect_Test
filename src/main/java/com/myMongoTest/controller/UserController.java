@@ -283,7 +283,11 @@ public class UserController {
 	  @RequestMapping("/admin")
 	  public String hello(Model model ){
 		List<Users> userList = userService.mongoFindAll();
+		List<Memo> memoList = userService.mongoFindAllMemo();
+		int count = memoList.size();
+		System.out.println("count : " + count);
 		model.addAttribute("user",  userList);
+		  model.addAttribute("count",  count);
 		return "admin";
 	  } 
 	  

@@ -159,6 +159,8 @@ var init = function(){
 		})
 		.done(function(resp){
 			//alert("resp"+resp)
+			var str2 = resp.length
+			// alert("str2"+str2)
 			var str = "<table class='table table-hover mt-3  ' border=1>";
 			str +="<th>" +"사진"+"</th>"
 				str +="<th>" +"제목"+"</th>"
@@ -182,9 +184,12 @@ var init = function(){
 				str+= "<td><a href=javascript:dbDel('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
 				
 				str += "</tr>"
+
 			})
 			str += "</table>"
 			$("#dbResult").html(str);
+			$("#findAllMemoCount").html(str2);
+
 		})
 	};
 	

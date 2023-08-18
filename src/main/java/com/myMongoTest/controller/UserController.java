@@ -283,9 +283,10 @@ public class UserController {
 	  @RequestMapping("/admin")
 	  public String hello(Model model ){
 		List<Users> userList = userService.mongoFindAll();
+		//admin 매핑시에만 전체 메모 갯수 출력 되는 방법
 		List<Memo> memoList = userService.mongoFindAllMemo();
 		int count = memoList.size();
-		System.out.println("count : " + count);
+//		System.out.println("count : " + count);
 		model.addAttribute("user",  userList);
 		  model.addAttribute("count",  count);
 		return "admin";

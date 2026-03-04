@@ -1,0 +1,10 @@
+# 테스트용 설정 (단위/통합 테스트 시 사용)
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/blog3_test
+
+logging:
+  level:
+    com.myMongoTest: INFO
+    root: WARN

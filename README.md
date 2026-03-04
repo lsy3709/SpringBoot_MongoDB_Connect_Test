@@ -31,7 +31,8 @@ SpringBoot_MongoDB_Connect_Test/
 │   ├── constant/
 │   │   └── Role.java                                  # USER, ADMIN
 │   ├── controller/
-│   │   ├── UserController.java                        # 로그인/회원가입/메모·유저 CRUD
+│   │   ├── UserController.java                        # 로그인/회원가입/Users CRUD/메인·admin 뷰
+│   │   ├── MemoController.java                        # 메모 CRUD·검색·첨부 이미지
 │   │   └── ImageController.java                       # 이미지 업로드·다운로드·삭제
 │   ├── document/                                      # MongoDB 도큐먼트(ODM)
 │   │   ├── Users.java                                 # 컬렉션: user (간단 게시글)
@@ -66,6 +67,32 @@ SpringBoot_MongoDB_Connect_Test/
 - **회원가입**: `/joinForm` → `/joinUser` (비밀번호 BCrypt 암호화)
 - **메모**: 메모 등록/수정/삭제/검색, 이미지 첨부(썸네일 생성), GridFS 저장
 - **이미지 API**: `/images` 업로드, `GET /images/{id}` 다운로드, 파일명 목록/삭제
+
+---
+
+## API 목록 요약
+
+| 메서드 | 경로 | 설명 | 인증 |
+|--------|------|------|------|
+| GET | `/`, `/main` | 메인 페이지 | permitAll |
+| GET | `/login`, `/login/error` | 로그인 폼·에러 | permitAll |
+| GET | `/login/redirect` | 로그인 성공 후 경유 리다이렉트 | authenticated |
+| POST | `/joinUser` | 회원가입 | permitAll |
+| GET | `/joinForm` | 회원가입 폼 | permitAll |
+| GET | `/admin` | 관리자 페이지 (메모·Users 목록) | ADMIN |
+| GET | `/findAll` | Users 목록(JSON) | permitAll |
+| GET | `/findAllMemo` | 메모 목록(JSON) | authenticated |
+| POST | `/insertMemo`, `/insertMemoWithImage` | 메모 등록(이미지 선택) | authenticated |
+| POST | `/updateMemo`, `/updateWithMemo` | 메모 수정 | authenticated |
+| POST | `/searchDb` | 메모 검색(JSON, SearchDB) | authenticated |
+| GET | `/updateFormMemo/{id}` | 메모 수정 폼 | authenticated |
+| DELETE | `/dbDelete/{id}/{imageFileName}` | 메모·첨부 이미지 삭제 | authenticated |
+| POST | `/insertDb`, `/updateDb` | Users CRUD(JSON) | authenticated |
+| GET | `/updateForm/{id}` | Users 수정 폼 | authenticated |
+| POST | `/images` | 이미지 업로드(GridFS) | authenticated |
+| GET | `/images/{id}` | 이미지 다운로드(filename) | permitAll |
+| GET | `/images/findFileNameAll` | 전체 파일명 목록(JSON) | authenticated |
+| DELETE | `/images/deleteImage/{filename}` | 이미지 삭제 | authenticated |
 
 ---
 
@@ -107,3 +134,5 @@ spring:
 - 필요하신 분은 이 레포를 참고용으로 활용하시면 됩니다.
 - 미니 인프런 확장 후 소스 공개 예정입니다.
 - 상세 개선점·진행 계획은 `docs/` 폴더의 문서를 참고하세요.
+- **메시지**: 로그인/회원가입/에러 메시지는 `src/main/resources/messages.properties` 에서 키로 관리됩니다.
+- **통합 테스트**: MongoDB Testcontainers 테스트는 Docker 실행 후 `ENABLE_MONGO_INTEGRATION=true` 로 실행할 수 있습니다 (`./gradlew test`).

@@ -21,7 +21,8 @@ layout:decorate="~{layout/default_layout2}">
 						<label for="password">Password:</label>
 						<input type="password" class="form-control"  name="password"   id="password" placeholder="Enter Password">
 					</div>
-					<p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
+					<p th:if="${loginErrorMsg}" class="text-danger" th:text="${loginErrorMsg}"></p>
+					<p th:if="${joinSuccessMsg}" class="text-success" th:text="${joinSuccessMsg}"></p>
 					<button type="submit" class="btn btn-primary mt-2"  id="loginBtn">로그인</button>
 					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 				</form>

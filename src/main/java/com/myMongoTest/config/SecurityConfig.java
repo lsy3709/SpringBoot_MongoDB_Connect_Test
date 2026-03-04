@@ -8,29 +8,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
-// CustomAuthenticationEntryPoint 임포트 경로가 맞는지 확인해 주세요.
-// import com.myMongoTest.config.CustomAuthenticationEntryPoint;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 💡 참고: UserService는 현재 SecurityFilterChain 내에서 직접 사용되지 않으므로
-    // 불필요한 @Autowired는 제거하는 것이 좋습니다. (UserDetailsService를 구현했다면 스프링이 알아서 찾습니다.)
-    // @Autowired
-    // UserService userService;
+    private final LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
+
+    public SecurityConfig(LoginRedirectAuthenticationSuccessHandler loginSuccessHandler) {
+        this.loginSuccessHandler = loginSuccessHandler;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // 1. 로그인 및 로그아웃 설정 (람다식 사용)
+        // 1. 로그인 및 로그아웃 설정 (성공 시 중간 경유 페이지 사용으로 리다이렉트 오류 방지)
         http
                 .formLogin(form -> form
-                        .loginPage("/login")                 // 사용자 정의 로그인 페이지 경로
-                        .defaultSuccessUrl("/admin", true)   // 로그인 성공 시 이동할 기본 경로
-                        .usernameParameter("email")          // 로그인 아이디 파라미터명 (기본값 username 대신 email 사용)
-                        .failureUrl("/login/error")          // 로그인 실패 시 이동할 경로
+                        .loginPage("/login")
+                        .successHandler(loginSuccessHandler)
+                        .usernameParameter("email")
+                        .failureUrl("/login/error")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout") // 훨씬 직관적이고 깔끔함
@@ -45,6 +42,8 @@ public class SecurityConfig {
                         .requestMatchers("/css/**", "/js/**", "/image/**", "/images/**").permitAll()
                         // 메인 페이지, 로그인/회원가입 관련 페이지 누구나 접근 허용
                         .requestMatchers("/", "/main", "/login", "/joinUser", "/joinForm", "/findAll", "/error").permitAll()
+                        // 로그인 성공 후 세션 확정을 위한 중간 리다이렉트 페이지 (인증 필요)
+                        .requestMatchers("/login/redirect").authenticated()
                         // /admin 경로는 "ADMIN" 권한(역할)을 가진 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // 그 외의 모든 요청은 로그인(인증)한 사용자만 접근 가능

@@ -27,7 +27,7 @@ layout:decorate="~{layout/default_layout2}">
 						<input type="password" class="form-control"  id="password2" placeholder="Enter Password">
 					</div>
 				<input type="hidden"  name="role" id="role" value="USER">
-						
+					<p th:if="${joinErrorMsg}" class="text-danger" th:text="${joinErrorMsg}"></p>
 					<button type="submit" class="btn btn-primary mt-2"  id="joinBtn">회원가입</button>
 					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 				</form>

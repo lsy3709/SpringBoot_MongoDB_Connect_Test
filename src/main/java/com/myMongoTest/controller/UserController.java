@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.Memo;
@@ -56,10 +57,22 @@ public class UserController {
 	        model.addAttribute("loginErrorMsg", "아이디 또는 비밀번호를 확인해주세요");
 	        return "loginForm";
 	    }
-	  //test
+
 	    @GetMapping(value = "/login")
 	    public String loginMember(){
 	        return "loginForm";
+	    }
+
+	    /**
+	     * 로그인 성공 후 세션 쿠키가 확실히 붙은 상태에서 목적지로 리다이렉트하기 위한 경유 페이지.
+	     * target 쿼리 파라미터가 있으면 해당 경로로, 없으면 /admin 으로 보낸다. (상대 경로만 허용)
+	     */
+	    @GetMapping("/login/redirect")
+	    public void loginRedirect(@RequestParam(value = "target", required = false) String target,
+	                             jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+	        String safeTarget = target != null && target.startsWith("/") && !target.startsWith("//")
+	            ? target : "/admin";
+	        response.sendRedirect(safeTarget);
 	    }
 	
 	@ResponseBody
@@ -143,23 +156,26 @@ public class UserController {
 	
 	  
 	  @RequestMapping("/joinForm")
-	  public String joinForm(Model model ){
-		  model.addAttribute("User2", new User2());
-//		  System.out.println("joinFomr");
-		return "joinForm";
-	  } 
-	
+	  public String joinForm(Model model) {
+		  model.addAttribute("user", new User2());
+		  return "joinForm";
+	  }
+
 	@PostMapping("/joinUser")
-	public String joinUser(User2 user ){
+	public String joinUser(User2 user, RedirectAttributes redirectAttributes) {
 		String email = user.getEmail();
-		String password = passwordEncoder.encode(user.getPassword());
-		user.setPassword(password);
-		if(userService.mongoFindOneUser2Email(email) == null) {
-		
-			userService.mongoUser2Insert(user);
-			return "redirect:/";
+		if (user.getPassword() == null || user.getPassword().isEmpty()) {
+			redirectAttributes.addFlashAttribute("joinErrorMsg", "비밀번호를 입력해 주세요.");
+			return "redirect:/joinForm";
 		}
-		return "/joinForm";
+		if (userService.mongoFindOneUser2Email(email) != null) {
+			redirectAttributes.addFlashAttribute("joinErrorMsg", "이미 사용 중인 이메일입니다.");
+			return "redirect:/joinForm";
+		}
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		userService.mongoUser2Insert(user);
+		redirectAttributes.addFlashAttribute("joinSuccessMsg", "회원가입이 완료되었습니다. 로그인해 주세요.");
+		return "redirect:/login";
 	}
 	
 	@ResponseBody

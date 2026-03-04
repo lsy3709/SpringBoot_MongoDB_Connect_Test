@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import com.myMongoTest.DTO.MemoPageResponse;
 import com.myMongoTest.DTO.SearchDB;
+import com.myMongoTest.document.Category;
 import com.myMongoTest.document.Memo;
 import com.myMongoTest.document.User2;
 import com.myMongoTest.document.Users;
@@ -96,14 +98,112 @@ public class UserService implements UserDetailsService{
     //전체 검색
     public List<Memo> mongoFindAllMemo() {
         Query query = new Query();
-        query.with(Sort.by(Sort.Direction.DESC, "id"));
-
-        List<Memo> memoList=mongoTemplate.find(query,Memo.class);
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+        List<Memo> memoList = mongoTemplate.find(query, Memo.class);
         return memoList;
-
     }
-    
- //조건 검색
+
+    /**
+     * 커서 기반 전체 목록 페이지네이션 (categoryId 필터, 최신순, 10개씩).
+     */
+    public MemoPageResponse mongoFindMemoCursor(String categoryId, String lastId, int limit) {
+        int fetchLimit = limit + 1;
+        Query query = new Query();
+        if (categoryId != null && !categoryId.isBlank()) {
+            query.addCriteria(Criteria.where("categoryId").is(categoryId));
+        }
+        if (lastId != null && !lastId.isBlank()) {
+            query.addCriteria(Criteria.where("_id").lt(new ObjectId(lastId)));
+        }
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+        query.limit(fetchLimit);
+        List<Memo> list = mongoTemplate.find(query, Memo.class);
+        boolean hasNext = list.size() > limit;
+        List<Memo> result = hasNext ? list.subList(0, limit) : list;
+        return new MemoPageResponse(result, hasNext);
+    }
+
+    /**
+     * 커서 기반 검색 목록 페이지네이션 (categoryId 필터 적용).
+     */
+    public MemoPageResponse mongoSearchMemoCursor(SearchDB searchDB, String categoryId, String lastId, int limit) {
+        if (searchDB == null || searchDB.getSearchDB() == null || searchDB.getSearchContent() == null || searchDB.getSearchContent().isBlank()) {
+            return new MemoPageResponse(List.of(), false);
+        }
+        if ("_id".equals(searchDB.getSearchDB())) {
+            try {
+                ObjectId id = new ObjectId(searchDB.getSearchContent().trim());
+                Memo memo = mongoTemplate.findById(id, Memo.class);
+                if (memo == null) return new MemoPageResponse(List.of(), false);
+                if (categoryId != null && !categoryId.isBlank() && !categoryId.equals(memo.getCategoryId())) {
+                    return new MemoPageResponse(List.of(), false);
+                }
+                return new MemoPageResponse(List.of(memo), false);
+            } catch (Exception e) {
+                return new MemoPageResponse(List.of(), false);
+            }
+        }
+        int fetchLimit = limit + 1;
+        Criteria criteria;
+        if ("title".equals(searchDB.getSearchDB())) {
+            criteria = Criteria.where("title").regex(searchDB.getSearchContent());
+        } else if ("message".equals(searchDB.getSearchDB())) {
+            criteria = Criteria.where("message").regex(searchDB.getSearchContent());
+        } else {
+            return new MemoPageResponse(List.of(), false);
+        }
+        Query query = new Query(criteria);
+        if (categoryId != null && !categoryId.isBlank()) {
+            query.addCriteria(Criteria.where("categoryId").is(categoryId));
+        }
+        if (lastId != null && !lastId.isBlank()) {
+            query.addCriteria(Criteria.where("_id").lt(new ObjectId(lastId)));
+        }
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+        query.limit(fetchLimit);
+        List<Memo> list = mongoTemplate.find(query, Memo.class);
+        boolean hasNext = list.size() > limit;
+        List<Memo> result = hasNext ? list.subList(0, limit) : list;
+        return new MemoPageResponse(result, hasNext);
+    }
+
+    // ---- Category CRUD ----
+    public List<Category> mongoFindAllCategory() {
+        Query query = new Query().with(Sort.by(Sort.Direction.ASC, "sortOrder"));
+        return mongoTemplate.find(query, Category.class);
+    }
+
+    public Category mongoFindOneCategory(String id) {
+        return mongoTemplate.findById(id, Category.class);
+    }
+
+    public void mongoCategoryInsert(Category category) {
+        mongoTemplate.insert(category);
+    }
+
+    public void mongoCategoryUpdate(Category category) {
+        Query query = new Query().addCriteria(Criteria.where("_id").is(category.getId()));
+        Update update = new Update().set("name", category.getName()).set("sortOrder", category.getSortOrder());
+        mongoTemplate.updateFirst(query, update, Category.class);
+    }
+
+    public void mongoCategoryDelete(String id) {
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), Category.class);
+    }
+
+    /** categoryId가 없는 메모들에 기본 categoryId 부여 (마이그레이션) */
+    public long mongoMigrateMemoCategoryId(String categoryId) {
+        Query query = new Query();
+        query.addCriteria(new Criteria().orOperator(
+                Criteria.where("categoryId").exists(false),
+                Criteria.where("categoryId").is(null)
+        ));
+        Update update = new Update().set("categoryId", categoryId);
+        var result = mongoTemplate.updateMulti(query, update, Memo.class);
+        return result.getModifiedCount();
+    }
+
+    //조건 검색
     public List<Memo> mongoSearchFindAll(SearchDB searchDB) {
 //    	System.out.println("서비스 searchDB.getSearchDB(): "+searchDB.getSearchDB());
 //    	System.out.println("서비스 searchDB.getSearchContent(): "+searchDB.getSearchContent());
@@ -196,9 +296,10 @@ public void mongoMemoUpdate(Memo memo) {
 
    // where절 조건
    query.addCriteria(Criteria.where("_id").is(memo.getId()));
-   update.set("title",memo.getTitle());
+   update.set("title", memo.getTitle());
    update.set("message", memo.getMessage());
-    update.set("imageFileName", memo.getImageFileName());
+   update.set("imageFileName", memo.getImageFileName());
+   if (memo.getCategoryId() != null) update.set("categoryId", memo.getCategoryId());
 
 
    mongoTemplate.updateMulti(query, update, "memo");

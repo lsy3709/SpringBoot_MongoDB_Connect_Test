@@ -149,51 +149,131 @@ function FindOneFileName (imageName1) {
 };
         
         
-        // 메인에 유저 게시글 목록 , 돔 준비되면 항상 목록 출력해주는 기능. 	
-// 메모 및 등록날짜, 수정 버튼 부분 문자열 부분 큰따옴표안에 작은 따옴표 수정. 
-// 자바스크립트 앞에 작은 따옴표 생략 했음.
+        // 메인 목록: 커서 기반 무한 스크롤 (10개씩)
+var allLastId = null, allHasNext = true, allLoading = false, allTotalCount = 0;
+var searchLastId = null, searchHasNext = true, searchLoading = false, searchTotalCount = 0, currentSearchData = null;
+/** 현재 선택된 카테고리 ID (탭별 메모 필터) */
+var currentCategoryId = null;
+
+function buildMemoRow(val) {
+	var img = val.imageFileName ? "<img src=/images/"+val.imageFileName+">" : "-";
+	return "<tr><td>"+img+"</td><td>"+(val.title||"")+"</td><td>"+(val.message||"")+"</td><td>"+(val.dateField||"")+"</td>"+
+		"<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"+
+		"<td><a href=javascript:dbDel('"+val.id+"','"+(val.imageFileName||"")+"')>삭제</a></td></tr>";
+}
+
+function buildTableHeader() {
+	return "<table class='table table-hover mt-3' border=1><thead><tr>"+
+		"<th>사진</th><th>제목</th><th>메세지</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody id='dbResultBody'></tbody></table>";
+}
+
+function loadCategoriesAndRenderTabs() {
+	$.ajax({ type:"get", url:"/categories", dataType:"JSON" })
+	.done(function(categories){
+		var html = '<li class="nav-item"><a class="nav-link'+(currentCategoryId==null||currentCategoryId===''?' active':'')+'" href="#" data-category-id="">전체</a></li>';
+		$.each(categories || [], function(_, c) {
+			var active = (currentCategoryId === c.id) ? ' active' : '';
+			html += '<li class="nav-item"><a class="nav-link'+active+'" href="#" data-category-id="'+(c.id||'')+'">'+ (c.name||'') +'</a></li>';
+		});
+		$("#categoryTabs").html(html);
+	});
+}
+
+// 탭 클릭 시 해당 카테고리로 전환
+$(document).on('click', '#categoryTabs a[data-category-id]', function(e){
+	e.preventDefault();
+	var id = $(this).attr('data-category-id') || null;
+	currentCategoryId = (id === '') ? null : id;
+	init();
+});
+
+// 탭 추가 모달 (Bootstrap 5)
+$("#btnAddTab").click(function(){
+	var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAddTab'));
+	modal.show();
+});
+$("#btnConfirmAddTab").click(function(){
+	var name = ($("#newTabName").val() || '').trim();
+	if (!name) { alert('탭 이름을 입력하세요.'); return; }
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+	$.ajax({ type:"post", url:"/categories", contentType:"application/json;charset=utf-8", data: JSON.stringify({ name: name, sortOrder: 999 }),
+		beforeSend: function(xhr){ xhr.setRequestHeader(header, token); } })
+	.done(function(){
+		var modal = bootstrap.Modal.getInstance(document.getElementById('modalAddTab'));
+		if (modal) modal.hide();
+		$("#newTabName").val('');
+		loadCategoriesAndRenderTabs();
+	})
+	.fail(function(){ alert('탭 추가 실패'); });
+});
+
 var init = function(){
-		$.ajax({
-			type:"get",
-			url:"/findAllMemo",
-			dataType:"JSON",
-			contentType:"application/json;charset=utf-8",
-		})
-		.done(function(resp){
-			//alert("resp"+resp)
-			var str2 = resp.length
-			// alert("str2"+str2)
-			var str = "<table class='table table-hover mt-3  ' border=1>";
-			str +="<th>" +"사진"+"</th>"
-				str +="<th>" +"제목"+"</th>"
-				str +="<th>" +"메세지"+"</th>"
-				str +="<th>" +"등록일"+"</th>"
-				str +="<th>" +"수정"+"</th>"
-				str +="<th>" +"삭제"+"</th>"
-			$.each(resp,function(key,val){
-		/*		console.log("val.id : "+ val.id)
-				console.log("val.title: "+ val.title)
-				console.log("val.message: "+ val.message)
-				console.log("val.dateField: "+ val.dateField)
-				var id2= val.id
-				console.log(typeof(id2))*/
-				str += "<tr>"
-				str += "<td>" +"<img src=/images/"+val.imageFileName+ "></td>"
-				str += "<td>" + val.title + "</td>"
-				str += "<td>" + val.message + "</td>"
-				str += "<td>" + val.dateField + "</td>"
-				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
-				str+= "<td><a href=javascript:dbDel('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
-				
-				str += "</tr>"
+	allLastId = null; allHasNext = true; allLoading = false; allTotalCount = 0;
+	loadCategoriesAndRenderTabs();
+	$("#dbResult").html(buildTableHeader());
+	loadAllNext();
+};
 
-			})
-			str += "</table>"
-			$("#dbResult").html(str);
-			$("#findAllMemoCount").html(str2);
+function loadAllNext() {
+	if (allLoading || !allHasNext) return;
+	allLoading = true;
+	var url = "/findAllMemoPage?limit=10";
+	if (currentCategoryId) url += "&categoryId=" + encodeURIComponent(currentCategoryId);
+	if (allLastId) url += "&lastId=" + encodeURIComponent(allLastId);
+	$.ajax({ type:"get", url:url, dataType:"JSON" })
+	.done(function(resp){
+		allLoading = false;
+		var list = resp.list || [];
+		allHasNext = resp.hasNext === true;
+		var $body = $("#dbResultBody");
+		$.each(list, function(_, val) {
+			$body.append(buildMemoRow(val));
+			allLastId = val.id;
+		});
+		allTotalCount += list.length;
+		$("#findAllMemoCount").html(allTotalCount + (allHasNext ? "+" : ""));
+	})
+	.fail(function(){ allLoading = false; });
+}
 
-		})
-	};
+function loadSearchNext() {
+	if (!currentSearchData || searchLoading || !searchHasNext) return;
+	searchLoading = true;
+	var url = "/searchDbPage?limit=10";
+	if (searchLastId) url += "&lastId=" + encodeURIComponent(searchLastId);
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+	$.ajax({ type:"post", url:url, dataType:"JSON", contentType:"application/json;charset=utf-8",
+		data: JSON.stringify(currentSearchData),
+		beforeSend: function(xhr){ xhr.setRequestHeader(header, token); }
+	})
+	.done(function(resp){
+		searchLoading = false;
+		var list = resp.list || [];
+		searchHasNext = resp.hasNext === true;
+		var $target = $("#searchResult tbody");
+		if ($target.length === 0) {
+			var tbl = "<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>";
+			$("#searchResult").html(tbl);
+			$target = $("#searchResult tbody");
+		}
+		$.each(list, function(_, val) {
+			$target.append(buildMemoRow(val).replace("dbDel(","dbDel2("));
+			searchLastId = val.id;
+		});
+		searchTotalCount += list.length;
+		$("#findSearchMemoCount").html(searchTotalCount + (searchHasNext ? "+" : ""));
+	})
+	.fail(function(){ searchLoading = false; });
+}
+
+$(window).on("scroll", function() {
+	if ($(document).height() - $(window).height() - $(window).scrollTop() < 300) {
+		if (currentSearchData) loadSearchNext();
+		else loadAllNext();
+	}
+});
 	
 
 
@@ -216,10 +296,9 @@ $("#uploadDBWithImageBtn").click(function(){
 		var formData = new FormData();
 
 		var data={
-			/*"id":$("#dbId").val(),*/
 			"title":$("#dbTitle").val(),
-			"message":$("#dbMessage").val()
-
+			"message":$("#dbMessage").val(),
+			"categoryId": currentCategoryId || null
 		}
 
             var input = document.getElementById("image");
@@ -261,54 +340,18 @@ $("#uploadDBWithImageBtn").click(function(){
 
 
 
-//검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
+//검색 버튼 클릭 (커서 기반 무한 스크롤)
 $("#dbSearchBtn").click(function(){
 	$('#findSearchMemoCount2').show();
-	var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-            
-			var searchData = {
-		"searchContent":$("#searchContent").val(),
-		"searchDB":$("#searchDB option:selected").val()
-	}
-	/*console.log(searchData)*/
-	$.ajax({
-		type:"post",
-		url:"/searchDb",
-		    beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(searchData)
-	})
-	.done(function(resp){
-		var str4 = resp.length
-	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
-				str +="<th>" +"사진"+"</th>"
-				str +="<th>" +"제목"+"</th>"
-				str +="<th>" +"메세지"+"</th>"
-				str +="<th>" +"등록일"+"</th>"
-				str +="<th>" +"수정"+"</th>"
-				str +="<th>" +"삭제"+"</th>"
-			$.each(resp,function(key,val){
-				str += "<tr>"
-				str += "<td>" +"<img src=/images/"+val.imageFileName+ "></td>"
-				str += "<td>" + val.title + "</td>"
-				str += "<td>" + val.message + "</td>"
-				str += "<td>" + val.dateField + "</td>"
-				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
-				str+= "<td><a href=javascript:dbDel2('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
-				str += "</tr>"
-			})
-			str += "</table>"
-			$("#searchResult").html(str);
-		$("#findSearchMemoCount").html(str4);
-			})
-	.fail(function(){
-		alert("디비 검색 실패")
-	});
-	});
+	currentSearchData = {
+		searchContent: $("#searchContent").val(),
+		searchDB: $("#searchDB option:selected").val(),
+		categoryId: currentCategoryId || undefined
+	};
+	searchLastId = null; searchHasNext = true; searchLoading = false; searchTotalCount = 0;
+	$("#searchResult").html("<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>");
+	loadSearchNext();
+});
 
 // 메인 처럼 사용중. 
 $("#listBtn").click(function(){
@@ -416,109 +459,15 @@ function dbDel2(id,imageFileName){
 
 }
 
-//검색 버튼 클릭시 , searchDB : 검색 조건, searchContent : 검색 내용.
-//반찬 먼저 테스트
-$("#dbSearchBtn2").on('click','#ban', function(){
-/*$("#dbSearchBtn2").click(function(){*/
+//빠른 검색 버튼 (반찬, 음료 등) - 커서 기반 무한 스크롤
+$("#dbSearchBtn2").on('click','button', function(){
+	var v = $(this).attr("value");
+	if (!v) return;
 	$('#findSearchMemoCount2').show();
-	var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-            
-            // alert("테스트 : "+$(this).attr("value"));
-            var searchCon =  $(this).attr("value");
-            // alert(" searchCon1 " + searchCon);
-            
-            if (searchCon == "반찬"){
-	        // alert(" searchCon 2" + searchCon);
-	        		var searchData = {
-		"searchContent":"반찬",
-		"searchDB":"title"
-	}
-} else if (searchCon == "음료") {
-	  // alert(" searchCon " + searchCon);
-	        		var searchData = {
-		"searchContent":"음료",
-		"searchDB":"title"
-	}
-} else if (searchCon == "과일") {
-				// alert(" searchCon " + searchCon);
-				var searchData = {
-					"searchContent":"과일",
-					"searchDB":"title"
-				}
-			}
-else if (searchCon == "재료") {
-	// alert(" searchCon " + searchCon);
-	var searchData = {
-		"searchContent":"재료",
-		"searchDB":"title"
-	}
-}
-else if (searchCon == "소스") {
-	// alert(" searchCon " + searchCon);
-	var searchData = {
-		"searchContent":"소스",
-		"searchDB":"title"
-	}
-}
-else if (searchCon == "냉동") {
-	// alert(" searchCon " + searchCon);
-	var searchData = {
-		"searchContent":"냉동",
-		"searchDB":"title"
-	}
-}
-else if (searchCon == "간식") {
-	// alert(" searchCon " + searchCon);
-	var searchData = {
-		"searchContent":"간식",
-		"searchDB":"title"
-	}
-}
-            
-	/*		var searchData = {
-		"searchContent":"반찬",
-		"searchDB":"title"
-	}*/
-	/*console.log(searchData)*/
-	        // alert(" searchData " + searchData.searchContent + searchData.searchDB);
-	$.ajax({
-		type:"post",
-		url:"/searchDb",
-		    beforeSend : function(xhr){
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-		contentType:"application/json;charset=utf-8",
-		data:JSON.stringify(searchData)
-	})
-	.done(function(resp){
-		var str3 = resp.length
-	 	 var str = "<table class='table table-hover mt-3 ' border=1>";
-				str +="<th>" +"사진"+"</th>"
-				str +="<th>" +"제목"+"</th>"
-				str +="<th>" +"메세지"+"</th>"
-				str +="<th>" +"등록일"+"</th>"
-				str +="<th>" +"수정"+"</th>"
-				str +="<th>" +"삭제"+"</th>"
-			$.each(resp,function(key,val){
-				str += "<tr>"
-				str += "<td>" +"<img src=/images/"+val.imageFileName+ "></td>"
-				str += "<td>" + val.title + "</td>"
-				str += "<td>" + val.message + "</td>"
-				str += "<td>" + val.dateField + "</td>"
-				str+= "<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"
-				str+= "<td><a href=javascript:dbDel2('"+val.id+"','"+val.imageFileName+"')>삭제</a></td>"
-				str += "</tr>"
-			})
-			str += "</table>"
-			$("#searchResult").html(str);
-		$("#findSearchMemoCount").html(str3);
-
-			})
-	.fail(function(){
-		alert("디비 검색 실패")
-	});
-	});
+	currentSearchData = { searchContent: v, searchDB: "title", categoryId: currentCategoryId || undefined };
+	searchLastId = null; searchHasNext = true; searchLoading = false; searchTotalCount = 0;
+	$("#searchResult").html("<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>");
+	loadSearchNext();
+});
 
 

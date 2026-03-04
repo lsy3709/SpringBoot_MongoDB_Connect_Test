@@ -5,6 +5,26 @@ layout:decorate="~{layout/default_layout2}">
 
 <body><th:block layout:fragment="content">
    <h1 >냉장고 및 물품 관리</h1>
+
+   <!-- 카테고리 탭 바 -->
+   <div class="mb-3" id="categoryTabsWrap">
+      <ul class="nav nav-tabs" id="categoryTabs"></ul>
+      <button type="button" class="btn btn-sm btn-outline-secondary mt-1" id="btnAddTab">탭 추가</button>
+   </div>
+   <div class="modal fade" id="modalAddTab" tabindex="-1">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">탭 추가</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+               <input type="text" class="form-control" id="newTabName" placeholder="탭 이름 (예: 팬트리, 안방)" />
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+               <button type="button" class="btn btn-primary" id="btnConfirmAddTab">추가</button>
+            </div>
+         </div>
+      </div>
+   </div>
    <style>
    body {
    background-image:url('/image/balloon.jpg')

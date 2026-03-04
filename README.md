@@ -81,7 +81,9 @@ SpringBoot_MongoDB_Connect_Test/
 | GET | `/joinForm` | 회원가입 폼 | permitAll |
 | GET | `/admin` | 관리자 페이지 (메모·Users 목록) | ADMIN |
 | GET | `/findAll` | Users 목록(JSON) | permitAll |
-| GET | `/findAllMemo` | 메모 목록(JSON) | authenticated |
+| GET | `/findAllMemo` | 메모 전체 목록(JSON) | authenticated |
+| GET | `/findAllMemoPage?lastId=&limit=10` | 메모 커서 페이지네이션(무한 스크롤용) | authenticated |
+| POST | `/searchDbPage?lastId=&limit=10` | 검색 커서 페이지네이션(무한 스크롤용) | authenticated |
 | POST | `/insertMemo`, `/insertMemoWithImage` | 메모 등록(이미지 선택) | authenticated |
 | POST | `/updateMemo`, `/updateWithMemo` | 메모 수정 | authenticated |
 | POST | `/searchDb` | 메모 검색(JSON, SearchDB) | authenticated |

@@ -29,4 +29,7 @@ public class Memo {
 	private String imageFileObjectId;
 	private String imageFileName;
 
+	/** 카테고리 ID (냉장고, 팬트리 등 탭 구분) */
+	private String categoryId;
+
 }

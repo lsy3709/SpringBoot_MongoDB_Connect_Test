@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.myMongoTest.DTO.MemoPageResponse;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.Memo;
 import com.myMongoTest.service.ImageService;
@@ -82,10 +83,33 @@ public class MemoController {
 		return userService.mongoFindAllMemo();
 	}
 
+	/**
+	 * 커서 기반 전체 목록 페이지네이션 (무한 스크롤용).
+	 */
+	@ResponseBody
+	@GetMapping("/findAllMemoPage")
+	public MemoPageResponse listMemoPage(@RequestParam(required = false) String categoryId,
+	                                      @RequestParam(required = false) String lastId,
+	                                      @RequestParam(defaultValue = "10") int limit) {
+		return userService.mongoFindMemoCursor(categoryId, lastId, Math.min(limit, 50));
+	}
+
 	@ResponseBody
 	@PostMapping("/searchDb")
 	public List<Memo> searchList(@RequestBody SearchDB searchDB) {
 		return userService.mongoSearchFindAll(searchDB);
+	}
+
+	/**
+	 * 커서 기반 검색 목록 페이지네이션 (무한 스크롤용).
+	 */
+	@ResponseBody
+	@PostMapping("/searchDbPage")
+	public MemoPageResponse searchListPage(@RequestBody SearchDB searchDB,
+	                                        @RequestParam(required = false) String lastId,
+	                                        @RequestParam(defaultValue = "10") int limit) {
+		String catId = searchDB != null ? searchDB.getCategoryId() : null;
+		return userService.mongoSearchMemoCursor(searchDB, catId, lastId, Math.min(limit, 50));
 	}
 
 	@RequestMapping("/updateFormMemo/{id}")

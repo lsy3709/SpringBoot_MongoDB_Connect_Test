@@ -10,9 +10,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class SearchDB {
-	
 	private String searchContent;
 	private String searchDB;
-	
-
+	/** 카테고리 ID (탭별 검색용) */
+	private String categoryId;
 }

@@ -1,9 +1,9 @@
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://<계정>:<패스워드>@mongodbtutorial.c24ikv6.mongodb.net/blog3?retryWrites=true&w=majority
-      ex) uri: mongodb://localhost:27017/blog3?retryWrites=true&w=majority
-  
+      # 아이디, 비밀번호, authSource를 모두 제거한 아주 깔끔한 주소입니다.
+      uri: mongodb://localhost:27017/blog3
+
   servlet:
     multipart:
       max-file-size: 10MB

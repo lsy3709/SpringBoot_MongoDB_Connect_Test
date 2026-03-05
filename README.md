@@ -31,13 +31,13 @@ SpringBoot_MongoDB_Connect_Test/
 │   ├── constant/
 │   │   └── Role.java                                  # USER, ADMIN
 │   ├── controller/
-│   │   ├── UserController.java                        # 로그인/회원가입/Users CRUD/메인·admin 뷰
+│   │   ├── UserController.java                        # 로그인/회원가입/메인·admin 뷰
 │   │   ├── MemoController.java                        # 메모 CRUD·검색·첨부 이미지
 │   │   └── ImageController.java                       # 이미지 업로드·다운로드·삭제
 │   ├── document/                                      # MongoDB 도큐먼트(ODM)
-│   │   ├── Users.java                                 # 컬렉션: user (간단 게시글)
 │   │   ├── User2.java                                 # 컬렉션: user2 (회원, 이메일/역할)
 │   │   ├── Memo.java                                  # 컬렉션: memo (메모+이미지)
+│   │   ├── Category.java                              # 컬렉션: category (탭)
 │   │   └── LoginForm.java                             # 로그인 폼
 │   ├── DTO/
 │   │   ├── User2DB.java
@@ -79,8 +79,7 @@ SpringBoot_MongoDB_Connect_Test/
 | GET | `/login/redirect` | 로그인 성공 후 경유 리다이렉트 | authenticated |
 | POST | `/joinUser` | 회원가입 | permitAll |
 | GET | `/joinForm` | 회원가입 폼 | permitAll |
-| GET | `/admin` | 관리자 페이지 (메모·Users 목록) | ADMIN |
-| GET | `/findAll` | Users 목록(JSON) | permitAll |
+| GET | `/admin` | 관리자 페이지 (메모·카테고리 탭) | ADMIN |
 | GET | `/findAllMemo` | 메모 전체 목록(JSON) | authenticated |
 | GET | `/findAllMemoPage?lastId=&limit=10` | 메모 커서 페이지네이션(무한 스크롤용) | authenticated |
 | POST | `/searchDbPage?lastId=&limit=10` | 검색 커서 페이지네이션(무한 스크롤용) | authenticated |
@@ -89,8 +88,8 @@ SpringBoot_MongoDB_Connect_Test/
 | POST | `/searchDb` | 메모 검색(JSON, SearchDB) | authenticated |
 | GET | `/updateFormMemo/{id}` | 메모 수정 폼 | authenticated |
 | DELETE | `/dbDelete/{id}/{imageFileName}` | 메모·첨부 이미지 삭제 | authenticated |
-| POST | `/insertDb`, `/updateDb` | Users CRUD(JSON) | authenticated |
-| GET | `/updateForm/{id}` | Users 수정 폼 | authenticated |
+| GET | `/categories` | 카테고리 목록(JSON) | authenticated |
+| POST | `/categories` | 카테고리 추가 | authenticated |
 | POST | `/images` | 이미지 업로드(GridFS) | authenticated |
 | GET | `/images/{id}` | 이미지 다운로드(filename) | permitAll |
 | GET | `/images/findFileNameAll` | 전체 파일명 목록(JSON) | authenticated |

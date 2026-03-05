@@ -27,7 +27,6 @@ import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.Category;
 import com.myMongoTest.document.Memo;
 import com.myMongoTest.document.User2;
-import com.myMongoTest.document.Users;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,12 +39,6 @@ public class UserService implements UserDetailsService{
     
     private final GridFsTemplate gridFsTemplate;
 
-// 샘플 하나 추가. 
-    public void mongoInsert() {
-        Users user1 = new Users(3L, "제목2", "메세지2");
-        mongoTemplate.insert(user1);
-    }
-    
     // Convert Date to String
     public String dateToString(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -56,14 +49,6 @@ public class UserService implements UserDetailsService{
     public Date stringToDate(String dateString) throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return dateFormat.parse(dateString);
-    }
-    
-//하나 추가. 
-//	private Long id;
-//    private String title;
-//    private String message;
-    public void mongoUserInsert(Users user) {
-        mongoTemplate.insert(user);
     }
     
   // 메모 하나 추가. 
@@ -86,16 +71,7 @@ public class UserService implements UserDetailsService{
     }
     
     
-//전체 검색
-    public List<Users> mongoFindAll() {
-    	Query query = new Query();
-    	query.with(Sort.by(Sort.Direction.DESC, "id"));
-
-     	List<Users> userList=mongoTemplate.find(query,Users.class);
-		return userList;
-        
-    }
-    //전체 검색
+    //전체 검색 (메모)
     public List<Memo> mongoFindAllMemo() {
         Query query = new Query();
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
@@ -270,30 +246,10 @@ public class UserService implements UserDetailsService{
         Update update = new Update().set("password", encodedPassword);
         mongoTemplate.updateFirst(query, update, User2.class);
     }
-    
-//하나 찾기
-    public Users mongoFindOne(Long id) {
-		Users user = mongoTemplate.findById(id, Users.class);
-		return user;
-    }
 
     public Memo mongoFindOneMemo(ObjectId id) {
         Memo memo = mongoTemplate.findById(id, Memo.class);
         return memo;
-    }
- //하나 수정하기.
-public void mongoUserUpdate(Users user) {
-	Query query = new Query();
-    Update update = new Update();
-
-    // where절 조건
-    query.addCriteria(Criteria.where("_id").is(user.getId()));
-    update.set("title",user.getTitle());
-    update.set("message", user.getMessage());
-
-
-    mongoTemplate.updateMulti(query, update, "user");
-
     }
 
 //메모 하나 수정하기.

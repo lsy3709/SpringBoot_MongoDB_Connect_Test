@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.myMongoTest.document.Memo;
 import com.myMongoTest.document.User2;
-import com.myMongoTest.document.Users;
 import com.myMongoTest.service.UserService;
 import com.myMongoTest.support.PasswordPolicyValidator;
 import com.myMongoTest.support.ValidationResult;
@@ -52,13 +49,6 @@ public class UserController {
 	        response.sendRedirect(safeTarget);
 	    }
 	
-	@ResponseBody
-	@PostMapping("/insertDb")
-	public ResponseEntity<String> insertDb(	@RequestBody Users user){
-		userService.mongoUserInsert(user);
-		return new ResponseEntity<String>("success",HttpStatus.OK);
-	}
-
 	@RequestMapping("/joinForm")
 	  public String joinForm(Model model) {
 		  model.addAttribute("user", new User2());
@@ -86,43 +76,16 @@ public class UserController {
 				messageSource.getMessage("join.success", null, locale));
 		return "redirect:/login";
 	}
-	
-	@ResponseBody
-	@PostMapping("/updateDb")
-	public ResponseEntity<String> updateDb(	@RequestBody Users user){
-		userService.mongoUserUpdate(user);
-		return new ResponseEntity<String>("success",HttpStatus.OK);
-	}
-
-	@ResponseBody
-	@GetMapping("/findAll")
-	public List<Users> list( ){
-		List<Users> userList = userService.mongoFindAll();
-		return userList;
-	}
 
 	@RequestMapping("/admin")
 	public String admin(Model model) {
-		List<Users> userList = userService.mongoFindAll();
 		List<Memo> memoList = userService.mongoFindAllMemo();
-		int count = memoList.size();
-		model.addAttribute("user", userList);
-		  model.addAttribute("count",  count);
+		model.addAttribute("count", memoList.size());
 		return "admin";
-	  } 
-	  
-	  @RequestMapping("/")
-	  public String main(Model model ){
-		List<Users> userList = userService.mongoFindAll();
-		model.addAttribute("user",  userList);
-		return "main";
-	  } 
+	}
 
-	  
-	  @RequestMapping("/updateForm/{id}")
-	  public String updateForm(	Model model , @PathVariable Long id){
-		Users user = userService.mongoFindOne(id);
-		model.addAttribute("user",  user);
-		return "updateForm";
+	@RequestMapping("/")
+	public String main(Model model) {
+		return "main";
 	}
 }

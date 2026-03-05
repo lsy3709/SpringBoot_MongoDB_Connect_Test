@@ -29,10 +29,15 @@ public class SecurityConfig {
                         .usernameParameter("email")
                         .failureUrl("/login/error")
                 )
+                .rememberMe(rm -> rm
+                        .key("smart-inventory-remember-me")
+                        .tokenValiditySeconds(60 * 60 * 24 * 14)  // 14일
+                )
                 .logout(logout -> logout
-                        .logoutUrl("/logout") // 훨씬 직관적이고 깔끔함
-                        .logoutSuccessUrl("/")               // 로그아웃 성공 시 이동할 경로
-                        .invalidateHttpSession(true)         // (추천) 로그아웃 시 세션 날리기
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("remember-me")  // 자동 로그인 쿠키 삭제
                 );
 
         // 2. URL 경로별 권한 설정 (authorizeHttpRequests & requestMatchers 사용)

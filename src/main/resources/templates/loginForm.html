@@ -21,6 +21,10 @@ layout:decorate="~{layout/default_layout2}">
 						<label for="password">Password:</label>
 						<input type="password" class="form-control"  name="password"   id="password" placeholder="Enter Password">
 					</div>
+					<div class="form-group form-check mt-2">
+						<input type="checkbox" class="form-check-input" name="remember-me" id="remember-me">
+						<label class="form-check-label" for="remember-me">자동 로그인</label>
+					</div>
 					<p th:if="${loginErrorMsg}" class="text-danger" th:text="${loginErrorMsg}"></p>
 					<p th:if="${joinSuccessMsg}" class="text-success" th:text="${joinSuccessMsg}"></p>
 					<button type="submit" class="btn btn-primary mt-2"  id="loginBtn">로그인</button>

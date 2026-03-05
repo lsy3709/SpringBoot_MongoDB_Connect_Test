@@ -21,6 +21,11 @@ layout:decorate="~{layout/default_layout2}">
     		<input class="form-control"   id="dbTitle" name="dbTitle"placeholder="제목 입력" th:value="${memo.title}"></input>
     		<br>
     		<input class="form-control"   id="dbMessage" name="dbMessage" placeholder="메세지입력" th:value="${memo.message}"></input>
+    		<br>
+        <div class="form-group">
+            <label for="dbExpiryDate">유통기한:</label>
+            <input type="date" class="form-control" id="dbExpiryDate" name="dbExpiryDate" th:value="${memo.expiryDate}">
+        </div>
         <div class="form-group">
             <label for="file">Choose an image:</label>
             <input type="file" id="image" name="file" class="form-control-file" onchange="loadImage()">

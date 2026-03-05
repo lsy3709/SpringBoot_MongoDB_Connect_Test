@@ -78,6 +78,11 @@ layout:decorate="~{layout/default_layout2}">
             <input class="form-control"   id="dbMessage" name="dbMessage" placeholder="유통기한등 메모"></input>
             <br>
             <div class="form-group">
+                <label for="dbExpiryDate">유통기한:</label>
+                <input type="date" class="form-control" id="dbExpiryDate" name="dbExpiryDate">
+            </div>
+            <br>
+            <div class="form-group">
                 <label for="file">Choose an image:</label>
                 <input type="file" id="image" name="file" class="form-control-file" onchange="loadImage()">
             </div>

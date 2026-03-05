@@ -32,4 +32,7 @@ public class Memo {
 	/** 카테고리 ID (냉장고, 팬트리 등 탭 구분) */
 	private String categoryId;
 
+	/** 유통기한 (yyyy-MM-dd) */
+	private String expiryDate;
+
 }

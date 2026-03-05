@@ -263,7 +263,7 @@ public void mongoMemoUpdate(Memo memo) {
    update.set("message", memo.getMessage());
    update.set("imageFileName", memo.getImageFileName());
    if (memo.getCategoryId() != null) update.set("categoryId", memo.getCategoryId());
-
+   if (memo.getExpiryDate() != null) update.set("expiryDate", memo.getExpiryDate());
 
    mongoTemplate.updateMulti(query, update, "memo");
 

@@ -125,6 +125,10 @@ public class UserService implements UserDetailsService{
             criteria = Criteria.where("title").regex(searchDB.getSearchContent());
         } else if ("message".equals(searchDB.getSearchDB())) {
             criteria = Criteria.where("message").regex(searchDB.getSearchContent());
+        } else if ("tag".equals(searchDB.getSearchDB())) {
+            String tag = searchDB.getSearchContent().trim();
+            if (tag.isEmpty()) return new MemoPageResponse(List.of(), false);
+            criteria = Criteria.where("tags").is(tag);
         } else {
             return new MemoPageResponse(List.of(), false);
         }
@@ -264,6 +268,7 @@ public void mongoMemoUpdate(Memo memo) {
    update.set("imageFileName", memo.getImageFileName());
    if (memo.getCategoryId() != null) update.set("categoryId", memo.getCategoryId());
    if (memo.getExpiryDate() != null) update.set("expiryDate", memo.getExpiryDate());
+   if (memo.getTags() != null) update.set("tags", memo.getTags());
 
    mongoTemplate.updateMulti(query, update, "memo");
 

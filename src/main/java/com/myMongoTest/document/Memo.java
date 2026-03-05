@@ -1,8 +1,7 @@
 package com.myMongoTest.document;
 
-import java.util.Date;
+import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
-
 
 @AllArgsConstructor
 @Getter
@@ -19,10 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @Document("memo")
 public class Memo {
-   
+
 	@Id
 	private String id;
-	
+
 	private String title;
 	private String message;
 	private String dateField;
@@ -35,4 +32,6 @@ public class Memo {
 	/** 유통기한 (yyyy-MM-dd) */
 	private String expiryDate;
 
+	/** 태그 목록 (검색·필터용) */
+	private List<String> tags;
 }

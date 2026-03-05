@@ -1,6 +1,7 @@
 // ----- 이전 입력 자동 채우기 (localStorage, 최대 10개) -----
 var STORAGE_KEY_SEARCH = "smartInventory.recentSearches";
 var STORAGE_KEY_TITLES = "smartInventory.recentTitles";
+var STORAGE_KEY_TAGS = "smartInventory.recentTags";
 var MAX_RECENT = 10;
 
 function getRecentList(key) {
@@ -22,6 +23,7 @@ function saveRecentList(key, value, max) {
 
 function saveRecentSearch(term) { saveRecentList(STORAGE_KEY_SEARCH, term); }
 function saveRecentTitle(title) { saveRecentList(STORAGE_KEY_TITLES, title); }
+function saveRecentTag(tag) { saveRecentList(STORAGE_KEY_TAGS, tag); }
 
 function applyAutocomplete() {
 	var searches = getRecentList(STORAGE_KEY_SEARCH);
@@ -46,11 +48,42 @@ function applyAutocomplete() {
 		titles.forEach(function(t) { $dl.append($("<option>").attr("value", t)); });
 		$dbTitle.attr("list", dlId);
 	}
+
+	var tags = getRecentList(STORAGE_KEY_TAGS);
+	var $dbTags = $("#dbTags");
+	if ($dbTags.length) {
+		var dlId = "datalist-tag";
+		var $dl = $("#" + dlId);
+		if (!$dl.length) { $dl = $("<datalist id='" + dlId + "'></datalist>").appendTo("body"); }
+		$dl.empty();
+		tags.forEach(function(t) { $dl.append($("<option>").attr("value", t)); });
+		$dbTags.attr("list", dlId);
+	}
+}
+
+/** 태그 파싱: 쉼표 구분, trim, 빈 값 제거 */
+function parseTagsStr(str) {
+	if (!str || !String(str).trim()) return [];
+	return String(str).split(",").map(function(s) { return s.trim(); }).filter(Boolean);
+}
+
+/** 자주 사용하는 태그 버튼 렌더 (검색하기 밑) */
+function renderTagQuickButtons() {
+	var tags = getRecentList(STORAGE_KEY_TAGS).slice(0, 7);
+	var $wrap = $("#tagQuickButtons");
+	$wrap.empty();
+	if (tags.length) {
+		$wrap.append("<span class='me-2'>자주 쓰는 태그:</span>");
+		tags.forEach(function(tag) {
+			$wrap.append($("<button type='button' class='btn btn-sm btn-outline-secondary me-1 mb-1 tag-quick-btn'>").attr("data-tag", tag).text(tag));
+		});
+	}
 }
 
 $(document).ready(function(){
 		init();
 		applyAutocomplete();
+		renderTagQuickButtons();
 		 $('#preview').hide();
 		 $('#previewVideo').hide();
 	$('#findSearchMemoCount2').hide();
@@ -214,14 +247,15 @@ function formatExpiryDate(str) {
 function buildMemoRow(val) {
 	var img = val.imageFileName ? "<img src=/images/"+val.imageFileName+">" : "-";
 	var expiry = formatExpiryDate(val.expiryDate);
-	return "<tr><td>"+img+"</td><td>"+(val.title||"")+"</td><td>"+(val.message||"")+"</td><td>"+expiry+"</td><td>"+(val.dateField||"")+"</td>"+
+	var tagsStr = (val.tags && val.tags.length) ? val.tags.join(", ") : "-";
+	return "<tr><td>"+img+"</td><td>"+(val.title||"")+"</td><td>"+(val.message||"")+"</td><td>"+tagsStr+"</td><td>"+expiry+"</td><td>"+(val.dateField||"")+"</td>"+
 		"<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"+
 		"<td><a href=javascript:dbDel('"+val.id+"','"+(val.imageFileName||"")+"')>삭제</a></td></tr>";
 }
 
 function buildTableHeader() {
 	return "<table class='table table-hover mt-3' border=1><thead><tr>"+
-		"<th>사진</th><th>제목</th><th>메세지</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody id='dbResultBody'></tbody></table>";
+		"<th>사진</th><th>제목</th><th>메세지</th><th>태그</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody id='dbResultBody'></tbody></table>";
 }
 
 function loadCategoriesAndRenderTabs() {
@@ -311,7 +345,7 @@ function loadSearchNext() {
 		searchHasNext = resp.hasNext === true;
 		var $target = $("#searchResult tbody");
 		if ($target.length === 0) {
-			var tbl = "<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>";
+			var tbl = "<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>태그</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>";
 			$("#searchResult").html(tbl);
 			$target = $("#searchResult tbody");
 		}
@@ -352,10 +386,12 @@ $("#uploadDBWithImageBtn").click(function(){
 
 		var formData = new FormData();
 
+		var tagsArr = parseTagsStr($("#dbTags").val());
 		var data={
 			"title":$("#dbTitle").val(),
 			"message":$("#dbMessage").val(),
 			"expiryDate":$("#dbExpiryDate").val() || null,
+			"tags": tagsArr.length ? tagsArr : null,
 			"categoryId": currentCategoryId || null
 		}
 
@@ -380,6 +416,7 @@ $("#uploadDBWithImageBtn").click(function(){
 			success  : function(result, status){
 				var title = ($("#dbTitle").val() || "").trim();
 				if (title) saveRecentTitle(title);
+				parseTagsStr($("#dbTags").val()).forEach(saveRecentTag);
 				alert('업로드 성공');
 				location.href='/admin'
 			},
@@ -411,7 +448,7 @@ $("#dbSearchBtn").click(function(){
 		categoryId: currentCategoryId || undefined
 	};
 	searchLastId = null; searchHasNext = true; searchLoading = false; searchTotalCount = 0;
-	$("#searchResult").html("<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>");
+	$("#searchResult").html("<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>태그</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>");
 	loadSearchNext();
 });
 
@@ -435,11 +472,13 @@ $("#dbUpdateBtn2").click(function(){
 
 		var formData = new FormData();
 
+		var tagsArr = parseTagsStr($("#dbTags").val());
 		var data = {
 			"id": $("#dbId").val(),
 			"title": $("#dbTitle").val(),
 			"message": $("#dbMessage").val(),
-			"expiryDate": $("#dbExpiryDate").val() || null
+			"expiryDate": $("#dbExpiryDate").val() || null,
+			"tags": tagsArr.length ? tagsArr : null
 		}
 				var input = document.getElementById("image");
 				var file = input.files[0];
@@ -522,17 +561,13 @@ function dbDel2(id,imageFileName){
 
 }
 
-//빠른 검색 버튼 (반찬, 음료 등) - 커서 기반 무한 스크롤
-$("#dbSearchBtn2").on('click','button', function(){
-	var v = $(this).attr("value");
-	if (!v) return;
-	saveRecentSearch(v);
-	applyAutocomplete();
-	$('#findSearchMemoCount2').show();
-	currentSearchData = { searchContent: v, searchDB: "title", categoryId: currentCategoryId || undefined };
-	searchLastId = null; searchHasNext = true; searchLoading = false; searchTotalCount = 0;
-	$("#searchResult").html("<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>");
-	loadSearchNext();
+// 자주 쓰는 태그 버튼 클릭 → 해당 태그로 검색
+$(document).on("click", ".tag-quick-btn", function(){
+	var tag = $(this).attr("data-tag");
+	if (!tag) return;
+	$("#searchContent").val(tag);
+	$("#searchDB").val("tag");
+	$("#dbSearchBtn").trigger("click");
 });
 
 

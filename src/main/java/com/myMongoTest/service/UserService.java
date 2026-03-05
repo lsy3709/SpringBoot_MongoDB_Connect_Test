@@ -263,6 +263,13 @@ public class UserService implements UserDetailsService{
 		User2 user2 = mongoTemplate.findOne(query, User2.class);
 		return user2;
     }
+
+    /** 이메일로 user2 비밀번호만 갱신 (기본 관리자 복구용) */
+    public void mongoUser2UpdatePassword(String email, String encodedPassword) {
+        Query query = new Query(Criteria.where("email").is(email));
+        Update update = new Update().set("password", encodedPassword);
+        mongoTemplate.updateFirst(query, update, User2.class);
+    }
     
 //하나 찾기
     public Users mongoFindOne(Long id) {

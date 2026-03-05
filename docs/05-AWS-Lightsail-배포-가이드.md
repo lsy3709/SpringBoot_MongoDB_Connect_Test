@@ -107,6 +107,9 @@ docker stop mongodb
 docker start mongodb
 ```
 
+**중요**: Spring Boot 앱을 기동하기 **전에** MongoDB가 먼저 떠 있어야 합니다. 그래야 기본 관리자 계정(admin / admin1234)이 생성됩니다. 순서가 바뀌면 admin 로그인이 안 될 수 있습니다.  
+admin 로그인이 안 되면 `docs/03-로그인-리다이렉트-및-기본관리자.md` 6장을 참고하세요.
+
 ---
 
 ## 3. application.yml 확인

@@ -146,7 +146,35 @@ layout:decorate="~{layout/default_layout2}">
 
       <div id="dbResult"></div>
 
-
+      <!-- 메모 상세보기 모달 -->
+      <div class="modal fade" id="memoDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="memoDetailTitle">메모 상세보기</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div id="memoDetailImage" class="mb-3 text-center"></div>
+              <dl class="row">
+                <dt class="col-sm-3">제목</dt>
+                <dd class="col-sm-9" id="memoDetailTitleText"></dd>
+                <dt class="col-sm-3">메세지</dt>
+                <dd class="col-sm-9" id="memoDetailMessage"></dd>
+                <dt class="col-sm-3">태그</dt>
+                <dd class="col-sm-9" id="memoDetailTags"></dd>
+                <dt class="col-sm-3">유통기한</dt>
+                <dd class="col-sm-9" id="memoDetailExpiry"></dd>
+                <dt class="col-sm-3">등록일</dt>
+                <dd class="col-sm-9" id="memoDetailDate"></dd>
+              </dl>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
      </th:block>
 </body>

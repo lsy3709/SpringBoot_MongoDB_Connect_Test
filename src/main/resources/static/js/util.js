@@ -236,6 +236,8 @@ var allLastId = null, allHasNext = true, allLoading = false, allTotalCount = 0;
 var searchLastId = null, searchHasNext = true, searchLoading = false, searchTotalCount = 0, currentSearchData = null;
 /** 현재 선택된 카테고리 ID (탭별 메모 필터) */
 var currentCategoryId = null;
+/** 상세보기용 메모 캐시 (id -> memo 객체) */
+var memoCache = {};
 
 /** 유통기한 년월일만 표기 (yyyy-MM-dd) */
 function formatExpiryDate(str) {
@@ -248,7 +250,9 @@ function buildMemoRow(val) {
 	var img = val.imageFileName ? "<img src=/images/"+val.imageFileName+">" : "-";
 	var expiry = formatExpiryDate(val.expiryDate);
 	var tagsStr = (val.tags && val.tags.length) ? val.tags.join(", ") : "-";
-	return "<tr><td>"+img+"</td><td>"+(val.title||"")+"</td><td>"+(val.message||"")+"</td><td>"+tagsStr+"</td><td>"+expiry+"</td><td>"+(val.dateField||"")+"</td>"+
+	var titleHtml = "<a href='#' class='memo-detail-link' data-id='"+val.id+"'>"+(val.title||"")+"</a>";
+	memoCache[val.id] = val;
+	return "<tr><td>"+img+"</td><td>"+titleHtml+"</td><td>"+(val.message||"")+"</td><td>"+tagsStr+"</td><td>"+expiry+"</td><td>"+(val.dateField||"")+"</td>"+
 		"<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"+
 		"<td><a href=javascript:dbDel('"+val.id+"','"+(val.imageFileName||"")+"')>삭제</a></td></tr>";
 }
@@ -365,12 +369,48 @@ $(window).on("scroll", function() {
 		else loadAllNext();
 	}
 });
-	
-
 
 function dbUpdateFormMemo(id){
 	location.href='/updateFormMemo/'+id;
 }
+
+/** 상세보기용: 파일명이 동영상인지 여부 */
+function isVideoFileName(name) {
+	if (!name) return false;
+	var ext = name.substring(name.lastIndexOf('.') + 1).toLowerCase();
+	return ext === 'mp4' || ext === 'mov' || ext === 'avi' || ext === 'wmv';
+}
+
+// 목록에서 제목 클릭 시 상세보기 모달 오픈
+$(document).on('click', '.memo-detail-link', function(e){
+	e.preventDefault();
+	var id = $(this).attr('data-id');
+	if (!id || !memoCache[id]) return;
+	var memo = memoCache[id];
+
+	// 제목·텍스트 정보
+	$('#memoDetailTitle').text(memo.title || '메모 상세보기');
+	$('#memoDetailTitleText').text(memo.title || '');
+	$('#memoDetailMessage').text(memo.message || '');
+	var tagsStr = (memo.tags && memo.tags.length) ? memo.tags.join(', ') : '-';
+	$('#memoDetailTags').text(tagsStr);
+	$('#memoDetailExpiry').text(formatExpiryDate(memo.expiryDate));
+	$('#memoDetailDate').text(memo.dateField || '');
+
+	// 이미지/동영상
+	var html = '-';
+	if (memo.imageFileName) {
+		if (isVideoFileName(memo.imageFileName)) {
+			html = "<video controls class='w-100' style='max-height:480px;'><source src='/images/"+memo.imageFileName+"'></video>";
+		} else {
+			html = "<img src='/images/"+memo.imageFileName+"' class='img-fluid' style='max-height:480px;object-fit:contain;'>";
+		}
+	}
+	$('#memoDetailImage').html(html);
+
+	var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('memoDetailModal'));
+	modal.show();
+});
 
 
 //메모 with 이미지

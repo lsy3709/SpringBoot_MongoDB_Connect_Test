@@ -25,14 +25,21 @@ import net.coobird.thumbnailator.Thumbnails;
 @Service
 public class ImageService {
 
-    private static final int THUMBNAIL_WIDTH = 200;
-    private static final int THUMBNAIL_HEIGHT = 200;
-    private static final String THUMBNAIL_FORMAT = "jpg";
+    /** 상세보기용 표준 이미지 최대 크기 (가로/세로) */
+    private static final int STANDARD_MAX_WIDTH = 1280;
+    private static final int STANDARD_MAX_HEIGHT = 1280;
+    /** JPEG 품질 (0.0 ~ 1.0) */
+    private static final float STANDARD_QUALITY = 0.8f;
+    /** 저장 포맷: JPEG */
+    private static final String IMAGE_FORMAT = "jpg";
 
     private final GridFsTemplate gridFsTemplate;
 
     /**
-     * 메모 첨부용: 동영상은 원본 저장, 이미지는 200x200 썸네일로 저장 후 GridFS에 넣고 정보 반환.
+     * 메모 첨부용:
+     * - 동영상: 원본 그대로 GridFS에 저장
+     * - 이미지: 업로드 원본을 {@link #STANDARD_MAX_WIDTH} x {@link #STANDARD_MAX_HEIGHT} 이하로 리사이즈하고
+     *   {@link #STANDARD_QUALITY} 품질의 JPEG로 압축해 GridFS에 저장 (목록·상세 공용으로 사용).
      * 파일이 없거나 파일명이 비어 있으면 null 반환.
      */
     public StoredFileInfo storeForMemo(MultipartFile file) throws IOException {
@@ -63,7 +70,8 @@ public class ImageService {
     }
 
     /**
-     * 이미지를 썸네일 크기로 리사이즈 후 GridFS에 저장.
+     * 이미지를 표준 크기(상세보기용)로 리사이즈·압축 후 GridFS에 저장.
+     * 저장 크기를 줄이기 위해 원본을 버리고 최적화된 JPEG만 남긴다.
      */
     public StoredFileInfo storeImageWithThumbnail(MultipartFile file) throws IOException {
         if (file == null || file.getOriginalFilename() == null) {
@@ -71,8 +79,9 @@ public class ImageService {
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Thumbnails.of(file.getInputStream())
-                .size(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
-                .outputFormat(THUMBNAIL_FORMAT)
+                .size(STANDARD_MAX_WIDTH, STANDARD_MAX_HEIGHT)
+                .outputQuality(STANDARD_QUALITY)
+                .outputFormat(IMAGE_FORMAT)
                 .toOutputStream(out);
         try (InputStream in = new ByteArrayInputStream(out.toByteArray())) {
             ObjectId objectId = gridFsTemplate.store(in, file.getOriginalFilename(), "image/jpeg");

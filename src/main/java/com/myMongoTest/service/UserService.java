@@ -1,6 +1,8 @@
 package com.myMongoTest.service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,16 +53,10 @@ public class UserService implements UserDetailsService{
         return dateFormat.parse(dateString);
     }
     
-  // 메모 하나 추가. 
-//	@Id
-//	private ObjectId id;
-//	
-//	private String title;
-//	private String message;
+  // 메모 하나 추가. 등록일(dateField)은 항상 서버 현재 시각으로 자동 설정.
     public void mongoMemoInsert(Memo memo) {
-    	Date date = new Date();
-    	String converDate = dateToString(date);
-    	memo.setDateField(converDate);
+    	memo.setDateField(LocalDateTime.now().format(
+    			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         mongoTemplate.insert(memo);
     }
     

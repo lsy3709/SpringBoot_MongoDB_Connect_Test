@@ -1,6 +1,8 @@
 package com.myMongoTest.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -33,6 +35,7 @@ public class MemoController {
 	@PostMapping("/insertMemoWithImage")
 	public ResponseEntity<String> insertMemoWithImage(@RequestPart(value = "key") Memo memo,
 	                                                   @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+		memo.setDateField(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 		StoredFileInfo stored = imageService.storeForMemo(file);
 		if (stored != null) {
 			memo.setImageFileObjectId(stored.getObjectIdString());
@@ -45,6 +48,7 @@ public class MemoController {
 	@ResponseBody
 	@PostMapping("/insertMemo")
 	public ResponseEntity<String> insertMemo(@RequestBody Memo memo) {
+		memo.setDateField(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 		userService.mongoMemoInsert(memo);
 		return ResponseEntity.ok("success");
 	}

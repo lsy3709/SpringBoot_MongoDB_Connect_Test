@@ -249,17 +249,15 @@ function formatExpiryDate(str) {
 function buildMemoRow(val) {
 	var img = val.imageFileName ? "<img src=/images/"+val.imageFileName+">" : "-";
 	var expiry = formatExpiryDate(val.expiryDate);
-	var tagsStr = (val.tags && val.tags.length) ? val.tags.join(", ") : "-";
+	var dateField = (val.dateField || "").trim() || "-";
 	var titleHtml = "<a href='#' class='memo-detail-link' data-id='"+val.id+"'>"+(val.title||"")+"</a>";
 	memoCache[val.id] = val;
-	return "<tr><td>"+img+"</td><td>"+titleHtml+"</td><td>"+(val.message||"")+"</td><td>"+tagsStr+"</td><td>"+expiry+"</td><td>"+(val.dateField||"")+"</td>"+
-		"<td><a href=javascript:dbUpdateFormMemo('"+val.id+"')>수정</a></td>"+
-		"<td><a href=javascript:dbDel('"+val.id+"','"+(val.imageFileName||"")+"')>삭제</a></td></tr>";
+	return "<tr><td>"+img+"</td><td>"+titleHtml+"</td><td>"+expiry+"</td><td>"+dateField+"</td></tr>";
 }
 
 function buildTableHeader() {
 	return "<table class='table table-hover mt-3' border=1><thead><tr>"+
-		"<th>사진</th><th>제목</th><th>메세지</th><th>태그</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody id='dbResultBody'></tbody></table>";
+		"<th>사진</th><th>제목</th><th>유통기한</th><th>등록일</th></tr></thead><tbody id='dbResultBody'></tbody></table>";
 }
 
 function loadCategoriesAndRenderTabs() {
@@ -349,12 +347,12 @@ function loadSearchNext() {
 		searchHasNext = resp.hasNext === true;
 		var $target = $("#searchResult tbody");
 		if ($target.length === 0) {
-			var tbl = "<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>태그</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>";
+			var tbl = "<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>유통기한</th><th>등록일</th></tr></thead><tbody></tbody></table>";
 			$("#searchResult").html(tbl);
 			$target = $("#searchResult tbody");
 		}
 		$.each(list, function(_, val) {
-			$target.append(buildMemoRow(val).replace("dbDel(","dbDel2("));
+			$target.append(buildMemoRow(val));
 			searchLastId = val.id;
 		});
 		searchTotalCount += list.length;
@@ -396,6 +394,11 @@ $(document).on('click', '.memo-detail-link', function(e){
 	$('#memoDetailTags').text(tagsStr);
 	$('#memoDetailExpiry').text(formatExpiryDate(memo.expiryDate));
 	$('#memoDetailDate').text(memo.dateField || '');
+	$('#memoDetailRegistrant').text((memo.registrant || memo.userName || '').trim() || '-');
+
+	// 수정/삭제 버튼용 메모 데이터 저장
+	$('#memoDetailModal').data('memoId', memo.id);
+	$('#memoDetailModal').data('memoImage', memo.imageFileName || '');
 
 	// 이미지/동영상
 	var html = '-';
@@ -410,6 +413,26 @@ $(document).on('click', '.memo-detail-link', function(e){
 
 	var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('memoDetailModal'));
 	modal.show();
+});
+
+// 상세보기 모달 수정 버튼 → 수정 페이지로 이동
+$(document).on('click', '#memoDetailBtnEdit', function(){
+	var id = $('#memoDetailModal').data('memoId');
+	if (id) {
+		var modal = bootstrap.Modal.getInstance(document.getElementById('memoDetailModal'));
+		if (modal) modal.hide();
+		dbUpdateFormMemo(id);
+	}
+});
+
+// 상세보기 모달 삭제 버튼 → 삭제 후 목록 갱신
+$(document).on('click', '#memoDetailBtnDelete', function(){
+	var id = $('#memoDetailModal').data('memoId');
+	var img = $('#memoDetailModal').data('memoImage') || '';
+	if (!id) return;
+	var modal = bootstrap.Modal.getInstance(document.getElementById('memoDetailModal'));
+	if (modal) modal.hide();
+	dbDel(id, img);
 });
 
 
@@ -488,7 +511,7 @@ $("#dbSearchBtn").click(function(){
 		categoryId: currentCategoryId || undefined
 	};
 	searchLastId = null; searchHasNext = true; searchLoading = false; searchTotalCount = 0;
-	$("#searchResult").html("<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>메세지</th><th>태그</th><th>유통기한</th><th>등록일</th><th>수정</th><th>삭제</th></tr></thead><tbody></tbody></table>");
+	$("#searchResult").html("<table class='table table-hover mt-3' border=1><thead><tr><th>사진</th><th>제목</th><th>유통기한</th><th>등록일</th></tr></thead><tbody></tbody></table>");
 	loadSearchNext();
 });
 

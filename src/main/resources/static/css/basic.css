@@ -39,9 +39,20 @@ table {
 }
 body {
 	/* background-image:url('https://i.ibb.co/3493r17/cat.jpg') */
-	
 	/* background-image:url('/image/balloon.jpg') */
-	
+	padding: 5px;
+}
+
+/* 네비게이션 바: body 패딩 상쇄하여 전체 너비 사용 */
+nav.navbar {
+	margin-left: -5px;
+	margin-right: -5px;
+	width: calc(100% + 10px);
+}
+
+/* Home(navbar-brand)만 왼쪽에 3px 여백 */
+nav.navbar .navbar-brand {
+	margin-left: 3px;
 }
 a {
 	      font-family: 'SDSamliphopangche_Outline';

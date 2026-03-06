@@ -394,7 +394,13 @@ $(document).on('click', '.memo-detail-link', function(e){
 	$('#memoDetailTags').text(tagsStr);
 	$('#memoDetailExpiry').text(formatExpiryDate(memo.expiryDate));
 	$('#memoDetailDate').text(memo.dateField || '');
-	$('#memoDetailRegistrant').text((memo.registrant || memo.userName || '').trim() || '-');
+
+	// 등록인 행 제거 (캐시된 구버전 HTML 대비)
+	$('#memoDetailModal dl dt').each(function(){
+		if ($(this).text().trim() === '등록인') {
+			$(this).add($(this).next('dd')).hide();
+		}
+	});
 
 	// 수정/삭제 버튼용 메모 데이터 저장
 	$('#memoDetailModal').data('memoId', memo.id);

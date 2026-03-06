@@ -26,7 +26,7 @@ import com.myMongoTest.service.UserService;
  * MemoController 단위 테스트 (MockMvc, 서비스 목).
  */
 @WebMvcTest(controllers = MemoController.class)
-@Import(SecurityConfig.class)
+@Import({ SecurityConfig.class, com.myMongoTest.config.UserDetailsServiceConfig.class })
 @DisplayName("MemoController 단위 테스트")
 class MemoControllerTest {
 

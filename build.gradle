@@ -55,3 +55,10 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// 샘플 데이터 100건 삽입: ./gradlew bootRun -PsampleData=true
+bootRun {
+	if (project.hasProperty('sampleData')) {
+		args '--spring.profiles.active=sample-data'
+	}
+}

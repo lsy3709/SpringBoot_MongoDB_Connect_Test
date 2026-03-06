@@ -18,8 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,7 +30,7 @@ import com.myMongoTest.config.SecurityConfig;
  * UserController 단위 테스트 (MockMvc, 서비스 목).
  */
 @WebMvcTest(controllers = UserController.class)
-@Import(SecurityConfig.class)
+@Import({ SecurityConfig.class, com.myMongoTest.config.UserDetailsServiceConfig.class })
 @DisplayName("UserController 단위 테스트")
 class UserControllerTest {
 

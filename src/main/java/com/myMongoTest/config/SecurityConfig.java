@@ -1,9 +1,11 @@
 package com.myMongoTest.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -13,9 +15,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
+    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(LoginRedirectAuthenticationSuccessHandler loginSuccessHandler) {
+    public SecurityConfig(LoginRedirectAuthenticationSuccessHandler loginSuccessHandler,
+                          @Qualifier("userDetailsServiceForSecurity") UserDetailsService userDetailsService) {
         this.loginSuccessHandler = loginSuccessHandler;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
@@ -32,6 +37,7 @@ public class SecurityConfig {
                 .rememberMe(rm -> rm
                         .key("smart-inventory-remember-me")
                         .tokenValiditySeconds(60 * 60 * 24 * 14)  // 14일
+                        .userDetailsService(userDetailsService)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

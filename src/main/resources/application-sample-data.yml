@@ -1,0 +1,5 @@
+# sample-data 프로파일: 기동 시 메모 샘플 100건 삽입
+# 사용: ./gradlew bootRun -PsampleData=true  또는  --spring.profiles.active=sample-data
+logging:
+  level:
+    com.myMongoTest.config.SampleDataLoader: INFO

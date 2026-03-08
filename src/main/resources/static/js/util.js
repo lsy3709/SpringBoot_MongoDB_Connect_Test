@@ -427,14 +427,14 @@ $(document).on('click', '.memo-detail-link', function(e){
 // 상세보기 모달 수정 버튼 → 수정 페이지로 이동
 $(document).on('click', '#memoDetailBtnEdit', function(){
 	var id = $('#memoDetailModal').data('memoId');
-	if (id) {
-		var modal = bootstrap.Modal.getInstance(document.getElementById('memoDetailModal'));
-		if (modal) modal.hide();
-		dbUpdateFormMemo(id);
-	}
+	if (!id) return;
+	if (!confirm('수정 페이지로 이동할까요?')) return;
+	var modal = bootstrap.Modal.getInstance(document.getElementById('memoDetailModal'));
+	if (modal) modal.hide();
+	dbUpdateFormMemo(id);
 });
 
-// 상세보기 모달 삭제 버튼 → 삭제 후 목록 갱신
+// 상세보기 모달 삭제 버튼 → 확인 후 삭제( dbDel 내부 confirm 1회 ), 목록 갱신
 $(document).on('click', '#memoDetailBtnDelete', function(){
 	var id = $('#memoDetailModal').data('memoId');
 	var img = $('#memoDetailModal').data('memoImage') || '';

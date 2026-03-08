@@ -303,6 +303,9 @@ $("#btnConfirmAddTab").click(function(){
 
 var init = function(){
 	allLastId = null; allHasNext = true; allLoading = false; allTotalCount = 0;
+	currentSearchData = null;
+	$("#fullListSection").show();
+	$("#searchResultSection").hide();
 	loadCategoriesAndRenderTabs();
 	$("#dbResult").html(buildTableHeader());
 	loadAllNext();
@@ -510,6 +513,8 @@ $("#uploadDBWithImageBtn").click(function(){
 $("#dbSearchBtn").click(function(){
 	var term = ($("#searchContent").val() || "").trim();
 	if (term) { saveRecentSearch(term); applyAutocomplete(); }
+	$("#searchResultSection").show();
+	$("#fullListSection").hide();
 	$('#findSearchMemoCount2').show();
 	currentSearchData = {
 		searchContent: term || $("#searchContent").val(),

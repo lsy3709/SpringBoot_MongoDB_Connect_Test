@@ -127,24 +127,22 @@ layout:decorate="~{layout/default_layout2}">
     	</div>
 
     <br>
-    <h2>검색 목록</h2>
-    <h3 id="findSearchMemoCount2">검색 count : <span id="findSearchMemoCount"></span></h3>
-    <div id="searchResult"></div>
+    <!-- 검색 모드: 검색 시에만 표시 -->
+    <div id="searchResultSection" style="display:none;">
+      <h2>검색 목록</h2>
+      <h3 id="findSearchMemoCount2">검색 count : <span id="findSearchMemoCount"></span></h3>
+      <div id="searchResult"></div>
+    </div>
 
- <!-- <input type="file" id="image" onchange="loadImage()"> -->
     <br>
     <button id="scroll-to-top" class="btn btn-primary">Top</button>
 
-
-<h2>전체 목록</h2>
-
-    <!--새로고침 후 적용되어서 별로-->
-    <!--<h3>전체목록 갯수: <span th:text="${count}"></span> </h3>-->
-
-    <!--데이터만 변경하기.-->
-    <h3>전체 count : <span id="findAllMemoCount"></span></h3>
-
+    <!-- 전체 목록 모드: 검색이 아닐 때 표시 -->
+    <div id="fullListSection">
+      <h2>전체 목록</h2>
+      <h3>전체 count : <span id="findAllMemoCount"></span></h3>
       <div id="dbResult"></div>
+    </div>
 
       <!-- 메모 상세보기 모달 -->
       <div class="modal fade" id="memoDetailModal" tabindex="-1">

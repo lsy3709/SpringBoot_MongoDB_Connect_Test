@@ -12,6 +12,8 @@ spring:
       max-request-size: 10MB
 
 server:
+  # 프록시(HTTPS 종료) 뒤에서 리다이렉트·URL이 https로 생성되도록
+  forward-headers-strategy: framework
   servlet:
     session:
       cookie:

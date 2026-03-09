@@ -34,6 +34,6 @@ logging:
   file:
     name: /home/ec2-user/logs/spring-mongodb.log
 
-app:
-  default-admin:
-    force-reset-password: true
+# app:
+#   default-admin:
+#     force-reset-password: true

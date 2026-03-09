@@ -38,6 +38,6 @@ logging:
     name: /home/ec2-user/logs/spring-mongodb.log
 
 # admin 비밀번호를 admin1234로 강제 리셋 (로그인 확인 후 주석 처리 권장)
-app:
-  default-admin:
-    force-reset-password: true
+#app:
+#  default-admin:
+#    force-reset-password: true

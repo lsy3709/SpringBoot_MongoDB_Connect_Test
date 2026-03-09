@@ -34,7 +34,7 @@ import com.myMongoTest.service.UserService;
  * UserController 단위 테스트 (MockMvc, 서비스 목).
  */
 @WebMvcTest(controllers = UserController.class)
-@Import({ SecurityConfig.class })
+@Import({ SecurityConfig.class, LoginRedirectAuthenticationSuccessHandler.class, LoginFailureLoggingHandler.class })
 @DisplayName("UserController 단위 테스트")
 class UserControllerTest {
 
@@ -49,12 +49,6 @@ class UserControllerTest {
 
     @MockBean
     private ImageService imageService;
-
-    @MockBean
-    private LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
-
-    @MockBean
-    private LoginFailureLoggingHandler loginFailureLoggingHandler;
 
     @MockBean
     private MessageSource messageSource;

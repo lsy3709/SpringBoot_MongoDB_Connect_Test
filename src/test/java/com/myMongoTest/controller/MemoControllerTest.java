@@ -3,6 +3,7 @@ package com.myMongoTest.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,6 +25,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.myMongoTest.config.LoginFailureLoggingHandler;
+import com.myMongoTest.config.LoginRedirectAuthenticationSuccessHandler;
 import com.myMongoTest.config.SecurityConfig;
 import com.myMongoTest.document.Category;
 import com.myMongoTest.document.Memo;
@@ -34,7 +37,7 @@ import com.myMongoTest.service.UserService;
  * MemoController 단위 테스트 (MockMvc, 서비스 목).
  */
 @WebMvcTest(controllers = MemoController.class)
-@Import({ SecurityConfig.class })
+@Import({ SecurityConfig.class, LoginRedirectAuthenticationSuccessHandler.class, LoginFailureLoggingHandler.class })
 @DisplayName("MemoController 단위 테스트")
 class MemoControllerTest {
 
@@ -46,9 +49,6 @@ class MemoControllerTest {
 
 	@MockBean
 	private ImageService imageService;
-
-	@MockBean
-	private com.myMongoTest.config.LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
 
 	@Test
 	@DisplayName("GET /findAllMemo 인증 시 200 + 리스트")
@@ -96,7 +96,8 @@ class MemoControllerTest {
 		mockMvc.perform(post("/updateMemo")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ObjectMapper().writeValueAsString(body))
-						.with(user("admin").roles("ADMIN")))
+						.with(user("admin").roles("ADMIN"))
+						.with(csrf()))
 				.andExpect(status().isOk());
 
 		verify(userService).mongoMemoUpdate(org.mockito.ArgumentMatchers.argThat(m -> id.equals(m.getId()) && "newCatId".equals(m.getCategoryId())));

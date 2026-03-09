@@ -7,7 +7,7 @@ spring:
     mongodb:
       # [주의] 실제 운영 시에는 반드시 몽고DB에 계정을 만들고 아래처럼 적용하세요.
       # uri: mongodb://<username>:<password>@localhost:27017/blog3?authSource=admin
-      uri: mongodb://localhost:27017/blog3 # Docker에서 MongoDB 컨테이너면 호스트명(예: mongo)으로 변경
+      uri: mongodb://mongodb-container:27017/blog3 # Docker에서 MongoDB 컨테이너면 호스트명(예: mongo)으로 변경
   servlet:
     multipart:
       max-file-size: 10MB

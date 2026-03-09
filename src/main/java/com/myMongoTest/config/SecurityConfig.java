@@ -43,7 +43,8 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
-                        .deleteCookies("remember-me")  // 자동 로그인 쿠키 삭제
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID", "remember-me")  // 세션·자동 로그인 쿠키 삭제로 재로그인 시 인증 오류 방지
                 );
 
         // 2. URL 경로별 권한 설정 (authorizeHttpRequests & requestMatchers 사용)

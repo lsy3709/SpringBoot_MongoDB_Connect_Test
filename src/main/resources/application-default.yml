@@ -1,4 +1,5 @@
 # 기본 설정 — 프로파일 미지정 시 적용 (로컬 개발용)
+# 동일 머신에서 Docker MongoDB(-p 27017:27017) 사용 시 localhost:27017
 spring:
   data:
     mongodb:
@@ -21,3 +22,9 @@ server:
 app:
   default-admin:
     force-reset-password: true
+
+# 로그인 디버깅 시 로그 확인 (원인 파악 후 레벨 낮춰도 됨)
+logging:
+  level:
+    com.myMongoTest: INFO
+    org.springframework.security.web.authentication: DEBUG

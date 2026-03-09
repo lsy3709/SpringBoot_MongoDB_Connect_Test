@@ -15,11 +15,14 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
+    private final LoginFailureLoggingHandler loginFailureLoggingHandler;
     private final UserDetailsService userDetailsService;
 
     public SecurityConfig(LoginRedirectAuthenticationSuccessHandler loginSuccessHandler,
+                          LoginFailureLoggingHandler loginFailureLoggingHandler,
                           @Qualifier("userDetailsServiceForSecurity") UserDetailsService userDetailsService) {
         this.loginSuccessHandler = loginSuccessHandler;
+        this.loginFailureLoggingHandler = loginFailureLoggingHandler;
         this.userDetailsService = userDetailsService;
     }
 
@@ -31,8 +34,9 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(loginSuccessHandler)
+                        .failureHandler(loginFailureLoggingHandler)
                         .usernameParameter("email")
-                        .failureUrl("/login/error")
+                        .passwordParameter("password")
                 )
                 .rememberMe(rm -> rm
                         .key("smart-inventory-remember-me")
@@ -41,10 +45,10 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/login?logout")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("remember-me")  // 자동 로그인 쿠키 삭제
+                        .deleteCookies("remember-me")
                 );
 
         // 2. URL 경로별 권한 설정 (authorizeHttpRequests & requestMatchers 사용)

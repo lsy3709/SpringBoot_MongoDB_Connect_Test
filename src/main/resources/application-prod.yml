@@ -1,43 +1,38 @@
-# [AWS 필수] 1) 반드시 프로파일 prod 로 실행: --spring.profiles.active=prod 또는 SPRING_PROFILES_ACTIVE=prod
-# [AWS Docker] 2) MongoDB가 별도 컨테이너면 localhost 불가 → 아래 uri를 실제 호스트로 (예: mongodb://mongo:27017/blog3)
+# [필수] 프로파일 prod 로 실행: --spring.profiles.active=prod 또는 SPRING_PROFILES_ACTIVE=prod
+# [동일 머신] 스프링부트(호스트) + Docker MongoDB(-p 27017:27017) 이면 localhost:27017 사용
+# [스프링부트도 Docker] 앱·MongoDB 둘 다 컨테이너면 MongoDB 서비스명 사용 (예: mongodb://mongodb-container:27017/blog3)
 spring:
   application:
     name: SpringBoot_MongoDB_Connect_Test
   data:
     mongodb:
-      # [주의] 실제 운영 시에는 반드시 몽고DB에 계정을 만들고 아래처럼 적용하세요.
-      # uri: mongodb://<username>:<password>@localhost:27017/blog3?authSource=admin
-      uri: mongodb://localhost:27017/blog3 # Docker에서 MongoDB 컨테이너면 호스트명(예: mongo)으로 변경
+      uri: mongodb://localhost:27017/blog3
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
 
-#server:
-#  # 프록시(HTTPS 종료) 뒤에서 리다이렉트·URL이 https로 생성되도록
-#  forward-headers-strategy: framework
-#  servlet:
-#    session:
-#      cookie:
-#        http-only: true
-#        secure: true
-#        # same-site: none — 프록시·리다이렉트 환경에서 쿠키 전송 보장 (POST /login 403 방지)
-#        same-site: none
-#  tomcat:
-#    threads:
-#      max: 50 # 1GB RAM 환경 최적화 (유지)
-#
-## 패키지별 로깅 레벨 및 파일 저장 설정
-#logging:
-#  level:
-#    root: INFO
-#    com.myMongoTest: INFO
-#    org.springframework.security: INFO
-#  # 운영 환경에서는 로그를 파일로 남겨두는 것이 안전합니다.
-#  file:
-#    name: /home/ec2-user/logs/spring-mongodb.log
+server:
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+        same-site: none
+  tomcat:
+    threads:
+      max: 50
 
-# admin 비밀번호를 admin1234로 강제 리셋 (로그인 확인 후 주석 처리 권장)
-#app:
-#  default-admin:
-#    force-reset-password: true
+logging:
+  level:
+    root: INFO
+    com.myMongoTest: INFO
+    org.springframework.security: INFO
+  file:
+    name: /home/ec2-user/logs/spring-mongodb.log
+
+# admin 비밀번호를 admin1234로 강제 리셋 (로그인 정상화 후 false로 변경 가능)
+app:
+  default-admin:
+    force-reset-password: true

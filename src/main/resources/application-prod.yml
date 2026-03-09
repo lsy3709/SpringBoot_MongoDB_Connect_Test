@@ -1,3 +1,5 @@
+# [AWS 필수] 1) 반드시 프로파일 prod 로 실행: --spring.profiles.active=prod 또는 SPRING_PROFILES_ACTIVE=prod
+# [AWS Docker] 2) MongoDB가 별도 컨테이너면 localhost 불가 → 아래 uri를 실제 호스트로 (예: mongodb://mongo:27017/blog3)
 spring:
   application:
     name: SpringBoot_MongoDB_Connect_Test
@@ -5,7 +7,7 @@ spring:
     mongodb:
       # [주의] 실제 운영 시에는 반드시 몽고DB에 계정을 만들고 아래처럼 적용하세요.
       # uri: mongodb://<username>:<password>@localhost:27017/blog3?authSource=admin
-      uri: mongodb://localhost:27017/blog3 # 계정 세팅 전까지만 임시 유지
+      uri: mongodb://localhost:27017/blog3 # Docker에서 MongoDB 컨테이너면 호스트명(예: mongo)으로 변경
   servlet:
     multipart:
       max-file-size: 10MB
@@ -36,6 +38,6 @@ logging:
     name: /home/ec2-user/logs/spring-mongodb.log
 
 # admin 비밀번호를 admin1234로 강제 리셋 (로그인 확인 후 주석 처리 권장)
-#app:
-#  default-admin:
-#    force-reset-password: true
+app:
+  default-admin:
+    force-reset-password: true

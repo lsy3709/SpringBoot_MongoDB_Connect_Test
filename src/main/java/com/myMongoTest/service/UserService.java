@@ -65,7 +65,13 @@ public class UserService implements UserDetailsService{
   //하나 추가. 
     
     public void mongoUser2Insert(User2 user) {
+        if (user == null) {
+            log.warn("[회원가입 저장] user 파라미터가 null 입니다.");
+            return;
+        }
+        log.info("[회원가입 저장] MongoDB insert 시작: email={}, role={}", user.getEmail(), user.getRole());
         mongoTemplate.insert(user);
+        log.info("[회원가입 저장] MongoDB insert 완료: email={}", user.getEmail());
     }
     
     
@@ -216,6 +222,7 @@ public class UserService implements UserDetailsService{
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        log.info("[로그인 시도] loadUserByUsername 호출: email={}", email);
         User2 user2 = mongoFindOneUser2Email(email);
 
         if (user2 == null) {
@@ -226,7 +233,13 @@ public class UserService implements UserDetailsService{
         // DB 저장 시 공백이 들어간 경우 대비 trim
         String storedPassword = user2.getPassword() != null ? user2.getPassword().trim() : null;
         boolean isBcrypt = storedPassword != null && storedPassword.startsWith("$2a$");
-        log.info("[로그인] 사용자 조회: email={}, DB비밀번호BCrypt여부={}", email, isBcrypt);
+        String encodedPrefix = storedPassword != null && storedPassword.length() >= 7
+                ? storedPassword.substring(0, 7) : "(null)";
+        log.info("[로그인] 사용자 조회 완료: email={}, role={}, 비밀번호Prefix={}, BCrypt여부={}",
+                email,
+                user2.getRole(),
+                encodedPrefix,
+                isBcrypt);
 
         return User.builder()
                 .username(user2.getEmail())
@@ -242,7 +255,13 @@ public class UserService implements UserDetailsService{
 		
 		//기존 1:1 검색
 		Query query = new Query(criteria);
+		log.debug("[사용자 조회] email 기준 MongoDB findOne 시작: email={}", email);
 		User2 user2 = mongoTemplate.findOne(query, User2.class);
+		if (user2 == null) {
+		    log.debug("[사용자 조회] 결과 없음: email={}", email);
+		} else {
+		    log.debug("[사용자 조회] 결과 존재: email={}, role={}", user2.getEmail(), user2.getRole());
+		}
 		return user2;
     }
 

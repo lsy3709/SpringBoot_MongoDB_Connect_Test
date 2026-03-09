@@ -7,7 +7,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.myMongoTest.document.Memo;
@@ -17,9 +20,11 @@ import com.myMongoTest.support.PasswordPolicyValidator;
 import com.myMongoTest.support.ValidationResult;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
 	private final UserService userService;
@@ -57,21 +62,41 @@ public class UserController {
 
 	@PostMapping("/joinUser")
 	public String joinUser(User2 user, RedirectAttributes redirectAttributes, Locale locale) {
+		// 회원가입 전체 흐름 디버깅용 로그
+		if (user != null) {
+			log.info("[회원가입 요청] email={}, role={}", user.getEmail(), user.getRole());
+		} else {
+			log.warn("[회원가입 요청] user 파라미터가 null 입니다.");
+		}
+
 		ValidationResult passwordResult = PasswordPolicyValidator.validate(user.getPassword());
 		if (passwordResult != null) {
+			log.warn("[회원가입 실패] 비밀번호 정책 위반: code={}, args={}",
+					passwordResult.getMessageCode(), passwordResult.getArgs());
 			String msg = messageSource.getMessage(passwordResult.getMessageCode(),
 					passwordResult.getArgs(), locale);
 			redirectAttributes.addFlashAttribute("joinErrorMsg", msg);
 			return "redirect:/joinForm";
 		}
 		String email = user.getEmail();
+		log.debug("[회원가입 검증] 중복 이메일 체크 시작: email={}", email);
 		if (userService.mongoFindOneUser2Email(email) != null) {
+			log.warn("[회원가입 실패] 중복된 이메일: email={}", email);
 			redirectAttributes.addFlashAttribute("joinErrorMsg",
 					messageSource.getMessage("join.error.duplicate_email", null, locale));
 			return "redirect:/joinForm";
 		}
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		String rawPassword = user.getPassword();
+		String encodedPassword = passwordEncoder.encode(rawPassword);
+		log.info("[회원가입 처리] 비밀번호 인코딩 완료: email={}, rawLength={}, encodedPrefix={}",
+				email,
+				rawPassword != null ? rawPassword.length() : 0,
+				encodedPassword != null && encodedPassword.length() >= 7 ? encodedPassword.substring(0, 7) : "(null)");
+
+		user.setPassword(encodedPassword);
 		userService.mongoUser2Insert(user);
+		log.info("[회원가입 성공] email={}, role={}", email, user.getRole());
+
 		redirectAttributes.addFlashAttribute("joinSuccessMsg",
 				messageSource.getMessage("join.success", null, locale));
 		return "redirect:/login";

@@ -121,6 +121,7 @@ public class MemoController {
 		ObjectId objectId = new ObjectId(id);
 		Memo memo = userService.mongoFindOneMemo(objectId);
 		model.addAttribute("memo", memo);
+		model.addAttribute("categories", userService.mongoFindAllCategory());
 		return "updateForm";
 	}
 

@@ -547,12 +547,14 @@ $("#dbUpdateBtn2").click(function(){
 		var formData = new FormData();
 
 		var tagsArr = parseTagsStr($("#dbTags").val());
+		var catId = $("#dbCategoryId").val();
 		var data = {
 			"id": $("#dbId").val(),
 			"title": $("#dbTitle").val(),
 			"message": $("#dbMessage").val(),
 			"expiryDate": $("#dbExpiryDate").val() || null,
-			"tags": tagsArr.length ? tagsArr : null
+			"tags": tagsArr.length ? tagsArr : null,
+			"categoryId": (catId && catId.trim() !== "") ? catId : null
 		}
 				var input = document.getElementById("image");
 				var file = input.files[0];

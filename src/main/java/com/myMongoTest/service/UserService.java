@@ -262,7 +262,7 @@ public void mongoMemoUpdate(Memo memo) {
    update.set("title", memo.getTitle());
    update.set("message", memo.getMessage());
    update.set("imageFileName", memo.getImageFileName());
-   if (memo.getCategoryId() != null) update.set("categoryId", memo.getCategoryId());
+   update.set("categoryId", memo.getCategoryId());
    if (memo.getExpiryDate() != null) update.set("expiryDate", memo.getExpiryDate());
    if (memo.getTags() != null) update.set("tags", memo.getTags());
 

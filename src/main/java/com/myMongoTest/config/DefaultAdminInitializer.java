@@ -61,13 +61,19 @@ public class DefaultAdminInitializer implements ApplicationRunner {
         String encodedPassword = passwordEncoder.encode(DEFAULT_ADMIN_PASSWORD);
 
         if (existing != null) {
+            log.info("기본 관리자 계정 이미 존재: email={}", DEFAULT_ADMIN_EMAIL);
             if (forceResetPassword) {
                 // 이미 기본 비밀번호에서 변경된 경우에는 보안을 위해 다시 기본값으로 되돌리지 않는다.
                 // (실수로 force-reset-password=true가 설정된 상태로 배포되어도, 변경된 비밀번호는 유지)
                 String currentEncoded = existing.getPassword();
+                String currentPrefix = currentEncoded != null && currentEncoded.length() >= 7
+                        ? currentEncoded.substring(0, 7) : "(null)";
+                log.info("force-reset-password=true, 현재 저장된 admin 비밀번호 Prefix={}", currentPrefix);
                 if (currentEncoded != null && passwordEncoder.matches(DEFAULT_ADMIN_PASSWORD, currentEncoded)) {
                     userService.mongoUser2UpdatePassword(DEFAULT_ADMIN_EMAIL, encodedPassword);
-                    log.info("기본 관리자 비밀번호 강제 리셋(기본값 유지) 완료: {} / {}", DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD);
+                    String newPrefix = encodedPassword.length() >= 7 ? encodedPassword.substring(0, 7) : "(null)";
+                    log.info("기본 관리자 비밀번호 강제 리셋(기본값 유지) 완료: email={}, newPrefix={}",
+                            DEFAULT_ADMIN_EMAIL, newPrefix);
                 } else {
                     log.warn("force-reset-password=true 이지만, admin 비밀번호가 이미 기본값에서 변경되어 있어 강제 리셋을 수행하지 않습니다.");
                 }
@@ -82,6 +88,8 @@ public class DefaultAdminInitializer implements ApplicationRunner {
         admin.setPassword(encodedPassword);
         admin.setRole(DEFAULT_ADMIN_ROLE);
         userService.mongoUser2Insert(admin);
-        log.info("기본 관리자 계정 생성 완료: {} / {}", DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD);
+        String createdPrefix = encodedPassword.length() >= 7 ? encodedPassword.substring(0, 7) : "(null)";
+        log.info("기본 관리자 계정 생성 완료: email={}, role={}, encodedPrefix={}",
+                DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_ROLE, createdPrefix);
     }
 }

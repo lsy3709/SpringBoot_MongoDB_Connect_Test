@@ -64,7 +64,8 @@ public class DefaultAdminInitializer implements ApplicationRunner {
             if (forceResetPassword) {
                 // 이미 기본 비밀번호에서 변경된 경우에는 보안을 위해 다시 기본값으로 되돌리지 않는다.
                 // (실수로 force-reset-password=true가 설정된 상태로 배포되어도, 변경된 비밀번호는 유지)
-                if (passwordEncoder.matches(DEFAULT_ADMIN_PASSWORD, existing.getPassword())) {
+                String currentEncoded = existing.getPassword();
+                if (currentEncoded != null && passwordEncoder.matches(DEFAULT_ADMIN_PASSWORD, currentEncoded)) {
                     userService.mongoUser2UpdatePassword(DEFAULT_ADMIN_EMAIL, encodedPassword);
                     log.info("기본 관리자 비밀번호 강제 리셋(기본값 유지) 완료: {} / {}", DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD);
                 } else {

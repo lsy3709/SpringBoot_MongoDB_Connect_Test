@@ -32,8 +32,6 @@ logging:
   file:
     name: /home/ec2-user/logs/spring-mongodb.log
 
-# 운영(prod)에서는 기본 관리자 비밀번호 강제 리셋을 항상 비활성화해야 함
-# (테스트/로컬에서만 true 사용 권장)
 app:
   default-admin:
     force-reset-password: false

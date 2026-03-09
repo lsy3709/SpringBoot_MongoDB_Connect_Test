@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +27,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        // 0. CSRF 설정 — Spring Security 6.x 지연(deferred) 토큰 문제 방지
+        //    CsrfTokenRequestAttributeHandler: 토큰을 즉시 로드하여 Thymeleaf 폼에서 확실히 사용 가능
+        CsrfTokenRequestAttributeHandler csrfHandler = new CsrfTokenRequestAttributeHandler();
+        http
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
+                        .csrfTokenRequestHandler(csrfHandler)
+                );
 
         // 1. 로그인 및 로그아웃 설정 (성공 시 중간 경유 페이지 사용으로 리다이렉트 오류 방지)
         http

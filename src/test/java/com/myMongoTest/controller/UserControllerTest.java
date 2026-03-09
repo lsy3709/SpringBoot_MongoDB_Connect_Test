@@ -1,7 +1,7 @@
 package com.myMongoTest.controller;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,6 +9,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.myMongoTest.document.User2;
 import com.myMongoTest.service.ImageService;
@@ -95,5 +99,38 @@ class UserControllerTest {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    @DisplayName("로그아웃 후 admin/admin1234 재로그인 정상 동작")
+    void logout_thenRelogin_succeeds() throws Exception {
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password("encoded")
+                .roles("ADMIN")
+                .build();
+        when(userService.loadUserByUsername(eq("admin"))).thenReturn(admin);
+        when(passwordEncoder.matches(eq("admin1234"), eq("encoded"))).thenReturn(true);
+
+        MockHttpSession session = new MockHttpSession();
+        // 1) 로그인
+        mockMvc.perform(post("/login")
+                        .param("email", "admin")
+                        .param("password", "admin1234")
+                        .with(csrf())
+                        .session(session))
+                .andExpect(status().is3xxRedirection());
+
+        // 2) 로그아웃
+        mockMvc.perform(post("/logout").with(csrf()).session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+
+        // 3) 재로그인 (새 세션으로 시도)
+        mockMvc.perform(post("/login")
+                        .param("email", "admin")
+                        .param("password", "admin1234")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection());
     }
 }

@@ -15,11 +15,14 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
+    private final LoginFailureLoggingHandler loginFailureLoggingHandler;
     private final UserDetailsService userDetailsService;
 
     public SecurityConfig(LoginRedirectAuthenticationSuccessHandler loginSuccessHandler,
+                          LoginFailureLoggingHandler loginFailureLoggingHandler,
                           @Qualifier("userDetailsServiceForSecurity") UserDetailsService userDetailsService) {
         this.loginSuccessHandler = loginSuccessHandler;
+        this.loginFailureLoggingHandler = loginFailureLoggingHandler;
         this.userDetailsService = userDetailsService;
     }
 
@@ -31,8 +34,9 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(loginSuccessHandler)
+                        .failureHandler(loginFailureLoggingHandler)
                         .usernameParameter("email")
-                        .failureUrl("/login/error")
+                        .passwordParameter("password")
                 )
                 .rememberMe(rm -> rm
                         .key("smart-inventory-remember-me")
@@ -41,9 +45,10 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/login?logout")
                         .invalidateHttpSession(true)
-                        .deleteCookies("remember-me")  // 자동 로그인 쿠키 삭제
+                        .clearAuthentication(true)
+                        .deleteCookies("remember-me")
                 );
 
         // 2. URL 경로별 권한 설정 (authorizeHttpRequests & requestMatchers 사용)
@@ -52,7 +57,7 @@ public class SecurityConfig {
                         // 정적 리소스(css, js, 이미지)는 권한 없이 누구나 접근 허용
                         .requestMatchers("/css/**", "/js/**", "/image/**", "/images/**").permitAll()
                         // 메인 페이지, 로그인/회원가입 관련 페이지 누구나 접근 허용
-                        .requestMatchers("/", "/main", "/login", "/joinUser", "/joinForm", "/error").permitAll()
+                        .requestMatchers("/", "/main", "/login", "/login/error", "/joinUser", "/joinForm", "/error").permitAll()
                         // 로그인 성공 후 세션 확정을 위한 중간 리다이렉트 페이지 (인증 필요)
                         .requestMatchers("/login/redirect").authenticated()
                         // /admin 경로는 "ADMIN" 권한(역할)을 가진 사용자만 접근 가능

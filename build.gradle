@@ -54,6 +54,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	// BcryptHashPrintTest 등 테스트의 System.out 출력을 콘솔에 표시
+	testLogging {
+		showStandardStreams = true
+	}
 }
 
 // 샘플 데이터 100건 삽입: ./gradlew bootRun -PsampleData=true

@@ -31,8 +31,10 @@ import com.myMongoTest.document.Memo;
 import com.myMongoTest.document.User2;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService implements UserDetailsService{
@@ -214,18 +216,22 @@ public class UserService implements UserDetailsService{
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//    	  System.out.println("로그인 하나요?");
         User2 user2 = mongoFindOneUser2Email(email);
 
-        if(user2 == null){
+        if (user2 == null) {
+            log.warn("[로그인 실패] 사용자 없음: email={}", email);
             throw new UsernameNotFoundException(email);
         }
-        
+
+        // DB 저장 시 공백이 들어간 경우 대비 trim
+        String storedPassword = user2.getPassword() != null ? user2.getPassword().trim() : null;
+        boolean isBcrypt = storedPassword != null && storedPassword.startsWith("$2a$");
+        log.info("[로그인] 사용자 조회: email={}, DB비밀번호BCrypt여부={}", email, isBcrypt);
 
         return User.builder()
                 .username(user2.getEmail())
-                .password(user2.getPassword())
-                .roles(user2.getRole())
+                .password(storedPassword)
+                .roles(user2.getRole() != null ? user2.getRole().trim() : "USER")
                 .build();
     }
     

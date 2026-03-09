@@ -1,0 +1,30 @@
+# 기본 설정 — 프로파일 미지정 시 적용 (로컬 개발용)
+# 동일 머신에서 Docker MongoDB(-p 27017:27017) 사용 시 localhost:27017
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/blog3
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# 로컬 HTTP용 — secure: false 필수
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: false
+        same-site: lax
+
+# admin 비밀번호를 admin1234로 리셋
+app:
+  default-admin:
+    force-reset-password: true
+
+# 로그인 디버깅 시 로그 확인 (원인 파악 후 레벨 낮춰도 됨)
+logging:
+  level:
+    com.myMongoTest: INFO
+    org.springframework.security.web.authentication: DEBUG

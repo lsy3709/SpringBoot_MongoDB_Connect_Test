@@ -1,0 +1,24 @@
+# 로컬 개발용 설정 (프로파일: local)
+# 실행: --spring.profiles.active=local
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/blog3
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# 로컬 HTTP용 — secure: false 필수 (http://localhost에서는 true 시 세션 안 붙음)
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: false
+        same-site: lax
+
+# admin 비밀번호 리셋 — 로그인 안 될 때 1회 적용 후 false로 변경
+app:
+  default-admin:
+    force-reset-password: true

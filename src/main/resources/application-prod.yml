@@ -1,38 +1,37 @@
+# [필수] 프로파일 prod 로 실행: --spring.profiles.active=prod 또는 SPRING_PROFILES_ACTIVE=prod
+# [동일 머신] 스프링부트(호스트) + Docker MongoDB(-p 27017:27017) 이면 localhost:27017 사용
+# [스프링부트도 Docker] 앱·MongoDB 둘 다 컨테이너면 MongoDB 서비스명 사용 (예: mongodb://mongodb-container:27017/blog3)
 spring:
   application:
     name: SpringBoot_MongoDB_Connect_Test
   data:
     mongodb:
-      # [주의] 실제 운영 시에는 반드시 몽고DB에 계정을 만들고 아래처럼 적용하세요.
-      # uri: mongodb://<username>:<password>@localhost:27017/blog3?authSource=admin
-      uri: mongodb://localhost:27017/blog3 # 계정 세팅 전까지만 임시 유지
+      uri: mongodb://localhost:27017/blog3
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
 
 server:
+  forward-headers-strategy: framework
   servlet:
     session:
       cookie:
         http-only: true
-        secure: true # HTTPS(도메인) 적용 후에는 반드시 주석 해제(true) 하세요!
-        same-site: lax
+        secure: true
+        same-site: none
   tomcat:
     threads:
-      max: 50 # 1GB RAM 환경 최적화 (유지)
+      max: 50
 
-# 패키지별 로깅 레벨 및 파일 저장 설정
 logging:
   level:
     root: INFO
     com.myMongoTest: INFO
     org.springframework.security: INFO
-  # 운영 환경에서는 로그를 파일로 남겨두는 것이 안전합니다.
   file:
     name: /home/ec2-user/logs/spring-mongodb.log
 
-# 운영(prod)에서는 기본 관리자 비밀번호 강제 리셋은 비활성화. (테스트/로컬에서만 true 사용)
 app:
   default-admin:
     force-reset-password: false

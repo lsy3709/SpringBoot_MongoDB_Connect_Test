@@ -10,13 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import com.myMongoTest.document.User2;
-import com.myMongoTest.service.ImageService;
-import com.myMongoTest.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +17,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.MessageSource;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.myMongoTest.config.LoginFailureLoggingHandler;
 import com.myMongoTest.config.LoginRedirectAuthenticationSuccessHandler;
 import com.myMongoTest.config.SecurityConfig;
+import com.myMongoTest.document.User2;
+import com.myMongoTest.service.ImageService;
+import com.myMongoTest.service.UserService;
 
 /**
  * UserController 단위 테스트 (MockMvc, 서비스 목).
@@ -52,6 +52,9 @@ class UserControllerTest {
 
     @MockBean
     private LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
+
+    @MockBean
+    private LoginFailureLoggingHandler loginFailureLoggingHandler;
 
     @MockBean
     private MessageSource messageSource;
@@ -124,7 +127,7 @@ class UserControllerTest {
         // 2) 로그아웃
         mockMvc.perform(post("/logout").with(csrf()).session(session))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(redirectedUrl("/login?logout"));
 
         // 3) 재로그인 (새 세션으로 시도)
         mockMvc.perform(post("/login")

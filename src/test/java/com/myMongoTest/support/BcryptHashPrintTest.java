@@ -2,7 +2,6 @@ package com.myMongoTest.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,11 +50,10 @@ class BcryptHashPrintTest {
     }
 
     /**
-     * MongoDB에 넣을 BCrypt 해시 출력. 평문 저장 시 한 번만 실행해 해시를 복사해 사용.
-     * 사용: @Disabled 제거 후 ./gradlew test --tests BcryptHashPrintTest.printAdmin1234Hash
+     * MongoDB에 넣을 BCrypt 해시 출력. 평문 저장 시 실행하면 콘솔에 해시가 찍힘.
+     * 해시 출력이 불필요하면 아래 @Disabled를 다시 붙이면 됨.
      */
     @Test
-    @Disabled("필요할 때만 @Disabled 제거 후 실행")
     @DisplayName("admin1234 BCrypt 해시 출력 (MongoDB 수동 수정용)")
     void printAdmin1234Hash() {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

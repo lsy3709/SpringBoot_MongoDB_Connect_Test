@@ -2,6 +2,10 @@ package com.myMongoTest.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,17 +54,23 @@ class BcryptHashPrintTest {
     }
 
     /**
-     * MongoDB에 넣을 BCrypt 해시 출력. 평문 저장 시 실행하면 콘솔에 해시가 찍힘.
-     * 해시 출력이 불필요하면 아래 @Disabled를 다시 붙이면 됨.
+     * MongoDB에 넣을 BCrypt 해시 출력. build/admin1234-bcrypt-hash.txt 에도 저장됨.
+     * 해시 확인: cat build/admin1234-bcrypt-hash.txt
      */
     @Test
     @DisplayName("admin1234 BCrypt 해시 출력 (MongoDB 수동 수정용)")
-    void printAdmin1234Hash() {
+    void printAdmin1234Hash() throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String hash = encoder.encode(DEFAULT_ADMIN_PASSWORD);
         System.out.println("=== MongoDB에 넣을 password 값 (admin1234 BCrypt 해시) ===");
         System.out.println(hash);
         System.out.println("=== MongoDB 쉘에서 실행 ===");
         System.out.println("db.user2.updateOne( { email: \"admin\" }, { $set: { password: \"" + hash + "\" } } )");
+        // Gradle에서 stdout이 안 보일 수 있어 파일로도 저장
+        Path outDir = Paths.get("build").toAbsolutePath();
+        Files.createDirectories(outDir);
+        Path outFile = outDir.resolve("admin1234-bcrypt-hash.txt");
+        Files.writeString(outFile, hash);
+        System.out.println("=== 해시 파일 저장: " + outFile + " === (확인: cat build/admin1234-bcrypt-hash.txt)");
     }
 }

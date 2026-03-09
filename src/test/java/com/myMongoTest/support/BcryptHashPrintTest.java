@@ -1,21 +1,65 @@
 package com.myMongoTest.support;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
- * admin1234 의 BCrypt 해시를 출력. MongoDB에 평문이 들어갔을 때 한 번만 실행해 해시를 복사해 사용.
- * 사용: ./gradlew test --tests BcryptHashPrintTest.printAdmin1234Hash
- * 그 다음 MongoDB: db.user2.updateOne( { email: "admin" }, { $set: { password: "여기에_출력된_해시" } } )
+ * BCrypt 해시 생성·검증 단위 테스트.
+ * printAdmin1234Hash: MongoDB에 평문이 들어갔을 때 해시 출력용 (필요 시 @Disabled 제거 후 실행).
  */
-@Disabled("필요할 때만 @Disabled 제거 후 실행")
 class BcryptHashPrintTest {
 
+    private static final String DEFAULT_ADMIN_PASSWORD = "admin1234";
+
     @Test
+    @DisplayName("admin1234 인코딩 시 유효한 BCrypt 해시 생성 및 matches 검증")
+    void encode_admin1234_producesValidHashThatMatches() {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hash = encoder.encode(DEFAULT_ADMIN_PASSWORD);
+
+        assertThat(hash).isNotNull();
+        assertThat(hash).startsWith("$2a$");
+        assertThat(hash).hasSize(60);
+
+        assertThat(encoder.matches(DEFAULT_ADMIN_PASSWORD, hash)).isTrue();
+        assertThat(encoder.matches("wrong", hash)).isFalse();
+    }
+
+    @Test
+    @DisplayName("동일 비밀번호도 솔트가 달라 서로 다른 해시 생성")
+    void encode_samePassword_differentHashes() {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hash1 = encoder.encode(DEFAULT_ADMIN_PASSWORD);
+        String hash2 = encoder.encode(DEFAULT_ADMIN_PASSWORD);
+
+        assertThat(hash1).isNotEqualTo(hash2);
+        assertThat(encoder.matches(DEFAULT_ADMIN_PASSWORD, hash1)).isTrue();
+        assertThat(encoder.matches(DEFAULT_ADMIN_PASSWORD, hash2)).isTrue();
+    }
+
+    @Test
+    @DisplayName("DefaultAdminInitializer와 동일한 비밀번호로 생성한 해시 검증")
+    void encode_matchesDefaultAdminInitializerPassword() {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hash = encoder.encode(DEFAULT_ADMIN_PASSWORD);
+        // Spring Security 로그인 시 matches(입력비밀번호, DB해시) 호출과 동일 조건
+        assertThat(encoder.matches(DEFAULT_ADMIN_PASSWORD, hash)).isTrue();
+    }
+
+    /**
+     * MongoDB에 넣을 BCrypt 해시 출력. 평문 저장 시 한 번만 실행해 해시를 복사해 사용.
+     * 사용: @Disabled 제거 후 ./gradlew test --tests BcryptHashPrintTest.printAdmin1234Hash
+     */
+    @Test
+    @Disabled("필요할 때만 @Disabled 제거 후 실행")
+    @DisplayName("admin1234 BCrypt 해시 출력 (MongoDB 수동 수정용)")
     void printAdmin1234Hash() {
-        String rawPassword = "admin1234";
-        String hash = new BCryptPasswordEncoder().encode(rawPassword);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hash = encoder.encode(DEFAULT_ADMIN_PASSWORD);
         System.out.println("=== MongoDB에 넣을 password 값 (admin1234 BCrypt 해시) ===");
         System.out.println(hash);
         System.out.println("=== MongoDB 쉘에서 실행 ===");

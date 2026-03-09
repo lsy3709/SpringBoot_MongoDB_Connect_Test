@@ -18,8 +18,9 @@ server:
     session:
       cookie:
         http-only: true
-        secure: true # HTTPS(도메인) 적용 후에는 반드시 주석 해제(true) 하세요!
-        same-site: lax
+        secure: true
+        # same-site: none — 프록시·리다이렉트 환경에서 쿠키 전송 보장 (POST /login 403 방지)
+        same-site: none
   tomcat:
     threads:
       max: 50 # 1GB RAM 환경 최적화 (유지)
@@ -34,6 +35,7 @@ logging:
   file:
     name: /home/ec2-user/logs/spring-mongodb.log
 
-# app:
-#   default-admin:
-#     force-reset-password: true
+# admin 비밀번호를 admin1234로 강제 리셋 (로그인 확인 후 주석 처리 권장)
+app:
+  default-admin:
+    force-reset-password: true

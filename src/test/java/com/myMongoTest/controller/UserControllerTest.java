@@ -34,7 +34,7 @@ import com.myMongoTest.service.UserService;
  * UserController 단위 테스트 (MockMvc, 서비스 목).
  */
 @WebMvcTest(controllers = UserController.class)
-@Import({ SecurityConfig.class, com.myMongoTest.config.UserDetailsServiceConfig.class })
+@Import({ SecurityConfig.class })
 @DisplayName("UserController 단위 테스트")
 class UserControllerTest {
 

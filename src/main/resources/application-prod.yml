@@ -31,3 +31,8 @@ logging:
   # 운영 환경에서는 로그를 파일로 남겨두는 것이 안전합니다.
   file:
     name: /home/ec2-user/logs/spring-mongodb.log
+
+# 운영(prod)에서는 기본 관리자 비밀번호 강제 리셋은 비활성화. (테스트/로컬에서만 true 사용)
+app:
+  default-admin:
+    force-reset-password: false

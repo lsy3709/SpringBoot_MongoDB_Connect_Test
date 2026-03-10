@@ -67,7 +67,7 @@ public class AdminMemberController {
     @PostMapping("/members/{id}/role")
     public String updateRole(@PathVariable String id, @RequestParam String role,
                              RedirectAttributes ra) {
-        if (!"USER".equals(role) && !"ADMIN".equals(role)) {
+        if (!"USER".equals(role) && !"ADUSER".equals(role) && !"ADMIN".equals(role)) {
             ra.addFlashAttribute("errorMsg", "유효하지 않은 권한입니다.");
             return "redirect:/admin/members/" + id;
         }

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-layout:decorate="~{layout/default_layout2}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/default_layout2}">
 
 <body><th:block layout:fragment="content">
    <style>body{background-image:url('/image/balloon.jpg');background-size:cover;background-repeat:no-repeat;min-height:100vh}</style>
    <div class="mb-3">
-     <a th:href="@{/admin}">대시보드</a> | 
-     <a th:href="@{/admin/inventory}">인벤토리</a> | 
-     <a th:href="@{/admin/members}">회원 관리</a>
+     <a th:href="@{/admin}">대시보드</a> |
+     <a th:href="@{/admin/inventory}">인벤토리</a>
+     <span sec:authorize="hasRole('ADMIN')"> | <a th:href="@{/admin/members}">회원 관리</a></span>
    </div>
    <h1>스마트 인벤토리 (Smart Inventory)</h1>
 

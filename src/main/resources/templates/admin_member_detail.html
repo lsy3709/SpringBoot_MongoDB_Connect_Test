@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/default_layout2}">
 
 <body>
@@ -8,8 +9,8 @@
   <style>body{background-image:url('/image/balloon.jpg');background-size:cover;background-repeat:no-repeat;min-height:100vh}</style>
   <div class="mb-3">
     <a th:href="@{/admin}">대시보드</a> |
-    <a th:href="@{/admin/inventory}">인벤토리</a> |
-    <a th:href="@{/admin/members}">회원 관리</a>
+    <a th:href="@{/admin/inventory}">인벤토리</a>
+    <span sec:authorize="hasRole('ADMIN')"> | <a th:href="@{/admin/members}">회원 관리</a></span>
   </div>
   <h1>회원 상세</h1>
 
@@ -28,8 +29,9 @@
   <form th:action="@{/admin/members/{id}/role(id=${user.id})}" method="post" class="mb-3">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
     <select name="role" class="form-select d-inline-block w-auto">
-      <option value="USER" th:selected="${user.role == 'USER'}">USER</option>
-      <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">ADMIN</option>
+      <option value="USER" th:selected="${user.role == 'USER'}">USER (미승인)</option>
+      <option value="ADUSER" th:selected="${user.role == 'ADUSER'}">ADUSER (승인·인벤토리만)</option>
+      <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">ADMIN (관리자)</option>
     </select>
     <button type="submit" class="btn btn-primary">권한 변경</button>
   </form>

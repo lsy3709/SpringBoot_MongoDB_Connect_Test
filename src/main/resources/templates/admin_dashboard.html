@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/default_layout2}">
 
 <body>
@@ -11,8 +12,8 @@
   </style>
   <div class="mb-3">
     <a th:href="@{/admin}">대시보드</a> |
-    <a th:href="@{/admin/inventory}">인벤토리</a> |
-    <a th:href="@{/admin/members}">회원 관리</a>
+    <a th:href="@{/admin/inventory}">인벤토리</a>
+    <span sec:authorize="hasRole('ADMIN')"> | <a th:href="@{/admin/members}">회원 관리</a></span>
   </div>
   <h1>관리자 대시보드</h1>
 
@@ -26,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4" sec:authorize="hasRole('ADMIN')">
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">회원 관리</h5>

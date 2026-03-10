@@ -76,8 +76,10 @@ public class SecurityConfig {
                         .requestMatchers("/", "/main", "/login", "/login/error", "/joinUser", "/joinForm", "/error", "/actuator/health").permitAll()
                         // 로그인 성공 후 세션 확정을 위한 중간 리다이렉트 페이지 (인증 필요)
                         .requestMatchers("/login/redirect").authenticated()
-                        // /admin 경로는 "ADMIN" 권한(역할)을 가진 사용자만 접근 가능
-                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
+                        // 회원 관리: ADMIN만 접근 가능
+                        .requestMatchers("/admin/members", "/admin/members/**").hasRole("ADMIN")
+                        // 대시보드·인벤토리: ADMIN, ADUSER(승인된 유저) 접근 가능
+                        .requestMatchers("/admin", "/admin/inventory").hasAnyRole("ADMIN", "ADUSER")
                         // 그 외의 모든 요청은 로그인(인증)한 사용자만 접근 가능
                         .anyRequest().authenticated()
                 );

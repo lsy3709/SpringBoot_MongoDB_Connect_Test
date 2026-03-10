@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 로그인 성공 후 세션 쿠키가 확실히 붙은 상태에서 목적지로 보내기 위해
  * 중간 경유 URL(/login/redirect)로 먼저 리다이렉트한 뒤, 해당 페이지에서 최종 목적지로 보낸다.
- * <p>역할별 기본 목적지: ADMIN → /admin, USER → / (403 방지)
+ * <p>역할별 기본 목적지: ADMIN/ADUSER → /admin, USER → / (403 방지)
  */
 @Component
 @Slf4j
@@ -35,13 +35,13 @@ public class LoginRedirectAuthenticationSuccessHandler implements Authentication
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        boolean isAdmin = hasAdminRole(authentication);
+        boolean canAccessAdmin = hasAdminOrAduserRole(authentication);
 
-        String targetUrl = isAdmin ? ADMIN_TARGET : USER_TARGET;
+        String targetUrl = canAccessAdmin ? ADMIN_TARGET : USER_TARGET;
         if (savedRequest != null && savedRequest.getRedirectUrl() != null && !savedRequest.getRedirectUrl().isEmpty()) {
             String saved = savedRequest.getRedirectUrl();
-            // /admin 하위 경로는 ADMIN만 접근 가능 → USER면 / 로 대체
-            if (saved.startsWith("/admin") && !isAdmin) {
+            // /admin 하위 경로는 ADMIN/ADUSER만 접근 가능 → USER면 / 로 대체
+            if (saved.startsWith("/admin") && !canAccessAdmin) {
                 targetUrl = USER_TARGET;
             } else {
                 targetUrl = saved;
@@ -52,14 +52,15 @@ public class LoginRedirectAuthenticationSuccessHandler implements Authentication
                 + java.net.URLEncoder.encode(targetUrl, java.nio.charset.StandardCharsets.UTF_8);
         String username = authentication != null && authentication.getPrincipal() instanceof UserDetails ud
                 ? ud.getUsername() : (authentication != null ? authentication.getPrincipal().toString() : null);
-        log.info("[로그인 성공] username={}, role={}, redirectTarget={}", username, isAdmin ? "ADMIN" : "USER", targetUrl);
+        log.info("[로그인 성공] username={}, canAccessAdmin={}, redirectTarget={}", username, canAccessAdmin, targetUrl);
         response.sendRedirect(redirectUrl);
     }
 
-    private boolean hasAdminRole(Authentication authentication) {
+    private boolean hasAdminOrAduserRole(Authentication authentication) {
         if (authentication == null) return false;
         Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
         if (auths == null) return false;
-        return auths.stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        return auths.stream().anyMatch(a ->
+                "ROLE_ADMIN".equals(a.getAuthority()) || "ROLE_ADUSER".equals(a.getAuthority()));
     }
 }

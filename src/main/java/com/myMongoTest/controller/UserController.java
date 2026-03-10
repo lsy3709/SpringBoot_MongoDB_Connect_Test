@@ -76,6 +76,7 @@ public class UserController {
 			String msg = messageSource.getMessage(passwordResult.getMessageCode(),
 					passwordResult.getArgs(), locale);
 			redirectAttributes.addFlashAttribute("joinErrorMsg", msg);
+			redirectAttributes.addFlashAttribute("preservedEmail", user != null ? user.getEmail() : "");
 			return "redirect:/joinForm";
 		}
 		String email = user.getEmail();
@@ -84,6 +85,7 @@ public class UserController {
 			log.warn("[회원가입 실패] 중복된 이메일: email={}", email);
 			redirectAttributes.addFlashAttribute("joinErrorMsg",
 					messageSource.getMessage("join.error.duplicate_email", null, locale));
+			redirectAttributes.addFlashAttribute("preservedEmail", email);
 			return "redirect:/joinForm";
 		}
 		String rawPassword = user.getPassword();

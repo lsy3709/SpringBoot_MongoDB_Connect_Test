@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 로그인 성공 후 세션 쿠키가 확실히 붙은 상태에서 목적지로 보내기 위해
  * 중간 경유 URL(/login/redirect)로 먼저 리다이렉트한 뒤, 해당 페이지에서 최종 목적지로 보낸다.
- * <p>역할별 기본 목적지: ADMIN → /admin, USER → /main (403 방지)
+ * <p>역할별 기본 목적지: ADMIN → /admin, USER → / (403 방지)
  */
 @Component
 @Slf4j
@@ -26,7 +26,7 @@ public class LoginRedirectAuthenticationSuccessHandler implements Authentication
 
     private static final String REDIRECT_PATH = "/login/redirect";
     private static final String ADMIN_TARGET = "/admin";
-    private static final String USER_TARGET = "/main";
+    private static final String USER_TARGET = "/";
     private static final String TARGET_PARAM = "target";
 
     private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
@@ -40,7 +40,7 @@ public class LoginRedirectAuthenticationSuccessHandler implements Authentication
         String targetUrl = isAdmin ? ADMIN_TARGET : USER_TARGET;
         if (savedRequest != null && savedRequest.getRedirectUrl() != null && !savedRequest.getRedirectUrl().isEmpty()) {
             String saved = savedRequest.getRedirectUrl();
-            // /admin 하위 경로는 ADMIN만 접근 가능 → USER면 기본 목적지로 대체
+            // /admin 하위 경로는 ADMIN만 접근 가능 → USER면 / 로 대체
             if (saved.startsWith("/admin") && !isAdmin) {
                 targetUrl = USER_TARGET;
             } else {

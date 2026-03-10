@@ -4,14 +4,11 @@
       layout:decorate="~{layout/default_layout2}">
 
 <body>
-<style>
-  body {
-    background-image: url('/image/balloon.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
-</style>
 <th:block layout:fragment="content">
+  <style>
+    body{background-image:url('/image/balloon.jpg');background-size:cover;background-repeat:no-repeat;min-height:100vh}
+    .card, .card .card-body { background-color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6); }
+  </style>
   <div class="mb-3">
     <a th:href="@{/admin}">대시보드</a> |
     <a th:href="@{/admin/inventory}">인벤토리</a> |

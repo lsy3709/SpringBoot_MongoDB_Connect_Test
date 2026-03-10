@@ -1,0 +1,7 @@
+/* 관리자·인벤토리 페이지 공통 배경 */
+body {
+  background-image: url('/image/balloon.jpg') !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  min-height: 100vh;
+}

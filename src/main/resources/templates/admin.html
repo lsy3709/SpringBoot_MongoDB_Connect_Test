@@ -4,6 +4,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 layout:decorate="~{layout/default_layout2}">
 
 <body><th:block layout:fragment="content">
+   <style>body{background-image:url('/image/balloon.jpg');background-size:cover;background-repeat:no-repeat;min-height:100vh}</style>
    <div class="mb-3">
      <a th:href="@{/admin}">대시보드</a> | 
      <a th:href="@{/admin/inventory}">인벤토리</a> | 
@@ -30,11 +31,6 @@ layout:decorate="~{layout/default_layout2}">
          </div>
       </div>
    </div>
-   <style>
-   body {
-   background-image:url('/image/balloon.jpg')
-   }
-   </style>
    <!-- 이미지자동변경 -->
    <!-- <style>
   body {

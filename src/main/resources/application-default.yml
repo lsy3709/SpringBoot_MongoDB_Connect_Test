@@ -6,6 +6,7 @@ spring:
       uri: mongodb://localhost:27017/blog3?maxPoolSize=10&minPoolSize=2&maxIdleTimeMS=30000
   servlet:
     multipart:
+      # 업로드 파일 크기 제한 (DoS·스토리지 남용 방지)
       max-file-size: 10MB
       max-request-size: 10MB
 
@@ -35,6 +36,16 @@ app:
     queue-capacity: 50
   memo:
     findAll-max-size: 500
+
+# Actuator: health(헬스체크), metrics(연결 풀 등 모니터링)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
 
 # 로그인 디버깅 시 로그 확인 (원인 파악 후 레벨 낮춰도 됨)
 logging:

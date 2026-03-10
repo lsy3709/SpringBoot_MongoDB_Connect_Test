@@ -19,6 +19,7 @@ import com.myMongoTest.DTO.MemoPageResponse;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.Memo;
 import com.myMongoTest.service.ImageService;
+import com.myMongoTest.service.ParallelFetchService;
 import com.myMongoTest.service.StoredFileInfo;
 import com.myMongoTest.service.UserService;
 
@@ -33,6 +34,7 @@ public class MemoController {
 
 	private final UserService userService;
 	private final ImageService imageService;
+	private final ParallelFetchService parallelFetchService;
 
 	@ResponseBody
 	@PostMapping("/insertMemoWithImage")
@@ -134,9 +136,9 @@ public class MemoController {
 	@RequestMapping("/updateFormMemo/{id}")
 	public String updateFormMemo(Model model, @PathVariable String id) {
 		ObjectId objectId = new ObjectId(id);
-		Memo memo = userService.mongoFindOneMemo(objectId);
-		model.addAttribute("memo", memo);
-		model.addAttribute("categories", userService.mongoFindAllCategory());
+		ParallelFetchService.MemoAndCategories result = parallelFetchService.fetchMemoAndCategories(objectId);
+		model.addAttribute("memo", result.memo());
+		model.addAttribute("categories", result.categories());
 		return "updateForm";
 	}
 

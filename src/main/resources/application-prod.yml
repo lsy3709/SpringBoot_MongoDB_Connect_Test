@@ -10,6 +10,7 @@ spring:
       uri: mongodb://localhost:27017/blog3?maxPoolSize=20&minPoolSize=5&maxIdleTimeMS=60000
   servlet:
     multipart:
+      # 업로드 파일 크기 제한 (DoS·스토리지 남용 방지)
       max-file-size: 10MB
       max-request-size: 10MB
 
@@ -26,6 +27,15 @@ server:
     threads:
       # 1GB 메모리·Xmx512m 환경에서 50 유지 (과다 스레드 시 메모리 압박 방지)
       max: 50
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
 
 logging:
   level:

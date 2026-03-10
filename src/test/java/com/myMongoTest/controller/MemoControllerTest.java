@@ -34,6 +34,7 @@ import com.myMongoTest.document.Category;
 import com.myMongoTest.document.Memo;
 import com.myMongoTest.service.AsyncAuditService;
 import com.myMongoTest.service.ImageService;
+import com.myMongoTest.service.ParallelFetchService;
 import com.myMongoTest.service.UserService;
 
 /**
@@ -56,6 +57,9 @@ class MemoControllerTest {
 
 	@MockBean
 	private AsyncAuditService asyncAuditService;
+
+	@MockBean
+	private ParallelFetchService parallelFetchService;
 
 	@Test
 	@DisplayName("GET /findAllMemo 인증 시 200 + 리스트")
@@ -88,8 +92,8 @@ class MemoControllerTest {
 		Category cat = new Category();
 		cat.setId("cat1");
 		cat.setName("팬트리");
-		when(userService.mongoFindOneMemo(any(ObjectId.class))).thenReturn(memo);
-		when(userService.mongoFindAllCategory()).thenReturn(List.of(cat));
+		when(parallelFetchService.fetchMemoAndCategories(any(ObjectId.class)))
+				.thenReturn(new ParallelFetchService.MemoAndCategories(memo, List.of(cat)));
 
 		mockMvc.perform(get("/updateFormMemo/" + id).with(user("admin").roles("ADMIN")))
 				.andExpect(status().isOk())
@@ -97,7 +101,7 @@ class MemoControllerTest {
 				.andExpect(model().attributeExists("memo"))
 				.andExpect(model().attributeExists("categories"));
 
-		verify(userService).mongoFindAllCategory();
+		verify(parallelFetchService).fetchMemoAndCategories(any(ObjectId.class));
 	}
 
 	@Test

@@ -19,8 +19,8 @@
    </script>
 
    <div class="mb-3">
-     <a th:href="@{/admin/export/memos.xlsx}" class="btn btn-outline-success btn-sm">엑셀 내보내기</a>
-     <form th:action="@{/admin/import/memos}" method="post" enctype="multipart/form-data" class="d-inline-block ms-2">
+     <a th:href="@{/admin/export/memos.xlsx}" class="btn btn-outline-success btn-sm" id="btnExportExcel">엑셀 내보내기</a>
+     <form th:action="@{/admin/import/memos}" method="post" enctype="multipart/form-data" class="d-inline-block ms-2" id="formImportExcel">
        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
        <input type="file" name="file" accept=".xlsx" class="form-control form-control-sm d-inline-block w-auto">
        <button type="submit" class="btn btn-outline-primary btn-sm">엑셀 가져오기</button>
@@ -85,7 +85,29 @@
 
     		<button id="dbInsertBtn" class="btn btn-primary">디비추가</button>
     	</div>-->
-    <br>
+   <script th:inline="javascript">
+     // 엑셀 내보내기 버튼 클릭 시 confirm 후 진행
+     document.addEventListener('DOMContentLoaded', function() {
+       var exportBtn = document.getElementById('btnExportExcel');
+       if (exportBtn) {
+         exportBtn.addEventListener('click', function(e) {
+           if (!confirm('현재 메모와 탭 정보를 엑셀로 내보낼까요?')) {
+             e.preventDefault();
+           }
+         });
+       }
+       var importForm = document.getElementById('formImportExcel');
+       if (importForm) {
+         importForm.addEventListener('submit', function(e) {
+           if (!confirm('엑셀 파일을 가져와서 메모/탭을 추가하시겠습니까?')) {
+             e.preventDefault();
+           }
+         });
+       }
+     });
+   </script>
+
+   <br>
     <div class="form-group">
         <!--     <h1>Image Upload</h1> -->
         <form id="my-form">

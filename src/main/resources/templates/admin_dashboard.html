@@ -24,7 +24,7 @@
           <h5 class="card-title">인벤토리</h5>
           <p class="card-text">메모 <span th:text="${memoCount}">0</span>건</p>
           <a th:href="@{/admin/inventory}" class="btn btn-primary">인벤토리 관리</a>
-          <a th:href="@{/admin/export/memos.xlsx}" class="btn btn-outline-success btn-sm mt-1">엑셀 내보내기</a>
+          <a th:href="@{/admin/export/memos.xlsx}" class="btn btn-outline-success btn-sm mt-1" id="btnExportExcelDashboard">엑셀 내보내기</a>
         </div>
       </div>
     </div>
@@ -38,6 +38,20 @@
       </div>
     </div>
   </div>
+
+  <script th:inline="javascript">
+    // 대시보드 카드의 엑셀 내보내기 버튼도 confirm 후 진행
+    document.addEventListener('DOMContentLoaded', function() {
+      var exportBtnDash = document.getElementById('btnExportExcelDashboard');
+      if (exportBtnDash) {
+        exportBtnDash.addEventListener('click', function(e) {
+          if (!confirm('현재 메모와 탭 정보를 엑셀로 내보낼까요?')) {
+            e.preventDefault();
+          }
+        });
+      }
+    });
+  </script>
 </th:block>
 </body>
 </html>

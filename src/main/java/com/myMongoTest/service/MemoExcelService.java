@@ -80,16 +80,24 @@ public class MemoExcelService {
 
     /**
      * 메모·탭(카테고리) 목록을 엑셀 바이트로 생성.
-     * 1) "탭" 시트: ID, 이름, 정렬순서
-     * 2) "메모" 시트: 제목, 메모, 등록일, 유통기한, 태그, 카테고리ID, 이미지(셀에 맞춰 임베드)
+     * 1) "메모" 시트: 제목, 메모, 등록일, 유통기한, 태그, 카테고리ID, 이미지(셀에 맞춰 임베드)
+     * 2) "탭" 시트: ID, 이름, 정렬순서
+     * 기본으로 "메모" 시트가 첫 번째/활성 탭으로 열리도록 설정.
      */
     public byte[] exportToExcel(List<Memo> memos, List<Category> categories) throws IOException {
         try (XSSFWorkbook wb = new XSSFWorkbook()) {
-            // 1. 탭(카테고리) 시트
+            // 1. 메모 시트 (이미지 셀 맞춤)
+            writeMemoSheet(wb, memos);
+
+            // 2. 탭(카테고리) 시트
             writeTabsSheet(wb, categories != null ? categories : List.of());
 
-            // 2. 메모 시트 (이미지 셀 맞춤)
-            writeMemoSheet(wb, memos);
+            // 엑셀을 열었을 때 "메모" 시트가 기본으로 보이도록 설정
+            int memoIdx = wb.getSheetIndex(SHEET_MEMO);
+            if (memoIdx >= 0) {
+                wb.setActiveSheet(memoIdx);
+                wb.setSelectedTab(memoIdx);
+            }
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             wb.write(out);

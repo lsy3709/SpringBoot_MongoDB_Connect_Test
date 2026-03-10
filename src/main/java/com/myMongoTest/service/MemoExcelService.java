@@ -152,7 +152,9 @@ public class MemoExcelService {
         }
     }
 
-    /** 이미지를 한 셀(COL_IMAGE, rowNum) 안에 맞춰 삽입 */
+    /** 이미지를 한 셀(COL_IMAGE, rowNum) 안에 맞춰 삽입.
+     *  - 엑셀에서 셀 크기를 변경하면 이미지도 같이 이동·리사이즈되도록 MOVE_AND_RESIZE 사용.
+     */
     private void insertImageFitInCell(Workbook wb, Sheet sheet, Drawing<?> drawing,
                                       CreationHelper helper, byte[] imgBytes, int rowNum) throws IOException {
         int pictureType = Workbook.PICTURE_TYPE_JPEG;
@@ -163,11 +165,10 @@ public class MemoExcelService {
         int pictureIdx = wb.addPicture(imgBytes, pictureType);
 
         ClientAnchor anchor = helper.createClientAnchor();
+        // 좌상단 기준으로 이미지 배치. 열/행 경계는 resize가 계산하도록 둔다.
         anchor.setCol1(COL_IMAGE);
         anchor.setRow1(rowNum);
-        anchor.setCol2(COL_IMAGE + 1);
-        anchor.setRow2(rowNum + 1);
-        anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE);
+        anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
 
         Picture picture = drawing.createPicture(anchor, pictureIdx);
         double scale = computeScaleToFitCell(imgBytes);

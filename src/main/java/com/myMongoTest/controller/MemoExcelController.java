@@ -44,7 +44,8 @@ public class MemoExcelController {
     @GetMapping("/export/memos.xlsx")
     public ResponseEntity<InputStreamResource> exportMemos() throws IOException {
         List<Memo> memos = userService.mongoFindAllMemo();
-        byte[] bytes = memoExcelService.exportToExcel(memos);
+        var categories = userService.mongoFindAllCategory();
+        byte[] bytes = memoExcelService.exportToExcel(memos, categories);
         String filename = "메모내보내기_" + System.currentTimeMillis() + ".xlsx";
         String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
 
@@ -69,7 +70,13 @@ public class MemoExcelController {
 
         try (InputStream in = file.getInputStream()) {
             ImportResult result = memoExcelService.importFromExcel(in);
-            ra.addFlashAttribute("importSuccessMsg", result.importedCount() + "건 가져왔습니다.");
+            StringBuilder msg = new StringBuilder();
+            msg.append("메모 ").append(result.importedCount()).append("건");
+            if (result.categoriesCreated() > 0) {
+                msg.append(", 탭 ").append(result.categoriesCreated()).append("개");
+            }
+            msg.append(" 가져왔습니다.");
+            ra.addFlashAttribute("importSuccessMsg", msg.toString());
             if (!result.errors().isEmpty()) {
                 ra.addFlashAttribute("importWarnMsg", String.join(" / ", result.errors()));
             }

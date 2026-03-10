@@ -24,6 +24,7 @@ import com.myMongoTest.service.StoredFileInfo;
 import com.myMongoTest.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
 /**
  * 메모 CRUD·검색·첨부 이미지 전용 컨트롤러.
@@ -148,5 +149,48 @@ public class MemoController {
 		userService.deleteDb("_id", id);
 		imageService.deleteImage(imageFileName);
 		return id;
+	}
+
+	/**
+	 * 관리자 화면(인벤토리 전체 목록)에서 선택한 메모들을 일괄 삭제.
+	 * - 요청 바디에 id, imageFileName 목록을 JSON으로 전달.
+	 * - 각 항목마다 개별 삭제 수행 (실패한 항목은 로그만 남기고 계속 진행).
+	 */
+	@ResponseBody
+	@PostMapping("/dbDeleteBatch")
+	public String deleteBatch(@RequestBody DeleteBatchRequest request) {
+		if (request == null || request.getItems() == null || request.getItems().isEmpty()) {
+			return "0";
+		}
+		int success = 0;
+		for (DeleteItem item : request.getItems()) {
+			if (item == null || item.getId() == null || item.getId().isBlank()) {
+				continue;
+			}
+			try {
+				userService.deleteDb("_id", item.getId());
+				if (item.getImageFileName() != null && !item.getImageFileName().isBlank()) {
+					imageService.deleteImage(item.getImageFileName());
+				}
+				success++;
+			} catch (Exception e) {
+				// 삭제 실패 시에도 다른 항목 처리는 계속 진행
+			}
+		}
+		return String.valueOf(success);
+	}
+
+	/**
+	 * 일괄 삭제 요청용 DTO.
+	 */
+	@Data
+	public static class DeleteBatchRequest {
+		private List<DeleteItem> items;
+	}
+
+	@Data
+	public static class DeleteItem {
+		private String id;
+		private String imageFileName;
 	}
 }

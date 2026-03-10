@@ -238,6 +238,8 @@ var searchLastId = null, searchHasNext = true, searchLoading = false, searchTota
 var currentCategoryId = null;
 /** 상세보기용 메모 캐시 (id -> memo 객체) */
 var memoCache = {};
+/** 관리자 여부 (Thymeleaf에서 window.isAdmin으로 주입) */
+var isAdmin = (window.isAdmin === true);
 
 /** 유통기한 년월일만 표기 (yyyy-MM-dd) */
 function formatExpiryDate(str) {
@@ -252,12 +254,27 @@ function buildMemoRow(val) {
 	var dateField = (val.dateField || "").trim() || "-";
 	var titleHtml = "<a href='#' class='memo-detail-link' data-id='"+val.id+"'>"+(val.title||"")+"</a>";
 	memoCache[val.id] = val;
-	return "<tr><td>"+img+"</td><td>"+titleHtml+"</td><td>"+expiry+"</td><td>"+dateField+"</td></tr>";
+
+	var checkboxTd = "";
+	if (isAdmin) {
+		checkboxTd = "<td><input type='checkbox' class='form-check-input memo-select' data-id='"+val.id+"' data-image='"+(val.imageFileName||"")+"'></td>";
+	}
+
+	var rowHtml = "<tr>";
+	if (isAdmin) {
+		rowHtml += checkboxTd;
+	}
+	rowHtml += "<td>"+img+"</td><td>"+titleHtml+"</td><td>"+expiry+"</td><td>"+dateField+"</td></tr>";
+	return rowHtml;
 }
 
 function buildTableHeader() {
-	return "<table class='table table-hover mt-3' border=1><thead><tr>"+
-		"<th>사진</th><th>제목</th><th>유통기한</th><th>등록일</th></tr></thead><tbody id='dbResultBody'></tbody></table>";
+	var thead = "<thead><tr>";
+	if (isAdmin) {
+		thead += "<th style='width:40px;'></th>";
+	}
+	thead += "<th>사진</th><th>제목</th><th>유통기한</th><th>등록일</th></tr></thead>";
+	return "<table class='table table-hover mt-3' border=1>"+thead+"<tbody id='dbResultBody'></tbody></table>";
 }
 
 function loadCategoriesAndRenderTabs() {
@@ -369,6 +386,52 @@ $(window).on("scroll", function() {
 		if (currentSearchData) loadSearchNext();
 		else loadAllNext();
 	}
+});
+
+// 전체 선택 체크박스 클릭 시 화면의 메모 체크박스 모두 토글 (관리자 전용)
+$(document).on('change', '#chkAllMemos', function(){
+	if (!isAdmin) return;
+	var checked = $(this).is(':checked');
+	$('.memo-select').prop('checked', checked);
+});
+
+// 선택 삭제 버튼 클릭 시, 선택된 메모 일괄 삭제 (관리자 전용, confirm 포함)
+$(document).on('click', '#btnDeleteSelected', function(){
+	if (!isAdmin) {
+		alert('관리자만 사용할 수 있는 기능입니다.');
+		return;
+	}
+	var items = [];
+	$('.memo-select:checked').each(function(){
+		var id = $(this).attr('data-id');
+		var img = $(this).attr('data-image') || '';
+		if (id) {
+			items.push({ id: id, imageFileName: img });
+		}
+	});
+	if (items.length === 0) {
+		alert('삭제할 항목을 선택해 주세요.');
+		return;
+	}
+	if (!confirm('선택한 '+items.length+'개 항목을 삭제할까요?')) {
+		return;
+	}
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
+	$.ajax({
+		type: "post",
+		url: "/dbDeleteBatch",
+		contentType: "application/json;charset=utf-8",
+		data: JSON.stringify({ items: items }),
+		beforeSend: function(xhr){ xhr.setRequestHeader(header, token); }
+	})
+	.done(function(resp){
+		alert('삭제 요청이 완료되었습니다.');
+		init();
+	})
+	.fail(function(){
+		alert('선택 삭제 중 오류가 발생했습니다.');
+	});
 });
 
 function dbUpdateFormMemo(id){

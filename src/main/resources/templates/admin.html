@@ -13,6 +13,11 @@
    </div>
    <h1>스마트 인벤토리 (Smart Inventory)</h1>
 
+   <script th:inline="javascript">
+     /* 관리자 여부를 전역 변수에 저장 (자바스크립트 boolean) */
+     window.isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
+   </script>
+
    <div class="mb-3">
      <a th:href="@{/admin/export/memos.xlsx}" class="btn btn-outline-success btn-sm">엑셀 내보내기</a>
      <form th:action="@{/admin/import/memos}" method="post" enctype="multipart/form-data" class="d-inline-block ms-2">
@@ -151,10 +156,17 @@
     <br>
     <button id="scroll-to-top" class="btn btn-primary">Top</button>
 
-    <!-- 전체 목록 모드: 검색이 아닐 때 표시 -->
-    <div id="fullListSection">
+   <!-- 전체 목록 모드: 검색이 아닐 때 표시 -->
+   <div id="fullListSection">
       <h2>전체 목록</h2>
       <h3>전체 count : <span id="findAllMemoCount"></span></h3>
+      <div class="mb-2" sec:authorize="hasRole('ADMIN')">
+        <label class="form-check-label me-2">
+          <input type="checkbox" class="form-check-input" id="chkAllMemos">
+          전체 선택
+        </label>
+        <button type="button" id="btnDeleteSelected" class="btn btn-danger btn-sm">선택 삭제</button>
+      </div>
       <div id="dbResult"></div>
     </div>
 

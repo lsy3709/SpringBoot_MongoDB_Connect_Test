@@ -33,10 +33,26 @@ class PasswordPolicyValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "12345678", "admin1234", "longpassword123" })
-    @DisplayName("8자 이상이면 null 반환(통과)")
+    @ValueSource(strings = { "a1234567", "admin1234", "longpassword123" })
+    @DisplayName("8자 이상·영문+숫자 포함이면 null 반환(통과)")
     void validate_valid_returnsNull(String password) {
         assertNull(PasswordPolicyValidator.validate(password));
+    }
+
+    @Test
+    @DisplayName("숫자만 8자 이상이면 complexity 코드 반환")
+    void validate_digitsOnly_returnsComplexityCode() {
+        ValidationResult r = PasswordPolicyValidator.validate("12345678");
+        assertNotNull(r);
+        assertEquals(PasswordPolicyValidator.CODE_COMPLEXITY, r.getMessageCode());
+    }
+
+    @Test
+    @DisplayName("영문만 8자 이상이면 complexity 코드 반환")
+    void validate_lettersOnly_returnsComplexityCode() {
+        ValidationResult r = PasswordPolicyValidator.validate("password");
+        assertNotNull(r);
+        assertEquals(PasswordPolicyValidator.CODE_COMPLEXITY, r.getMessageCode());
     }
 
     @Test

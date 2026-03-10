@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.11'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.owasp.dependencycheck' version '9.2.0'
 }
 
 group = 'com.myMongoTest'
@@ -30,6 +31,10 @@ dependencies {
 
 	// 2. MongoDB
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+	// 2-1. Cache (Phase 2)
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine'
 
 	// 3. Security (★ Spring Boot 3.x 버전용으로 수정)
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -62,7 +67,13 @@ tasks.named('test') {
 
 // 샘플 데이터 100건 삽입: ./gradlew bootRun -PsampleData=true
 bootRun {
-	if (project.hasProperty('sampleData')) {
-		args '--spring.profiles.active=sample-data'
+	// 프로덕션 JVM 옵션: ./gradlew bootRun -Pprod
+	if (project.hasProperty('prod')) {
+		// GC 로그: build/gc-*.log (실제 배포 시 -Xlog:gc* 재정의 가능)
+		jvmArgs = ['-Xmx512m', '-Xms256m', '-XX:MetaspaceSize=128m',
+		           '-Xlog:gc*:file=./build/gc-%t.log:time,uptime:filecount=3,filesize=5m']
+		args = ['--spring.profiles.active=prod']
+	} else if (project.hasProperty('sampleData')) {
+		args = ['--spring.profiles.active=sample-data']
 	}
 }

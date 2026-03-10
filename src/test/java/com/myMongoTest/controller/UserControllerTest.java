@@ -24,9 +24,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.myMongoTest.config.LoginFailureLoggingHandler;
+import com.myMongoTest.config.LoginRateLimitFilter;
 import com.myMongoTest.config.LoginRedirectAuthenticationSuccessHandler;
 import com.myMongoTest.config.SecurityConfig;
 import com.myMongoTest.document.User2;
+import com.myMongoTest.service.AsyncAuditService;
 import com.myMongoTest.service.ImageService;
 import com.myMongoTest.service.UserService;
 
@@ -34,7 +36,8 @@ import com.myMongoTest.service.UserService;
  * UserController 단위 테스트 (MockMvc, 서비스 목).
  */
 @WebMvcTest(controllers = UserController.class)
-@Import({ SecurityConfig.class, LoginRedirectAuthenticationSuccessHandler.class, LoginFailureLoggingHandler.class })
+@Import({ SecurityConfig.class, LoginRedirectAuthenticationSuccessHandler.class,
+        LoginFailureLoggingHandler.class, LoginRateLimitFilter.class })
 @DisplayName("UserController 단위 테스트")
 class UserControllerTest {
 
@@ -52,6 +55,9 @@ class UserControllerTest {
 
     @MockBean
     private MessageSource messageSource;
+
+    @MockBean
+    private AsyncAuditService asyncAuditService;
 
     @Test
     @DisplayName("GET /joinForm -> joinForm 뷰")

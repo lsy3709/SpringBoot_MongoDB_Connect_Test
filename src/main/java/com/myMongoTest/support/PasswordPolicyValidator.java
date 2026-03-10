@@ -13,6 +13,7 @@ public final class PasswordPolicyValidator {
     public static final String CODE_REQUIRED = "validation.password.required";
     public static final String CODE_MIN_LENGTH = "validation.password.minLength";
     public static final String CODE_MAX_LENGTH = "validation.password.maxLength";
+    public static final String CODE_COMPLEXITY = "validation.password.complexity";
 
     private PasswordPolicyValidator() {}
 
@@ -30,6 +31,12 @@ public final class PasswordPolicyValidator {
         }
         if (password.length() > MAX_LENGTH) {
             return ValidationResult.of(CODE_MAX_LENGTH, MAX_LENGTH);
+        }
+        // 최소 1개 문자 + 1개 숫자
+        boolean hasLetter = password.chars().anyMatch(Character::isLetter);
+        boolean hasDigit = password.chars().anyMatch(Character::isDigit);
+        if (!hasLetter || !hasDigit) {
+            return ValidationResult.of(CODE_COMPLEXITY);
         }
         return null;
     }

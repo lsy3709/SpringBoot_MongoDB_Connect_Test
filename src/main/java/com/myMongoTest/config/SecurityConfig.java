@@ -5,11 +5,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.myMongoTest.service.UserService;
 
@@ -19,18 +22,24 @@ public class SecurityConfig {
 
     private final LoginRedirectAuthenticationSuccessHandler loginSuccessHandler;
     private final LoginFailureLoggingHandler loginFailureLoggingHandler;
+    private final LoginRateLimitFilter loginRateLimitFilter;
     private final UserService userService;
 
     public SecurityConfig(LoginRedirectAuthenticationSuccessHandler loginSuccessHandler,
                           LoginFailureLoggingHandler loginFailureLoggingHandler,
+                          LoginRateLimitFilter loginRateLimitFilter,
                           UserService userService) {
         this.loginSuccessHandler = loginSuccessHandler;
         this.loginFailureLoggingHandler = loginFailureLoggingHandler;
+        this.loginRateLimitFilter = loginRateLimitFilter;
         this.userService = userService;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+
+        // 0. 로그인 Rate Limit 필터 (UsernamePasswordAuthenticationFilter 앞에 추가)
+        http.addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class);
 
         // 1. 로그인 및 로그아웃 설정 (성공 시 중간 경유 페이지 사용으로 리다이렉트 오류 방지)
         http
@@ -55,7 +64,10 @@ public class SecurityConfig {
                         .deleteCookies("remember-me")
                 );
 
-        // 2. URL 경로별 권한 설정 (authorizeHttpRequests & requestMatchers 사용)
+        // 2. CORS (CorsConfigurationSource 빈 사용)
+        http.cors(withDefaults());
+
+        // 3. URL 경로별 권한 설정 (authorizeHttpRequests & requestMatchers 사용)
         http
                 .authorizeHttpRequests(auth -> auth
                         // 정적 리소스(css, js, 이미지)는 권한 없이 누구나 접근 허용
@@ -70,7 +82,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 
-        // 3. 예외 처리 설정
+        // 4. 예외 처리 설정
         http
                 .exceptionHandling(exception -> exception
                         // 인증되지 않은 사용자가 보호된 리소스에 접근할 때 처리할 커스텀 클래스 지정
@@ -92,9 +104,9 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
-    // 비밀번호 암호화를 위한 인코더 빈 등록
+    // 비밀번호 암호화를 위한 인코더 빈 등록 (BCrypt strength 10 권장)
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(10);
     }
 }

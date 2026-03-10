@@ -3,7 +3,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/blog3
+      uri: mongodb://localhost:27017/blog3?maxPoolSize=10&minPoolSize=2&maxIdleTimeMS=30000
   servlet:
     multipart:
       max-file-size: 10MB
@@ -11,8 +11,12 @@ spring:
 
 # 로컬 HTTP용 — secure: false 필수
 server:
+  tomcat:
+    threads:
+      max: 50  # 1GB 환경 권장, 기본 200 대비 제한
   servlet:
     session:
+      timeout: 30m
       cookie:
         http-only: true
         secure: false
@@ -22,6 +26,15 @@ server:
 app:
   default-admin:
     force-reset-password: true
+  login:
+    rate-limit:
+      max-per-minute: 20
+  async:
+    core-pool-size: 2
+    max-pool-size: 5
+    queue-capacity: 50
+  memo:
+    findAll-max-size: 500
 
 # 로그인 디버깅 시 로그 확인 (원인 파악 후 레벨 낮춰도 됨)
 logging:

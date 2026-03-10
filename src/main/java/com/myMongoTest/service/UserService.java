@@ -10,11 +10,15 @@ import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,11 +31,15 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import com.myMongoTest.DTO.MemoPageResponse;
 import com.myMongoTest.DTO.SearchDB;
 import com.myMongoTest.document.Category;
+import com.myMongoTest.repository.MemoRepository;
 import com.myMongoTest.document.Memo;
+import com.myMongoTest.config.SpringCacheConfig;
+import com.myMongoTest.support.RegexEscape;
 import com.myMongoTest.document.User2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Slf4j
@@ -40,8 +48,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserService implements UserDetailsService{
 
     private final MongoTemplate mongoTemplate;
-    
     private final GridFsTemplate gridFsTemplate;
+    private final MemoRepository memoRepository;
+
+    /** findAll·searchDb 전체 조회 시 최대 반환 건수 (메모리 보호, 페이지 API 권장) */
+    @Value("${app.memo.findAll-max-size:500}")
+    private int findAllMaxSize;
 
     // Convert Date to String
     public String dateToString(Date date) {
@@ -75,12 +87,25 @@ public class UserService implements UserDetailsService{
     }
     
     
-    //전체 검색 (메모)
+    /**
+     * 전체 메모 조회 (최대 findAllMaxSize건).
+     * 대량 데이터는 mongoFindMemoCursor(페이지) 사용 권장.
+     */
     public List<Memo> mongoFindAllMemo() {
         Query query = new Query();
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
-        List<Memo> memoList = mongoTemplate.find(query, Memo.class);
-        return memoList;
+        query.limit(findAllMaxSize);
+        return mongoTemplate.find(query, Memo.class);
+    }
+
+    /**
+     * Pageable 기반 메모 목록 조회 (offset 페이지네이션).
+     */
+    public Page<Memo> mongoFindMemoPage(String categoryId, Pageable pageable) {
+        if (categoryId != null && !categoryId.isBlank()) {
+            return memoRepository.findByCategoryIdOrderByIdDesc(categoryId, pageable);
+        }
+        return memoRepository.findAllByOrderByIdDesc(pageable);
     }
 
     /**
@@ -126,9 +151,9 @@ public class UserService implements UserDetailsService{
         int fetchLimit = limit + 1;
         Criteria criteria;
         if ("title".equals(searchDB.getSearchDB())) {
-            criteria = Criteria.where("title").regex(searchDB.getSearchContent());
+            criteria = Criteria.where("title").regex(RegexEscape.toPartialMatchPattern(searchDB.getSearchContent()));
         } else if ("message".equals(searchDB.getSearchDB())) {
-            criteria = Criteria.where("message").regex(searchDB.getSearchContent());
+            criteria = Criteria.where("message").regex(RegexEscape.toPartialMatchPattern(searchDB.getSearchContent()));
         } else if ("tag".equals(searchDB.getSearchDB())) {
             String tag = searchDB.getSearchContent().trim();
             if (tag.isEmpty()) return new MemoPageResponse(List.of(), false);
@@ -152,6 +177,7 @@ public class UserService implements UserDetailsService{
     }
 
     // ---- Category CRUD ----
+    @Cacheable(value = SpringCacheConfig.CACHE_CATEGORIES)
     public List<Category> mongoFindAllCategory() {
         Query query = new Query().with(Sort.by(Sort.Direction.ASC, "sortOrder"));
         return mongoTemplate.find(query, Category.class);
@@ -161,16 +187,19 @@ public class UserService implements UserDetailsService{
         return mongoTemplate.findById(id, Category.class);
     }
 
+    @CacheEvict(value = SpringCacheConfig.CACHE_CATEGORIES, allEntries = true)
     public void mongoCategoryInsert(Category category) {
         mongoTemplate.insert(category);
     }
 
+    @CacheEvict(value = SpringCacheConfig.CACHE_CATEGORIES, allEntries = true)
     public void mongoCategoryUpdate(Category category) {
         Query query = new Query().addCriteria(Criteria.where("_id").is(category.getId()));
         Update update = new Update().set("name", category.getName()).set("sortOrder", category.getSortOrder());
         mongoTemplate.updateFirst(query, update, Category.class);
     }
 
+    @CacheEvict(value = SpringCacheConfig.CACHE_CATEGORIES, allEntries = true)
     public void mongoCategoryDelete(String id) {
         mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), Category.class);
     }
@@ -187,36 +216,36 @@ public class UserService implements UserDetailsService{
         return result.getModifiedCount();
     }
 
-    //조건 검색
+    /**
+     * 조건 검색 (최대 findAllMaxSize건).
+     * 대량 결과는 mongoSearchMemoCursor(페이지) 사용 권장.
+     */
     public List<Memo> mongoSearchFindAll(SearchDB searchDB) {
-//    	System.out.println("서비스 searchDB.getSearchDB(): "+searchDB.getSearchDB());
-//    	System.out.println("서비스 searchDB.getSearchContent(): "+searchDB.getSearchContent());
-    	List<Memo> memoList = null;
-    	if(searchDB.getSearchDB().equals("_id")) {
+    	if (searchDB == null || searchDB.getSearchDB() == null || searchDB.getSearchContent() == null) {
+    		return List.of();
+    	}
+    	List<Memo> memoList;
+    	if (searchDB.getSearchDB().equals("_id")) {
     		Criteria criteria = new Criteria("_id");
     		criteria.is(Long.parseLong(searchDB.getSearchContent()));
-    		
-    		//기존 1:1 검색
     		Query query = new Query(criteria);
-            memoList=mongoTemplate.find(query, Memo.class);
-    	} else if( searchDB.getSearchDB().equals("title")) {
-    		
-    		//like 검색. 
+    		memoList = mongoTemplate.find(query, Memo.class);
+    	} else if (searchDB.getSearchDB().equals("title")) {
     		Query searchQuery = new Query();
-    		 
-    		// LIKE '%[searchIndexInfoSearchParam.getTitleMain()]%' 와 같음
-    		searchQuery.addCriteria(Criteria.where("title").regex(searchDB.getSearchContent()));
-            memoList=mongoTemplate.find(searchQuery, Memo.class);
-    		
-    	} else if( searchDB.getSearchDB().equals("message")) {
-    		//like 검색. 
+    		searchQuery.addCriteria(Criteria.where("title").regex(RegexEscape.toPartialMatchPattern(searchDB.getSearchContent())));
+    		searchQuery.with(Sort.by(Sort.Direction.DESC, "_id"));
+    		searchQuery.limit(findAllMaxSize);
+    		memoList = mongoTemplate.find(searchQuery, Memo.class);
+    	} else if (searchDB.getSearchDB().equals("message")) {
     		Query searchQuery = new Query();
-    		 
-    		// LIKE '%[searchIndexInfoSearchParam.getTitleMain()]%' 와 같음
-    		searchQuery.addCriteria(Criteria.where("message").regex(searchDB.getSearchContent()));    
-    		memoList=mongoTemplate.find(searchQuery, Memo.class);
+    		searchQuery.addCriteria(Criteria.where("message").regex(RegexEscape.toPartialMatchPattern(searchDB.getSearchContent())));
+    		searchQuery.with(Sort.by(Sort.Direction.DESC, "_id"));
+    		searchQuery.limit(findAllMaxSize);
+    		memoList = mongoTemplate.find(searchQuery, Memo.class);
+    	} else {
+    		return List.of();
     	}
-		return memoList;
+    	return memoList != null ? memoList : List.of();
         
     }
     

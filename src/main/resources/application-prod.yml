@@ -6,7 +6,8 @@ spring:
     name: SpringBoot_MongoDB_Connect_Test
   data:
     mongodb:
-      uri: mongodb://localhost:27017/blog3
+      # 1GB 환경: maxPoolSize 10~20 권장 (기본 100은 과다)
+      uri: mongodb://localhost:27017/blog3?maxPoolSize=20&minPoolSize=5&maxIdleTimeMS=60000
   servlet:
     multipart:
       max-file-size: 10MB
@@ -16,12 +17,14 @@ server:
   forward-headers-strategy: framework
   servlet:
     session:
+      timeout: 30m
       cookie:
         http-only: true
         secure: true
         same-site: none
   tomcat:
     threads:
+      # 1GB 메모리·Xmx512m 환경에서 50 유지 (과다 스레드 시 메모리 압박 방지)
       max: 50
 
 logging:
@@ -35,3 +38,12 @@ logging:
 app:
   default-admin:
     force-reset-password: false
+  login:
+    rate-limit:
+      max-per-minute: 10
+  async:
+    core-pool-size: 2
+    max-pool-size: 5
+    queue-capacity: 50
+  memo:
+    findAll-max-size: 500

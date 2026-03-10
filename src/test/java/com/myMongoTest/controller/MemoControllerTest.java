@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.PageImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myMongoTest.config.LoginFailureLoggingHandler;
+import com.myMongoTest.config.LoginRateLimitFilter;
 import com.myMongoTest.config.LoginRedirectAuthenticationSuccessHandler;
 import com.myMongoTest.config.SecurityConfig;
 import com.myMongoTest.document.Category;
 import com.myMongoTest.document.Memo;
+import com.myMongoTest.service.AsyncAuditService;
 import com.myMongoTest.service.ImageService;
 import com.myMongoTest.service.UserService;
 
@@ -37,7 +40,8 @@ import com.myMongoTest.service.UserService;
  * MemoController 단위 테스트 (MockMvc, 서비스 목).
  */
 @WebMvcTest(controllers = MemoController.class)
-@Import({ SecurityConfig.class, LoginRedirectAuthenticationSuccessHandler.class, LoginFailureLoggingHandler.class })
+@Import({ SecurityConfig.class, LoginRedirectAuthenticationSuccessHandler.class,
+        LoginFailureLoggingHandler.class, LoginRateLimitFilter.class })
 @DisplayName("MemoController 단위 테스트")
 class MemoControllerTest {
 
@@ -50,12 +54,25 @@ class MemoControllerTest {
 	@MockBean
 	private ImageService imageService;
 
+	@MockBean
+	private AsyncAuditService asyncAuditService;
+
 	@Test
 	@DisplayName("GET /findAllMemo 인증 시 200 + 리스트")
 	void findAllMemo_authenticated_returnsList() throws Exception {
 		when(userService.mongoFindAllMemo()).thenReturn(Collections.emptyList());
 
 		mockMvc.perform(get("/findAllMemo").with(user("admin").roles("ADMIN")))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("GET /findAllMemoPageable 인증 시 200 + Page")
+	void findAllMemoPageable_authenticated_returnsPage() throws Exception {
+		when(userService.mongoFindMemoPage(any(), any())).thenReturn(new PageImpl<>(Collections.emptyList()));
+
+		mockMvc.perform(get("/findAllMemoPageable").param("page", "0").param("size", "20")
+						.with(user("admin").roles("ADMIN")))
 				.andExpect(status().isOk());
 	}
 

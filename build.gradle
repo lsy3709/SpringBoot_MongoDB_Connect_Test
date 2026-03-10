@@ -46,6 +46,7 @@ dependencies {
 	// 4. Utilities
 	implementation 'net.coobird:thumbnailator:0.4.1'
 	implementation 'commons-io:commons-io:2.16.1' // 버전을 명시해 주어야 안정적입니다.
+	implementation 'org.apache.poi:poi-ooxml:5.2.5' // 엑셀 내보내기/가져오기
 
 	// 5. Lombok & DevTools
 	compileOnly 'org.projectlombok:lombok'

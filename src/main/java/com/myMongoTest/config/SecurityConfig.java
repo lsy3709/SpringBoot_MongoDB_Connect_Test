@@ -78,8 +78,8 @@ public class SecurityConfig {
                         .requestMatchers("/login/redirect").authenticated()
                         // 회원 관리: ADMIN만 접근 가능
                         .requestMatchers("/admin/members", "/admin/members/**").hasRole("ADMIN")
-                        // 대시보드·인벤토리: ADMIN, ADUSER(승인된 유저) 접근 가능
-                        .requestMatchers("/admin", "/admin/inventory").hasAnyRole("ADMIN", "ADUSER")
+                        // 대시보드·인벤토리·엑셀 내보내기/가져오기: ADMIN, ADUSER 접근 가능
+                        .requestMatchers("/admin", "/admin/inventory", "/admin/export/**", "/admin/import/**").hasAnyRole("ADMIN", "ADUSER")
                         // 그 외의 모든 요청은 로그인(인증)한 사용자만 접근 가능
                         .anyRequest().authenticated()
                 );

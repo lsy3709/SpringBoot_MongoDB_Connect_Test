@@ -13,6 +13,18 @@
    </div>
    <h1>스마트 인벤토리 (Smart Inventory)</h1>
 
+   <div class="mb-3">
+     <a th:href="@{/admin/export/memos.xlsx}" class="btn btn-outline-success btn-sm">엑셀 내보내기</a>
+     <form th:action="@{/admin/import/memos}" method="post" enctype="multipart/form-data" class="d-inline-block ms-2">
+       <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+       <input type="file" name="file" accept=".xlsx" class="form-control form-control-sm d-inline-block w-auto">
+       <button type="submit" class="btn btn-outline-primary btn-sm">엑셀 가져오기</button>
+     </form>
+     <span th:if="${importSuccessMsg}" class="text-success ms-2" th:text="${importSuccessMsg}"></span>
+     <span th:if="${importErrorMsg}" class="text-danger ms-2" th:text="${importErrorMsg}"></span>
+     <span th:if="${importWarnMsg}" class="text-warning ms-2" th:text="${importWarnMsg}"></span>
+   </div>
+
    <!-- 카테고리 탭 바 -->
    <div class="mb-3" id="categoryTabsWrap">
       <ul class="nav nav-tabs" id="categoryTabs"></ul>

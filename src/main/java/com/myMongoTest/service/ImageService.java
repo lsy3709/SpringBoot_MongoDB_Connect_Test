@@ -7,9 +7,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,6 +98,35 @@ public class ImageService {
             filenames.add(file.getFilename());
         }
         return filenames;
+    }
+
+    /**
+     * 파일명으로 GridFS에서 이미지 바이트 조회. (엑셀 내보내기용)
+     * 없거나 읽기 실패 시 null.
+     */
+    public byte[] getImageBytesByFilename(String filename) {
+        if (filename == null || filename.isBlank()) return null;
+        try {
+            GridFSFile file = gridFsTemplate.find(Query.query(Criteria.where("filename").is(filename))).first();
+            if (file == null) return null;
+            GridFsResource resource = gridFsTemplate.getResource(file);
+            return IOUtils.toByteArray(resource.getInputStream());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * 바이트 배열을 GridFS에 저장. (엑셀 가져오기용)
+     * @param bytes 이미지 바이트 (JPEG 등)
+     * @param filename 저장할 파일명
+     */
+    public StoredFileInfo storeFromBytes(byte[] bytes, String filename) throws IOException {
+        if (bytes == null || bytes.length == 0 || filename == null || filename.isBlank()) return null;
+        try (InputStream in = new ByteArrayInputStream(bytes)) {
+            ObjectId objectId = gridFsTemplate.store(in, filename, "image/jpeg");
+            return new StoredFileInfo(objectId.toString(), filename);
+        }
     }
 
     /**

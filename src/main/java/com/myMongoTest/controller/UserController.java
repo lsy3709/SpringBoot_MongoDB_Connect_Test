@@ -102,12 +102,7 @@ public class UserController {
 		return "redirect:/login";
 	}
 
-	@RequestMapping("/admin")
-	public String admin(Model model) {
-		List<Memo> memoList = userService.mongoFindAllMemo();
-		model.addAttribute("count", memoList.size());
-		return "admin";
-	}
+	// /admin → AdminMemberController#dashboard
 
 	@RequestMapping("/")
 	public String main(Model model) {

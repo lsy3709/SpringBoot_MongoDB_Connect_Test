@@ -78,6 +78,7 @@ public class SampleDataLoader implements ApplicationRunner {
             LocalDate baseDate = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
+            List<Memo> memos = new java.util.ArrayList<>();
             for (int i = 0; i < count; i++) {
                 Memo memo = new Memo();
                 memo.setTitle(SAMPLE_TITLES.get(i % SAMPLE_TITLES.size()) + "_" + (i + 1));
@@ -85,9 +86,9 @@ public class SampleDataLoader implements ApplicationRunner {
                 memo.setExpiryDate(baseDate.plusDays(i % 30).format(formatter));
                 memo.setTags(SAMPLE_TAGS.get(i % SAMPLE_TAGS.size()));
                 memo.setCategoryId(i % 3 == 0 ? null : "cat-" + (i % 3));
-
-                userService.mongoMemoInsert(memo);
+                memos.add(memo);
             }
+            userService.mongoMemoInsertBatch(memos);
 
             long actual = mongoTemplate.count(new Query(), Memo.class);
             log.info("===== 샘플 메모 {}건 삽입 완료. 현재 memo 컬렉션 총 {}건 =====", count, actual);

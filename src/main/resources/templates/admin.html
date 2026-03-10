@@ -4,6 +4,11 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 layout:decorate="~{layout/default_layout2}">
 
 <body><th:block layout:fragment="content">
+   <div class="mb-3">
+     <a th:href="@{/admin}">대시보드</a> | 
+     <a th:href="@{/admin/inventory}">인벤토리</a> | 
+     <a th:href="@{/admin/members}">회원 관리</a>
+   </div>
    <h1>스마트 인벤토리 (Smart Inventory)</h1>
 
    <!-- 카테고리 탭 바 -->

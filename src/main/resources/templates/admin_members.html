@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default_layout2}">
+
+<body>
+<th:block layout:fragment="content">
+  <div class="mb-3">
+    <a th:href="@{/admin}">대시보드</a> |
+    <a th:href="@{/admin/inventory}">인벤토리</a> |
+    <a th:href="@{/admin/members}">회원 관리</a>
+  </div>
+  <h1>회원 관리</h1>
+
+  <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+  <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+
+  <table class="table table-striped mt-3">
+    <thead>
+      <tr>
+        <th>이메일</th>
+        <th>권한</th>
+        <th>관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="u : ${users}">
+        <td th:text="${u.email}"></td>
+        <td th:text="${u.role}"></td>
+        <td>
+          <a th:href="@{/admin/members/{id}(id=${u.id})}" class="btn btn-sm btn-outline-primary">상세</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p th:if="${#lists.isEmpty(users)}" class="text-muted">등록된 회원이 없습니다.</p>
+</th:block>
+</body>
+</html>

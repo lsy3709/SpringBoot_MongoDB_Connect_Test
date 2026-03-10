@@ -77,7 +77,7 @@ public class SecurityConfig {
                         // 로그인 성공 후 세션 확정을 위한 중간 리다이렉트 페이지 (인증 필요)
                         .requestMatchers("/login/redirect").authenticated()
                         // /admin 경로는 "ADMIN" 권한(역할)을 가진 사용자만 접근 가능
-                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                         // 그 외의 모든 요청은 로그인(인증)한 사용자만 접근 가능
                         .anyRequest().authenticated()
                 );

@@ -73,6 +73,17 @@ public class UserService implements UserDetailsService{
     			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         mongoTemplate.insert(memo);
     }
+
+    /**
+     * 메모 여러 건 배치 삽입 (대량 샘플 데이터 등).
+     * insertAll로 네트워크 왕복 최소화.
+     */
+    public void mongoMemoInsertBatch(List<Memo> memos) {
+        if (memos == null || memos.isEmpty()) return;
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        memos.forEach(m -> m.setDateField(now));
+        mongoTemplate.insertAll(memos);
+    }
     
   //하나 추가. 
     
@@ -90,6 +101,7 @@ public class UserService implements UserDetailsService{
     /**
      * 전체 메모 조회 (최대 findAllMaxSize건).
      * 대량 데이터는 mongoFindMemoCursor(페이지) 사용 권장.
+     * projection: 현재 전체 필드 반환(클라이언트 표시용). 필요 시 list 전용 DTO+fields() 적용 가능.
      */
     public List<Memo> mongoFindAllMemo() {
         Query query = new Query();
@@ -292,6 +304,36 @@ public class UserService implements UserDetailsService{
 		    log.debug("[사용자 조회] 결과 존재: email={}, role={}", user2.getEmail(), user2.getRole());
 		}
 		return user2;
+    }
+
+    /** 전체 회원 목록 조회 */
+    public List<User2> mongoFindAllUser2() {
+        Query query = new Query().with(Sort.by(Sort.Direction.DESC, "_id"));
+        return mongoTemplate.find(query, User2.class);
+    }
+
+    /** ID로 회원 1건 조회 */
+    public User2 mongoFindOneUser2ById(ObjectId id) {
+        return mongoTemplate.findById(id, User2.class);
+    }
+
+    /** 회원 권한 변경 */
+    public void mongoUser2UpdateRole(String id, String role) {
+        Query query = new Query(Criteria.where("_id").is(new ObjectId(id)));
+        Update update = new Update().set("role", role);
+        mongoTemplate.updateFirst(query, update, User2.class);
+    }
+
+    /** 회원 탈퇴 (DB에서 삭제). ADMIN이 1명일 때는 삭제 불가. */
+    public boolean mongoUser2Delete(String id) {
+        User2 target = mongoFindOneUser2ById(new ObjectId(id));
+        if (target == null) return false;
+        if ("ADMIN".equalsIgnoreCase(target.getRole())) {
+            long adminCount = mongoTemplate.count(new Query(Criteria.where("role").is("ADMIN")), User2.class);
+            if (adminCount <= 1) return false;  // 마지막 ADMIN은 탈퇴 불가
+        }
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(new ObjectId(id))), User2.class);
+        return true;
     }
 
     /** 이메일로 user2 비밀번호만 갱신 (기본 관리자 복구용) */

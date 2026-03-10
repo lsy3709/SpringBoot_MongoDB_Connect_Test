@@ -4,6 +4,13 @@
       layout:decorate="~{layout/default_layout2}">
 
 <body>
+<style>
+  body {
+    background-image: url('/image/balloon.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+</style>
 <th:block layout:fragment="content">
   <div class="mb-3">
     <a th:href="@{/admin}">대시보드</a> |
